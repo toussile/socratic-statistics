@@ -1,0 +1,493 @@
+---
+title: "Régression linéaire simple"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000010"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000035"
+difficulty: "Intermediate"
+categories: [Statistics, "Descriptive Statistics", "Bivariate Analysis"]
+---
+
+<concept id="droite-ols">
+
+## La droite de régression OLS
+
+Le coefficient $r$ quantifie la *force* de la liaison linéaire. La **droite de régression** va plus loin : elle modélise la *forme* de cette liaison en donnant, pour chaque valeur de $X$, une valeur prédite de $Y$.
+
+:::{#def-droite-ols}
+## Droite de régression OLS
+La **droite de régression des moindres carrés ordinaires** (*Ordinary Least Squares*, OLS) de $Y$ sur $X$ est la droite $\hat{y} = b_0 + b_1 x$ qui minimise la somme des carrés des résidus :
+
+$$\min_{b_0,\, b_1} \sum_{i=1}^{n} (y_i - b_0 - b_1 x_i)^2$$
+
+La solution analytique donne :
+
+$$b_1 = \frac{\text{cov}(X, Y)}{\sigma_X^2} = r \cdot \frac{\sigma_Y}{\sigma_X} \qquad b_0 = \bar{y} - b_1\,\bar{x}$$
+:::
+
+Deux propriétés fondamentales découlent directement de la minimisation :
+
+1. La droite passe **toujours par le point moyen** $(\bar{x},\, \bar{y})$.
+2. La somme (et donc la moyenne) des résidus est **exactement zéro** : $\sum_{i=1}^{n} \hat{\varepsilon}_i = 0$.
+
+:::{.callout-tip}
+### Sur le fil rouge
+
+$$b_1 = 0{,}75 \times \frac{3{,}0}{5{,}2} \approx 0{,}43 \quad \text{pt/h} \qquad b_0 = 12{,}5 - 0{,}43 \times 12{,}9 \approx 6{,}95$$
+
+$$\boxed{\hat{\text{note}} = 6{,}95 + 0{,}43 \times \text{heures}}$$
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_droite_ols -->
+
+<concept id="interpretation-droite">
+
+## Interprétation des coefficients
+
+:::{#prp-interpretation-b1-b0}
+## Interprétation de $b_1$ et $b_0$
+
+- **Pente $b_1$** : quand $X$ augmente d'**une unité**, $\hat{Y}$ augmente en moyenne de $b_1$ unités. Si $b_1 > 0$, liaison positive ; si $b_1 < 0$, liaison négative.
+- **Ordonnée à l'origine $b_0$** : valeur prédite de $Y$ quand $X = 0$. N'a de sens concret que si $x = 0$ est dans le domaine de validité des données.
+:::
+
+::: {.callout-warning title="Extrapolation hors du domaine de validité"}
+La droite a été ajustée sur la plage $[\min x_i;\, \max x_i]$. Utiliser $\hat{y} = b_0 + b_1 x$ pour des valeurs de $x$ très éloignées de cette plage est une **extrapolation** : le modèle linéaire peut y être totalement inadapté.
+
+Sur le fil rouge, $b_0 \approx 6{,}95$ représente la note prédite pour 0 heure de révision — une valeur marginalement interprétable (des étudiants révisent entre 2 et 25 h). Prédire la note d'un étudiant révisant 30 h serait une extrapolation risquée.
+:::
+
+**Interprétation sur le fil rouge :**
+
+- $b_1 \approx 0{,}43$ pt/h — chaque heure de révision supplémentaire est **associée** en moyenne à +0,43 point de note. Ce n'est pas un effet causal établi.
+- $b_0 \approx 6{,}95$ — un étudiant ne révisant pas du tout obtiendrait en moyenne environ 7/20, ce qui est cohérent avec la plage [6 ; 19] du fil rouge.
+
+**Prédictions ponctuelles :**
+
+| Heures | Prédiction $\hat{y}$ |
+|:------:|:--------------------:|
+| 5 h    | $6{,}95 + 0{,}43 \times 5 = 9{,}1$ |
+| 12 h   | $6{,}95 + 0{,}43 \times 12 = 12{,}1$ |
+| 20 h   | $6{,}95 + 0{,}43 \times 20 = 15{,}6$ |
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_interpretation -->
+
+<concept id="residus">
+
+## Les résidus
+
+La droite prédit une valeur $\hat{y}_i$ ; la valeur réelle est $y_i$. L'écart entre les deux est le **résidu**.
+
+:::{#def-residus}
+## Résidu
+Le **résidu** de l'observation $i$ est :
+
+$$\hat{\varepsilon}_i = y_i - \hat{y}_i = y_i - (b_0 + b_1 x_i)$$
+
+Il mesure l'erreur de prédiction pour cet individu : positif si la droite sous-estime $y_i$, négatif si elle le surestime.
+:::
+
+**Propriétés des résidus OLS :**
+
+- $\sum_{i=1}^n \hat{\varepsilon}_i = 0$ — les erreurs positives et négatives s'équilibrent exactement.
+- Les résidus sont **non corrélés** avec $X$ : la droite a extrait toute la tendance linéaire.
+
+**Diagnostic graphique :** Un bon modèle linéaire produit des résidus distribués de façon aléatoire autour de zéro, sans structure apparente. Si les résidus dessinent une courbe ou un entonnoir, la relation n'est pas linéaire (ou la variance n'est pas constante).
+
+::: {.callout-note title="Résidu ≠ erreur de mesure"}
+Le résidu $\hat{\varepsilon}_i$ n'est pas une erreur de saisie — c'est la part de $y_i$ que le modèle linéaire ne parvient pas à expliquer à partir de $x_i$. Il reflète l'action des variables non prises en compte dans le modèle (qualité du travail, niveau de départ, conditions d'examen…).
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_residus -->
+
+<concept id="coefficient-determination">
+
+## Coefficient de détermination $R^2$
+
+La qualité d'ajustement de la droite se mesure par la fraction de variabilité de $Y$ qu'elle explique.
+
+:::{#def-r2}
+## Coefficient de détermination $R^2$
+Dans le cadre de la régression linéaire simple, le **coefficient de détermination** est :
+
+$$R^2 = 1 - \frac{SCR}{SCT} = \frac{SCE}{SCT}$$
+
+où $SCT = \sum(y_i - \bar{y})^2$, $SCR = \sum\hat{\varepsilon}_i^2$, $SCE = SCT - SCR$.
+
+Pour la régression linéaire **simple** (un seul prédicteur), $R^2 = r^2$ exactement.
+
+$R^2 \in [0\,;\,1]$ : 0 signifie que la droite n'explique rien, 1 qu'elle prédit parfaitement.
+:::
+
+::: {.callout-tip title="Lien entre $r$ et $R^2$"}
+$R^2 = r^2$ implique que deux droites symétriques (l'une avec $r = +0{,}75$, l'autre avec $r = -0{,}75$) ont la même qualité d'ajustement. Le signe de $r$ donne la direction, $R^2$ donne la qualité.
+:::
+
+**Sur le fil rouge :**
+
+$$R^2 = r^2 \approx 0{,}75^2 \approx 0{,}56$$
+
+56 % de la variance des notes est expliquée par la relation linéaire avec les heures de révision. Les 44 % restants correspondent aux résidus — la partie des notes que le modèle ne parvient pas à prédire à partir des seules heures de travail.
+
+::: {.callout-warning title="Limites du modèle"}
+Un $R^2$ élevé ne valide pas un modèle :
+
+- Il ne prouve pas la causalité.
+- Il peut résulter d'une forme de relation **non linéaire** approximée grossièrement par une droite.
+- Il peut être artificiellement élevé en présence de quelques **outliers** influents.
+
+Toujours compléter $R^2$ par un examen visuel du nuage de points et des résidus.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_r2 -->
+
+## Application interactive
+
+Explorez la droite de régression, les résidus et l'outil de prédiction.
+
+```{ojs}
+//| echo: false
+regData = [
+  {hrs: 17.8, note: 14.4}, {hrs: 13.7, note: 15.0}, {hrs: 14.3, note: 14.8}, {hrs: 21.1, note: 14.8},
+  {hrs: 11.1, note: 12.2}, {hrs: 9.3, note: 13.6}, {hrs: 15.0, note: 13.3}, {hrs: 14.2, note: 13.0},
+  {hrs: 19.6, note: 19.0}, {hrs: 14.2, note: 14.3}, {hrs: 3.8, note: 6.0}, {hrs: 12.6, note: 9.4},
+  {hrs: 17.3, note: 13.2}, {hrs: 25.0, note: 18.9}, {hrs: 8.3, note: 7.1}, {hrs: 11.6, note: 15.1},
+  {hrs: 5.2, note: 9.0}, {hrs: 8.1, note: 10.4}, {hrs: 16.3, note: 14.3}, {hrs: 13.0, note: 12.2},
+  {hrs: 11.8, note: 10.9}, {hrs: 9.7, note: 6.0}, {hrs: 17.2, note: 12.7}, {hrs: 19.2, note: 14.8},
+  {hrs: 12.1, note: 10.1}, {hrs: 14.2, note: 10.6}, {hrs: 22.2, note: 12.7}, {hrs: 19.4, note: 17.0},
+  {hrs: 10.5, note: 13.9}, {hrs: 11.1, note: 11.0}, {hrs: 12.5, note: 12.2}, {hrs: 9.5, note: 12.1},
+  {hrs: 18.6, note: 16.0}, {hrs: 11.9, note: 14.2}, {hrs: 6.0, note: 10.1}, {hrs: 10.6, note: 10.9},
+  {hrs: 10.6, note: 9.5}, {hrs: 10.7, note: 9.2}, {hrs: 10.4, note: 12.5}, {hrs: 11.6, note: 13.5},
+  {hrs: 17.1, note: 12.9}, {hrs: 14.1, note: 12.7}, {hrs: 10.7, note: 10.2}, {hrs: 21.6, note: 16.0},
+  {hrs: 14.2, note: 9.6}, {hrs: 24.5, note: 19.0}, {hrs: 11.0, note: 16.7}, {hrs: 23.9, note: 14.8},
+  {hrs: 9.6, note: 11.6}, {hrs: 16.6, note: 13.2}, {hrs: 14.7, note: 16.1}, {hrs: 20.0, note: 16.7},
+  {hrs: 20.7, note: 16.8}, {hrs: 9.6, note: 10.8}, {hrs: 9.2, note: 6.5}, {hrs: 9.8, note: 11.6},
+  {hrs: 11.6, note: 12.3}, {hrs: 3.2, note: 6.0}, {hrs: 5.7, note: 10.4}, {hrs: 19.7, note: 16.5},
+  {hrs: 12.4, note: 10.0}, {hrs: 12.3, note: 11.5}, {hrs: 10.7, note: 13.8}, {hrs: 7.7, note: 7.9},
+  {hrs: 13.4, note: 13.3}, {hrs: 9.9, note: 13.7}, {hrs: 21.6, note: 16.0}, {hrs: 14.7, note: 11.1},
+  {hrs: 12.0, note: 10.8}, {hrs: 20.7, note: 19.0}, {hrs: 21.5, note: 16.1}, {hrs: 9.7, note: 10.9},
+  {hrs: 11.8, note: 9.5}, {hrs: 15.4, note: 13.3}, {hrs: 9.1, note: 11.5}, {hrs: 15.8, note: 17.8},
+  {hrs: 10.8, note: 9.1}, {hrs: 13.5, note: 11.2}, {hrs: 13.1, note: 13.2}, {hrs: 21.4, note: 19.0}
+]
+```
+
+```{ojs}
+//| echo: false
+lrStats = {
+  const n = regData.length;
+  const mx = d3.mean(regData, d => d.hrs);
+  const my = d3.mean(regData, d => d.note);
+  const num = d3.sum(regData, d => (d.hrs - mx) * (d.note - my));
+  const den = d3.sum(regData, d => (d.hrs - mx) ** 2);
+  const b1 = num / den;
+  const b0 = my - b1 * mx;
+  const sct = d3.sum(regData, d => (d.note - my) ** 2);
+  const scr = d3.sum(regData, d => (d.note - b0 - b1 * d.hrs) ** 2);
+  const r2 = 1 - scr / sct;
+  const res = regData.map(d => d.note - b0 - b1 * d.hrs);
+  return { b0, b1, r2, r: Math.sqrt(r2), n,
+           resMax: d3.max(res), resMin: d3.min(res),
+           nPos: res.filter(x => x > 0).length };
+}
+```
+
+```{ojs}
+//| echo: false
+viewof lrVue = Inputs.radio(
+  ["Droite de régression", "Résidus", "Prédiction"],
+  { value: "Droite de régression", label: "Mode :" }
+)
+```
+
+```{ojs}
+//| echo: false
+viewof lrXPred = Inputs.range([2, 25], {
+  step: 0.5, value: 12,
+  label: html`<b>Heures de révision :</b>`
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  if (lrVue === "Prédiction")
+    return html`<div style="max-width:420px;margin:4px 0 8px">${viewof lrXPred}</div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const { b0, b1 } = lrStats;
+  const xMin = d3.min(regData, d => d.hrs);
+  const xMax = d3.max(regData, d => d.hrs);
+  const lineData = [{ x: xMin, y: b0 + b1 * xMin }, { x: xMax, y: b0 + b1 * xMax }];
+
+  const scatter = Plot.dot(regData, {
+    x: "hrs", y: "note", fill: "#339af0", opacity: 0.65, r: 4
+  });
+  const regLine = Plot.line(lineData, {
+    x: "x", y: "y", stroke: "#e8590c", strokeWidth: 2
+  });
+  const eqLabel = Plot.text(
+    [{ x: 24.5, y: b0 + b1 * 24.5 + 1.3 }],
+    { x: "x", y: "y",
+      text: [`ŷ = ${b0.toFixed(2)} + ${b1.toFixed(2)}x`],
+      fill: "#e8590c", fontSize: 11, textAnchor: "end" }
+  );
+
+  let extra = [];
+  if (lrVue === "Résidus") {
+    const pos = regData.filter(d => d.note >= b0 + b1 * d.hrs);
+    const neg = regData.filter(d => d.note < b0 + b1 * d.hrs);
+    extra = [
+      Plot.ruleX(pos, { x: "hrs", y1: "note",
+        y2: d => b0 + b1 * d.hrs, stroke: "#2f9e44", strokeWidth: 1.5 }),
+      Plot.ruleX(neg, { x: "hrs", y1: "note",
+        y2: d => b0 + b1 * d.hrs, stroke: "#c92a2a", strokeWidth: 1.5 })
+    ];
+  } else if (lrVue === "Prédiction") {
+    const xp = lrXPred;
+    const yp = b0 + b1 * xp;
+    extra = [
+      Plot.ruleX([xp], { strokeDasharray: "4,3", stroke: "#555" }),
+      Plot.ruleY([yp], { x1: 0, x2: xp, strokeDasharray: "4,3", stroke: "#555" }),
+      Plot.dot([{ x: xp, y: yp }], {
+        x: "x", y: "y", symbol: "diamond",
+        fill: "#e8590c", stroke: "white", strokeWidth: 1.5, r: 8
+      }),
+      Plot.text([{ x: xp, y: yp }], {
+        x: "x", y: "y",
+        text: [`ŷ = ${yp.toFixed(1)}`],
+        dy: -14, fill: "#e8590c", fontWeight: "bold", fontSize: 12
+      })
+    ];
+  }
+
+  return Plot.plot({
+    width: 600, height: 360,
+    x: { label: "Heures de révision / semaine", domain: [0, 27] },
+    y: { label: "Note moyenne (/20)", domain: [4, 21] },
+    marks: [scatter, regLine, eqLabel, ...extra]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const { b0, b1, r2, r, resMax, resMin, nPos, n } = lrStats;
+  const box = (lbl, val) =>
+    `<div style="background:#f8f9fa;border-left:4px solid #e8590c;
+      padding:7px 13px;border-radius:4px">
+      <p style="font-size:.80em;color:#555;margin:0">${lbl}</p>
+      <p style="font-size:1.05em;font-weight:bold;color:#e8590c;margin:0">${val}</p></div>`;
+
+  if (lrVue === "Résidus") {
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("Résidu max",  `+${resMax.toFixed(2)} pt`)}
+      ${box("Résidu min",  `${resMin.toFixed(2)} pt`)}
+      ${box("Résidus > 0", `${nPos} / ${n}`)}
+      ${box("Résidu moyen","≈ 0")}
+    </div>`;
+  } else if (lrVue === "Prédiction") {
+    const xp = lrXPred;
+    const yp = b0 + b1 * xp;
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("Heures saisies",  `${xp.toFixed(1)} h`)}
+      ${box("Note prédite",    `${yp.toFixed(1)} / 20`)}
+      ${box("Équation", `${b0.toFixed(2)} + ${b1.toFixed(2)} × ${xp.toFixed(1)}`)}
+    </div>`;
+  } else {
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("b₀",          b0.toFixed(2))}
+      ${box("b₁ (pt / h)", b1.toFixed(3))}
+      ${box("R²",          r2.toFixed(3))}
+      ${box("r",           r.toFixed(3))}
+    </div>`;
+  }
+}
+```
+
+## Exercices écrits
+
+:::{#exr-reg-calcul}
+## Calculer une droite de régression
+
+Une étude portant sur 50 lycéens donne les statistiques suivantes pour le temps de trajet $X$ (min) et le score à un test de concentration $Y$ (sur 100) :
+
+$$\bar{x} = 30 \quad \bar{y} = 65 \quad \sigma_X = 10 \quad \sigma_Y = 8 \quad r = -0{,}60$$
+
+a) Calculer les coefficients $b_1$ et $b_0$ de la droite de régression de $Y$ sur $X$.
+b) Interpréter $b_1$ dans le contexte de l'étude.
+c) Prédire le score d'un lycéen dont le trajet dure 45 minutes.
+d) Un lycéen ayant 20 minutes de trajet obtient un score de 74. Calculer son résidu et interpréter.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Coefficients de la droite :**
+
+$$b_1 = r \cdot \frac{\sigma_Y}{\sigma_X} = -0{,}60 \times \frac{8}{10} = -0{,}48 \quad \text{pts/min}$$
+
+$$b_0 = \bar{y} - b_1\,\bar{x} = 65 - (-0{,}48) \times 30 = 65 + 14{,}4 = 79{,}4$$
+
+Droite : $\hat{y} = 79{,}4 - 0{,}48\,x$
+
+**b) Interprétation de $b_1$ :**
+
+Chaque minute de trajet supplémentaire est **associée** à une baisse moyenne de 0,48 point au score de concentration. Un trajet plus long est lié à une concentration plus faible — ce qui peut s'expliquer par la fatigue, mais ce n'est pas une causalité prouvée.
+
+**c) Prédiction pour $x = 45$ min :**
+
+$$\hat{y} = 79{,}4 - 0{,}48 \times 45 = 79{,}4 - 21{,}6 = \mathbf{57{,}8}$$
+
+Le score prédit est 57,8 / 100. Attention : 45 min est dans la plage raisonnable si les données couvrent ce domaine.
+
+**d) Résidu pour $(x = 20,\; y = 74)$ :**
+
+$$\hat{y} = 79{,}4 - 0{,}48 \times 20 = 79{,}4 - 9{,}6 = 69{,}8$$
+
+$$\hat{\varepsilon} = y - \hat{y} = 74 - 69{,}8 = \mathbf{+4{,}2}$$
+
+Le résidu est positif : la droite **sous-estime** le score de ce lycéen de 4,2 points. Malgré un trajet de 20 min (similaire à d'autres), il obtient un meilleur score que prévu — d'autres facteurs jouent en sa faveur.
+:::
+:::
+
+:::{#exr-reg-r2}
+## Interpréter $R^2$ et identifier les limites
+
+Deux chercheurs étudient la relation entre heures de sommeil ($X$) et performance académique ($Y$) sur des cohortes différentes :
+
+| Étude | $n$ | $r$ | $R^2$ | $b_1$ | Plage de $X$ |
+|:-----:|:---:|:---:|:-----:|:-----:|:------------:|
+| A | 200 | 0,45 | 0,20 | +2,1 pts/h | [4 ; 9] h |
+| B | 30  | 0,88 | 0,77 | +3,8 pts/h | [6 ; 8] h |
+
+a) Laquelle des deux études a la droite qui prédit le mieux la performance ? Justifier avec $R^2$.
+b) Peut-on utiliser la droite de l'étude B pour prédire la performance d'un étudiant dormant 4 heures ? Pourquoi ?
+c) Les deux études donnent des pentes positives. Peut-on en conclure que dormir plus *cause* de meilleures notes ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Qualité de prédiction :**
+
+L'étude B a $R^2 = 0{,}77$ contre $R^2 = 0{,}20$ pour l'étude A. La droite de B explique **77 % de la variance** des notes, contre seulement 20 % pour A. La droite de B prédit donc bien mieux — mais attention à la réponse b).
+
+**b) Extrapolation hors du domaine :**
+
+Non. La droite de l'étude B a été ajustée sur des étudiants dormant entre **6 et 8 heures**. Prédire pour 4 heures constitue une extrapolation : le comportement linéaire observé entre 6 et 8 h peut ne pas se prolonger jusqu'à 4 h (la relation pourrait s'accélérer, se courber ou s'inverser). La droite de l'étude A, ajustée sur [4 ; 9] h, serait plus appropriée pour 4 h.
+
+**c) Corrélation ≠ causalité :**
+
+Non. Une pente positive confirme une **association** entre sommeil et performance, mais pas un effet causal. Des variables confondantes peuvent expliquer simultanément les deux : les étudiants motivés ont tendance à la fois à mieux gérer leur sommeil et à travailler davantage. Établir la causalité requiert une expérience contrôlée (randomisée) ou une analyse longitudinale rigoureuse.
+:::
+:::
+
+### Quiz — Régression linéaire simple
+
+```{ojs}
+//| echo: false
+lr_questions = [
+  {
+    enonce: "Pour les données Heures × Note (x̄ = 12,9 h, ȳ = 12,5 pts, σ_x = 5,2, σ_y = 3,0, r = 0,75), quelle est la pente b₁ de la droite OLS ?",
+    choices: ["b₁ = 0,75 × 5,2 / 3,0 ≈ 1,30", "b₁ = 0,75 × 3,0 / 5,2 ≈ 0,43", "b₁ = 3,0 / 5,2 ≈ 0,58", "b₁ = 0,75 / (5,2 × 3,0) ≈ 0,048"],
+    correct: "b₁ = 0,75 × 3,0 / 5,2 ≈ 0,43",
+    explication: "b₁ = r × σ_Y / σ_X = 0,75 × 3,0 / 5,2 ≈ 0,43 pt/h. La formule b₁ = cov(X,Y) / σ²_X donne le même résultat car cov = r × σ_X × σ_Y, donc b₁ = r × σ_X × σ_Y / σ²_X = r × σ_Y / σ_X."
+  },
+  {
+    enonce: "La droite passe par le point moyen (x̄, ȳ). À quoi sert cette propriété pour calculer b₀ ?",
+    choices: ["Elle permet de calculer r sans connaître les données brutes", "Elle donne directement b₀ = x̄ / ȳ", "Elle implique b₀ = ȳ − b₁ · x̄, ce qui permet de trouver b₀ une fois b₁ connu", "Elle montre que b₀ = 0 quand les variables sont centrées"],
+    correct: "Elle implique b₀ = ȳ − b₁ · x̄, ce qui permet de trouver b₀ une fois b₁ connu",
+    explication: "Si la droite ŷ = b₀ + b₁x passe par (x̄, ȳ), alors ȳ = b₀ + b₁x̄. En isolant b₀ : b₀ = ȳ − b₁x̄. Cette propriété permet de calculer b₀ directement à partir de b₁ et des moyennes, sans résoudre un système d'équations."
+  },
+  {
+    enonce: "Un étudiant révise 18 heures par semaine. La droite ŷ = 6,95 + 0,43x prédit une note de 14,7. Il obtient réellement 13,2. Quel est son résidu ?",
+    choices: ["+1,5 (la droite sous-estime)", "−1,5 (la droite surestime)", "+14,7 (le résidu vaut la valeur prédite)", "0 car la droite OLS minimise les résidus"],
+    correct: "−1,5 (la droite surestime)",
+    explication: "Résidu = y − ŷ = 13,2 − 14,7 = −1,5. Le résidu est négatif : la droite prédit 14,7 alors que l'étudiant n'obtient que 13,2 — la droite surestime son score de 1,5 point."
+  },
+  {
+    enonce: "Pourquoi la somme des résidus OLS est-elle toujours égale à zéro ?",
+    choices: ["Parce que tous les résidus sont nuls si le modèle est bon", "C'est une conséquence de la minimisation des carrés, qui force la droite à passer par ȳ", "Parce que les valeurs positives et négatives de Y s'annulent", "C'est une approximation vraie seulement pour n > 30"],
+    correct: "C'est une conséquence de la minimisation des carrés, qui force la droite à passer par ȳ",
+    explication: "La condition de minimisation des moindres carrés impose ∂/∂b₀ Σεᵢ² = 0, ce qui donne Σεᵢ = 0 exactement. Géométriquement, cela signifie que la droite passe par le point (x̄, ȳ) : les résidus positifs et négatifs s'équilibrent parfaitement."
+  },
+  {
+    enonce: "Pour la régression linéaire simple Heures × Note, R² ≈ 0,56. Quelle affirmation est correcte ?",
+    choices: ["56 % des étudiants sont bien prédits par la droite", "La pente b₁ vaut 0,56", "56 % de la variance des notes est expliquée par la relation linéaire avec les heures de révision", "Il faut réviser 56 heures pour obtenir la note maximale"],
+    correct: "56 % de la variance des notes est expliquée par la relation linéaire avec les heures de révision",
+    explication: "R² = 1 − SCR/SCT mesure la proportion de variance de Y expliquée par le modèle linéaire. R² ≈ 0,56 signifie que 56 % de la dispersion des notes est captée par la droite de régression sur les heures. Les 44 % restants représentent la variabilité résiduelle."
+  },
+  {
+    enonce: "La droite ŷ = 79 − 0,5x est ajustée sur des données avec X ∈ [5 ; 40] min. Un chercheur l'utilise pour prédire Y en x = 80 min. Quel est le principal problème ?",
+    choices: ["La pente négative rend la prédiction impossible", "Il faut que n > 100 pour extrapoler", "x = 80 est hors du domaine d'ajustement — l'extrapolation peut être très inexacte", "ŷ = 79 − 0,5 × 80 = 39, ce qui est une valeur parfaitement acceptable"],
+    correct: "x = 80 est hors du domaine d'ajustement — l'extrapolation peut être très inexacte",
+    explication: "La droite OLS est fiable dans la plage [5 ; 40] min couverte par les données. En x = 80, on extrapole bien au-delà : la relation linéaire observée peut ne pas se prolonger ainsi (saturation, changement de comportement…). Le résultat ŷ = 39 peut sembler numérique, mais n'est pas validé par les données."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof lr_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(lr_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  lr_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../04-quantitative-quantitative/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Quanti × Quanti</span></span></a>
+  <a href="../../04-time-series-analysis/01-introduction-time-series/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Introduction aux séries temporelles</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

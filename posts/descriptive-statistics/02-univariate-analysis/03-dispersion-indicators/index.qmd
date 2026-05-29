@@ -1,0 +1,410 @@
+---
+title: "Indicateurs de dispersion"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000025"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Univariate Analysis"]
+---
+
+Deux distributions peuvent avoir la même moyenne et pourtant être très différentes : l'une concentrée, l'autre très étalée. Les **indicateurs de dispersion** répondent à la question *« les observations sont-elles regroupées autour du centre ou dispersées ? »*. Cette leçon présente l'étendue, la variance et l'écart-type, l'écart interquartile, et le coefficient de variation.
+
+<concept id="etendue">
+
+## L'étendue
+
+:::{#def-etendue}
+## Étendue
+L'**étendue** (ou *range*) est la différence entre la valeur maximale et la valeur minimale d'une série :
+
+$$e = x_{\max} - x_{\min}$$
+:::
+
+| Variable | $x_{\min}$ | $x_{\max}$ | Étendue |
+|----------|:----------:|:----------:|:-------:|
+| Nb de cours | 3 | 8 | **5 cours** |
+| Durée du trajet | 10 min | 70 min | **60 min** |
+
+L'étendue est simple à calculer, mais elle ne s'appuie que sur deux valeurs. Un seul étudiant avec un trajet de 3 heures (180 min) porterait l'étendue à 170 min sans rien dire de la distribution des 79 autres.
+
+::: {.callout-warning title="Limite de l'étendue"}
+L'étendue est **très sensible aux valeurs extrêmes**. Elle ne reflète pas la dispersion de la majorité des observations et ne doit être utilisée qu'en complément d'autres indicateurs.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_etendue -->
+
+<concept id="variance-et-ecart-type">
+
+## Variance et écart-type
+
+L'idée : mesurer en moyenne à quelle distance les observations se trouvent de la moyenne.
+
+:::{#def-variance}
+## Variance et écart-type
+Pour $k$ valeurs distinctes $x_i$ avec effectifs $n_i$ ($n = \sum n_i$) :
+
+$$\sigma^2 = \frac{\displaystyle\sum_{i=1}^k n_i (x_i - \bar{x})^2}{n}$$
+
+L'**écart-type** $\sigma = \sqrt{\sigma^2}$ est exprimé dans la même unité que la variable.
+:::
+
+Pour des **données groupées**, on substitue à $x_i$ le centre de classe $m_i$.
+
+*Application — fil rouge :*
+
+**Nombre de cours** ($\bar{x} = 5{,}6875$) :
+
+$$\sigma^2 = \frac{5(3-5{,}69)^2 + 12(4-5{,}69)^2 + 18(5-5{,}69)^2 + 22(6-5{,}69)^2 + 14(7-5{,}69)^2 + 9(8-5{,}69)^2}{80} \approx 1{,}91$$
+
+$$\sigma \approx \sqrt{1{,}91} \approx \mathbf{1{,}38 \text{ cours}}$$
+
+**Durée du trajet** ($\bar{x} = 38$ min, centres de classes $m_i$ : 15, 25, 35, 45, 55, 65) :
+
+$$\sigma^2 = \frac{8(15-38)^2 + 15(25-38)^2 + 22(35-38)^2 + 20(45-38)^2 + 10(55-38)^2 + 5(65-38)^2}{80} = \frac{14\,480}{80} = 181$$
+
+$$\sigma = \sqrt{181} \approx \mathbf{13{,}45 \text{ min}}$$
+
+**Propriétés :**
+
+- $\sigma \geq 0$ ; $\sigma = 0$ si et seulement si toutes les valeurs sont identiques.
+- $\sigma$ s'exprime dans la même unité que $\bar{x}$.
+- La variance est sensible aux valeurs extrêmes (les écarts sont élevés au carré).
+
+::: {.callout-note title="Règle empirique (distributions en cloche)"}
+Pour une distribution approximativement symétrique et en cloche : environ **68 %** des données se trouvent dans l'intervalle $[\bar{x} - \sigma\,;\,\bar{x} + \sigma]$ et **95 %** dans $[\bar{x} - 2\sigma\,;\,\bar{x} + 2\sigma]$.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_variance -->
+
+<concept id="ecart-interquartile-disp">
+
+## L'écart interquartile comme indicateur robuste
+
+L'IQR $= Q_3 - Q_1$ a été introduit dans la leçon sur les indicateurs de position. Il joue aussi un rôle central en dispersion, car il est **robuste aux valeurs extrêmes** : il mesure l'étendue des 50 % centraux, indépendamment des observations les plus extrêmes.
+
+| Variable | IQR |
+|----------|:---:|
+| Nb de cours | **2 cours** ($Q_1 = 5$, $Q_3 = 7$) |
+| Durée du trajet | **19,5 min** ($Q_1 = 28$, $Q_3 = 47{,}5$) |
+
+**Règle de Tukey pour les valeurs aberrantes :**
+
+Une observation est considérée **aberrante** si elle dépasse les bornes :
+
+$$\text{Borne inf.} = Q_1 - 1{,}5 \times \text{IQR} \qquad \text{Borne sup.} = Q_3 + 1{,}5 \times \text{IQR}$$
+
+*Trajet :* borne inf. $= 28 - 1{,}5 \times 19{,}5 = -0{,}25$ min ; borne sup. $= 47{,}5 + 1{,}5 \times 19{,}5 = 76{,}75$ min. Toutes les valeurs observées ([10 ; 70[) étant dans cet intervalle, il n'y a pas de valeur aberrante dans notre échantillon.
+
+::: {.callout-tip title="Quand préférer l'IQR à l'écart-type ?"}
+Utilisez l'IQR quand la distribution est asymétrique ou contient des outliers — l'IQR reste stable là où l'écart-type est gonflé par les valeurs extrêmes.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_iqr -->
+
+<concept id="coefficient-de-variation">
+
+## Le coefficient de variation
+
+Comparer la dispersion de deux variables mesurées dans des unités différentes (cours vs minutes) ou à des niveaux différents n'est pas directement possible avec $\sigma$. Le coefficient de variation pallie ce problème.
+
+:::{#def-cv}
+## Coefficient de variation
+$$\text{CV} = \frac{\sigma}{\bar{x}} \times 100 \quad (\%)$$
+
+Il exprime l'écart-type en proportion de la moyenne : plus le CV est élevé, plus la distribution est dispersée relativement à son centre.
+:::
+
+*Application — fil rouge :*
+
+| Variable | $\bar{x}$ | $\sigma$ | CV |
+|----------|:---------:|:--------:|:--:|
+| Nb de cours | 5,69 cours | 1,38 cours | **24,3 %** |
+| Durée du trajet | 38 min | 13,45 min | **35,4 %** |
+
+La durée du trajet est relativement **plus variable** que le nombre de cours, même si les unités sont incomparables directement.
+
+::: {.callout-warning title="Limite du CV"}
+Le CV n'est pas défini si $\bar{x} = 0$ et perd son sens pour des variables pouvant prendre des valeurs négatives (températures en °C, soldes bancaires…). Il s'utilise uniquement pour des variables à ratio (zéro absolu significatif).
+:::
+
+**Tableau récapitulatif des indicateurs de dispersion :**
+
+| Indicateur | Formule | Robustesse | Usage principal |
+|------------|---------|:----------:|-----------------|
+| Étendue | $x_{\max} - x_{\min}$ | Faible | Premier aperçu rapide |
+| Variance $\sigma^2$ | $\frac{\sum n_i(x_i-\bar{x})^2}{n}$ | Faible | Base de calcul de $\sigma$ |
+| Écart-type $\sigma$ | $\sqrt{\sigma^2}$ | Faible | Dispersion dans l'unité de la variable |
+| IQR | $Q_3 - Q_1$ | Élevée | Données asymétriques, outliers |
+| CV | $\sigma / \bar{x} \times 100$ | Faible | Comparaison inter-variables |
+
+```{mermaid}
+graph TD
+    Q[Quel indicateur de dispersion ?] --> AS[Distribution asymétrique\nou outliers ?]
+    Q --> CMP[Comparer deux variables\nd'unités différentes ?]
+    Q --> SYM[Distribution symétrique\nsans outlier ?]
+    AS --> IQR["IQR = Q₃ − Q₁"]
+    CMP --> CV["Coefficient de variation (CV)"]
+    SYM --> SD["Écart-type σ"]
+```
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_cv -->
+
+## Application interactive
+
+Sélectionnez une variable pour visualiser sa distribution avec les indicateurs de dispersion.
+
+```{ojs}
+//| echo: false
+viewof dispVar = Inputs.select(
+  new Map([
+    ["Nombre de cours par semaine (discrète)", "cours"],
+    ["Durée du trajet en minutes (continue)",  "trajet"]
+  ]),
+  { label: "Variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const coursVals = [3,4,5,6,7,8];
+  const coursEff  = [5,12,18,22,14,9];
+  const moy  = 5.69, sd = 1.38, sd2 = 2.76;
+
+  const trajetBins = [
+    {x0:10,x1:20,n:8},{x0:20,x1:30,n:15},{x0:30,x1:40,n:22},
+    {x0:40,x1:50,n:20},{x0:50,x1:60,n:10},{x0:60,x1:70,n:5}
+  ];
+  const moyT = 38, sdT = 13.45, sd2T = 26.9;
+
+  const legend = html`<div style="display:flex;gap:16px;margin:6px 0;font-size:0.88em;flex-wrap:wrap;">
+    <span><span style="color:#3b5bdb;font-weight:bold;font-size:1.2em;">—</span> Moyenne x̄</span>
+    <span><span style="color:#e67e22;font-weight:bold;font-size:1.2em;">- -</span> x̄ ± σ</span>
+    <span><span style="color:#c92a2a;font-weight:bold;font-size:1.2em;">···</span> x̄ ± 2σ</span>
+  </div>`;
+
+  let chart, tableHtml;
+
+  if (dispVar === "cours") {
+    const data = coursVals.map((v,i) => ({x: v, y: coursEff[i]}));
+    chart = Plot.plot({
+      x: {label: "Nombre de cours / semaine", tickValues: coursVals},
+      y: {label: "Effectif", domain: [0, 28]},
+      title: `σ² ≈ 1,91 | σ ≈ 1,38 cours | CV ≈ 24,3 %`,
+      marks: [
+        Plot.barY(data, {x: "x", y: "y", fill: "#b2f2d4", insetLeft: 14, insetRight: 14}),
+        Plot.ruleX([moy],       {stroke: "#3b5bdb", strokeWidth: 2}),
+        Plot.ruleX([moy+sd],    {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moy-sd],    {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moy+sd2],   {stroke: "#c92a2a", strokeWidth: 2, strokeDasharray: "2,2"}),
+        Plot.ruleX([moy-sd2],   {stroke: "#c92a2a", strokeWidth: 2, strokeDasharray: "2,2"})
+      ]
+    });
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:0.91em;">
+      <tr style="background:#e9f9f0;color:#0ca678;"><th style="padding:6px 10px;border:1px solid #dee2e6;">Indicateur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Valeur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Interprétation</th></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Étendue</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">5 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">max − min = 8 − 3</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>IQR</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">2 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃ − Q₁ = 7 − 5 (50 % centraux)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Variance σ²</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">≈ 1,91 cours²</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Moyenne des carrés des écarts à x̄</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Écart-type σ</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">≈ 1,38 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">√σ² — même unité que la variable</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>CV</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">≈ 24,3 %</td><td style="padding:6px 10px;border:1px solid #dee2e6;">σ / x̄ × 100</td></tr>
+    </table>`;
+  } else {
+    chart = Plot.plot({
+      x: {label: "Durée du trajet (min)", domain: [10, 70]},
+      y: {label: "Effectif", domain: [0, 25]},
+      title: `σ² = 181 min² | σ ≈ 13,45 min | CV ≈ 35,4 %`,
+      marks: [
+        Plot.rect(trajetBins, {x1: "x0", x2: "x1", y1: 0, y2: "n", fill: "#b2f2d4", stroke: "#0ca678", strokeWidth: 1.2}),
+        Plot.ruleX([moyT],        {stroke: "#3b5bdb", strokeWidth: 2}),
+        Plot.ruleX([moyT+sdT],    {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moyT-sdT],    {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moyT+sd2T],   {stroke: "#c92a2a", strokeWidth: 2, strokeDasharray: "2,2"}),
+        Plot.ruleX([moyT-sd2T],   {stroke: "#c92a2a", strokeWidth: 2, strokeDasharray: "2,2"})
+      ]
+    });
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:0.91em;">
+      <tr style="background:#e9f9f0;color:#0ca678;"><th style="padding:6px 10px;border:1px solid #dee2e6;">Indicateur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Valeur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Interprétation</th></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Étendue</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">60 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">max − min = 70 − 10</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>IQR</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">19,5 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃ − Q₁ = 47,5 − 28</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Variance σ²</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">181 min²</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Σ nᵢ(mᵢ − x̄)² / n avec mᵢ centres de classes</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Écart-type σ</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">≈ 13,45 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">√181 — en minutes</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>CV</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">≈ 35,4 %</td><td style="padding:6px 10px;border:1px solid #dee2e6;">13,45 / 38 × 100</td></tr>
+    </table>`;
+  }
+
+  return html`${legend}${chart}${tableHtml}`;
+}
+```
+
+## Exercices
+
+:::{#exr-dispersion-satisfaction}
+## Dispersion des scores de satisfaction
+
+Reprenons la distribution de l'exercice précédent (indicateurs de position) :
+
+| Score | 1 | 2 | 3 | 4 | 5 | Total |
+|:-----:|:-:|:-:|:-:|:-:|:-:|:-----:|
+| Effectif | 4 | 12 | 28 | 26 | 10 | 80 |
+
+On rappelle que $\bar{x} = 3{,}325$ et $Q_1 = 3$, $Q_3 = 4$ (IQR = 1).
+
+a) Calculer la variance $\sigma^2$.
+b) En déduire l'écart-type $\sigma$.
+c) Calculer le coefficient de variation CV.
+d) En comparant avec le nombre de cours (CV ≈ 24,3 %), quelle variable est relativement plus dispersée ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Variance** :
+$$\sigma^2 = \frac{4(1-3{,}325)^2 + 12(2-3{,}325)^2 + 28(3-3{,}325)^2 + 26(4-3{,}325)^2 + 10(5-3{,}325)^2}{80}$$
+$$= \frac{4 \times 5{,}406 + 12 \times 1{,}756 + 28 \times 0{,}106 + 26 \times 0{,}456 + 10 \times 2{,}806}{80} = \frac{85{,}55}{80} \approx \mathbf{1{,}069}$$
+
+**b) Écart-type** : $\sigma = \sqrt{1{,}069} \approx \mathbf{1{,}034}$
+
+**c) Coefficient de variation** : $\text{CV} = \dfrac{1{,}034}{3{,}325} \times 100 \approx \mathbf{31{,}1 \%}$
+
+**d) Comparaison** — CV(satisfaction) ≈ 31,1 % > CV(cours) ≈ 24,3 % : les scores de satisfaction sont relativement **plus dispersés** que le nombre de cours, malgré des écarts-types similaires (1,034 vs 1,38), car la moyenne de la satisfaction (3,325) est plus faible que celle des cours (5,69).
+:::
+:::
+
+:::{#exr-dispersion-outlier}
+## Impact d'une valeur extrême
+
+Deux groupes d'étudiants ont les durées de trajet suivantes (en minutes) :
+
+- **Groupe A** : 20, 25, 30, 35, 40 ($n = 5$)
+- **Groupe B** : 20, 25, 30, 35, 100 ($n = 5$)
+
+Pour chaque groupe, calculer : étendue, $\sigma$, IQR. Commenter les résultats.
+
+:::{.callout-note collapse="true" title="Solution"}
+**Groupe A** — $\bar{x}_A = 150/5 = 30$ min
+
+- Étendue = $40 - 20 = 20$ min
+- $\sigma_A^2 = \frac{(20-30)^2+(25-30)^2+(30-30)^2+(35-30)^2+(40-30)^2}{5} = \frac{100+25+0+25+100}{5} = 50$
+  $\sigma_A = \sqrt{50} \approx 7{,}07$ min
+- Q₁ = 25, Q₃ = 35 → IQR = 10 min
+
+**Groupe B** — $\bar{x}_B = 230/5 = 46$ min
+
+- Étendue = $100 - 20 = 80$ min
+- $\sigma_B^2 = \frac{(20-46)^2+(25-46)^2+(30-46)^2+(35-46)^2+(100-46)^2}{5} = \frac{676+441+256+121+2916}{5} = \frac{4410}{5} = 882$
+  $\sigma_B = \sqrt{882} \approx 29{,}7$ min
+- Q₁ = 25, Q₃ = 35 → IQR = 10 min
+
+**Commentaire** : un seul outlier (100 min au lieu de 40 min) a quadruplé l'étendue, multiplié $\sigma$ par 4, mais **laissé l'IQR identique**. C'est la démonstration directe de la robustesse de l'IQR face à la sensibilité de l'étendue et de l'écart-type.
+:::
+:::
+
+### Quiz — Indicateurs de dispersion
+
+```{ojs}
+//| echo: false
+disp_questions = [
+  {
+    enonce: "Quelle est la principale limite de l'étendue comme indicateur de dispersion ?",
+    choices: ["Elle ne s'applique qu'aux variables continues", "Elle est très sensible aux valeurs extrêmes — un seul outlier peut la rendre non représentative", "Elle est toujours égale à l'IQR", "Elle nécessite de connaître la médiane"],
+    correct: "Elle est très sensible aux valeurs extrêmes — un seul outlier peut la rendre non représentative",
+    explication: "L'étendue = max − min ne repose que sur deux valeurs. Un unique outlier peut la multiplier par 4 ou 10 sans que la distribution de la majorité des données ait changé."
+  },
+  {
+    enonce: "Deux groupes ont le même IQR mais des écarts-types très différents. Qu'est-ce que cela indique ?",
+    choices: ["Les deux groupes sont identiques", "Un des groupes contient des valeurs extrêmes qui gonflent l'écart-type sans affecter l'IQR", "L'IQR est mal calculé", "La moyenne des deux groupes est forcément différente"],
+    correct: "Un des groupes contient des valeurs extrêmes qui gonflent l'écart-type sans affecter l'IQR",
+    explication: "L'IQR est robuste aux valeurs extrêmes (il porte sur les 50 % centraux), tandis que l'écart-type est sensible à tous les écarts à la moyenne."
+  },
+  {
+    enonce: "Pour la durée du trajet, σ² = 181 min². Quelle est la valeur de l'écart-type, et que représente-t-il ?",
+    choices: ["σ = 90,5 min — moitié de la variance", "σ ≈ 13,45 min — dispersion moyenne autour de la moyenne", "σ = 181 min — car σ = σ²", "σ ≈ 38 min — égal à la moyenne"],
+    correct: "σ ≈ 13,45 min — dispersion moyenne autour de la moyenne",
+    explication: "σ = √181 ≈ 13,45 min. L'écart-type s'exprime dans la même unité que la variable. Il mesure la dispersion typique des observations autour de la moyenne."
+  },
+  {
+    enonce: "Que vaut σ si toutes les observations d'une série sont identiques ?",
+    choices: ["σ = 1", "σ = n (le nombre d'observations)", "σ = 0", "σ n'est pas défini dans ce cas"],
+    correct: "σ = 0",
+    explication: "Si toutes les valeurs sont égales, x̄ = c et tous les termes (xᵢ − x̄)² = 0. La variance σ² = 0 et donc σ = 0."
+  },
+  {
+    enonce: "Le CV du nombre de cours est ≈ 24,3 % et celui de la durée du trajet est ≈ 35,4 %. Qu'est-ce que cela signifie ?",
+    choices: ["Le trajet a un écart-type plus grand en minutes qu'en cours", "Le nombre de cours est plus dispersé en valeur absolue", "La durée du trajet est relativement plus variable par rapport à sa moyenne", "Les deux variables ont la même moyenne"],
+    correct: "La durée du trajet est relativement plus variable par rapport à sa moyenne",
+    explication: "Le CV permet de comparer des dispersions relatives. Un CV de 35,4 % pour le trajet signifie que l'écart-type représente 35,4 % de la moyenne — une variabilité relative plus forte que pour les cours (24,3 %)."
+  },
+  {
+    enonce: "Pour la durée du trajet, les bornes de Tukey : borne inf. = −0,25 min, borne sup. = 76,75 min. Que peut-on conclure ?",
+    context: "Q₁ = 28 min, Q₃ = 47,5 min, IQR = 19,5 min",
+    choices: ["Il y a des valeurs aberrantes au-dessous de la borne inférieure", "Il y a des valeurs aberrantes au-dessus de la borne supérieure", "Il n'y a pas de valeur aberrante dans l'échantillon", "La borne inférieure négative invalide la règle de Tukey"],
+    correct: "Il n'y a pas de valeur aberrante dans l'échantillon",
+    explication: "Les données vont de 10 à 70 min. La borne sup est 76,75 min et le max est 70 min < 76,75 : pas d'outlier. La borne négative signifie simplement qu'aucune valeur ne peut être aberrante vers le bas."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof disp_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(disp_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  disp_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../02-position-indicators/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Indicateurs de position</span></span></a>
+  <a href="../04-visualizing-qualitative-variables/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Visualisation — variables qualitatives</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

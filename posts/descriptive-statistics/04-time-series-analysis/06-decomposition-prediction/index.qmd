@@ -1,0 +1,1023 @@
+---
+title: "Prévision par décomposition"
+author: "Wilson Toussile"
+date: "2026-05-29"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000046"
+difficulty: "Advanced"
+description: "Extrapolation de la tendance, formules de prévision par décomposition, intervalles de confiance."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="identification-modele-prevision">
+
+## Choisir son modèle : additif ou multiplicatif
+
+Avant de décomposer et de prévoir, il faut choisir la bonne structure de modèle. Le critère est
+visuel : **comment évolue l'amplitude des oscillations saisonnières lorsque la tendance monte ?**
+
+:::{#def-amplitude-saisonniere}
+## Amplitude saisonnière
+L'**amplitude saisonnière** d'une série est l'écart entre la valeur maximale et la valeur minimale
+du cycle saisonnier sur une même période (ex. : juillet − janvier pour une série mensuelle).
+
+- Si l'amplitude est **constante** (indépendante du niveau de tendance) → **modèle additif** :
+  $$y_t = T_t + S_t + I_t, \quad \sum_{j=1}^p S_j = 0$$
+- Si l'amplitude **croît proportionnellement** au niveau de tendance → **modèle multiplicatif** :
+  $$y_t = T_t \times S_t \times I_t, \quad \frac{1}{p}\sum_{j=1}^p S_j = 1$$
+:::
+
+**Astuce pratique :** appliquer le logarithme naturel à la série. Si la saisonnalité devient
+d'amplitude constante sur la série transformée $\log y_t$, le modèle multiplicatif est adapté
+(car $\log(T \cdot S \cdot I) = \log T + \log S + \log I$ est additif). Si elle était déjà
+constante avant transformation, le modèle additif convient.
+
+```{mermaid}
+graph LR
+    A[Chronogramme<br>de y_t] --> B{Amplitude saisonnière<br>constante en valeur<br>absolue ?}
+    B -- Oui --> C["Modèle additif<br>y = T + S + I<br>S_j en unités brutes"]
+    B -- Non, croît avec T --> D{Amplitude constante<br>après log ?}
+    D -- Oui --> E["Modèle multiplicatif<br>y = T × S × I<br>S_j en ratios"]
+    D -- Non --> F["Modèle mixte<br>ou transformation<br>Box-Cox"]
+```
+
+**Sur le musée :** l'écart juillet − janvier est d'environ 7 100 visiteurs chaque année
+(+7,1 k en 2021, +7,4 k en 2022, +7,8 k en 2023) — stable alors que la tendance passe de
+4,8 k à 5,5 k. L'amplitude ne croît pas proportionnellement au niveau →
+**modèle additif justifié**.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_identification_modele_prevision -->
+
+```{ojs}
+//| echo: false
+// Données de base — partagées par toutes les visualisations de cette leçon
+fcBaseData = {
+  const y = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+    2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+  ];
+  const cmaNulled = [null,null,null,null,null,null,
+    4.754, 4.779, 4.804, 4.833, 4.867, 4.904,
+    4.950, 4.996, 5.033, 5.062, 5.088, 5.112,
+    5.133, 5.154, 5.179, 5.204, 5.233, 5.271,
+    5.317, 5.362, 5.400, 5.429, 5.454, 5.479,
+    null,null,null,null,null,null];
+  // Coefficients additifs (somme = 0)
+  const scA = [-2.63, -2.42, -1.56, -0.19, 0.44, 2.26, 4.56, 4.19, 0.82, -1.06, -2.49, -1.93];
+  // Coefficients multiplicatifs (moyenne = 1)
+  const scM = [0.486, 0.530, 0.699, 0.961, 1.080, 1.423, 1.918, 1.839, 1.160, 0.785, 0.504, 0.618];
+  const mnths = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  const tFn = t => 4.531 + 0.0317 * t; // régression linéaire sur CMA
+  return y.map((yi, i) => {
+    const t = i + 1;
+    const m = i % 12;
+    const tcma = cmaNulled[i];
+    const treg = tFn(t);
+    const fitA = treg + scA[m];
+    const fitM = treg * scM[m];
+    return {
+      t, y: yi, logY: +Math.log(yi).toFixed(4),
+      tcma, treg, fitA, fitM,
+      residA: +(yi - fitA).toFixed(4),
+      residM: +(yi - fitM).toFixed(4),
+      rawR: tcma !== null ? +(yi - tcma).toFixed(4) : null,
+      ratioR: tcma !== null ? +(yi / tcma).toFixed(4) : null,
+      scA: scA[m], scM: scM[m], m, month: mnths[m]
+    };
+  });
+}
+```
+
+::: {.callout-tip title="Sélecteur de modèle — contrôle global"}
+Le sélecteur ci-dessous agit sur **toutes les visualisations** de cette leçon : décomposition,
+profil saisonnier, prévision et diagnostic des résidus.
+:::
+
+```{ojs}
+//| echo: false
+viewof fcModel = Inputs.radio(
+  ["Additif", "Multiplicatif"],
+  { value: "Additif", label: "Modèle :" }
+)
+```
+
+### Diagnostic interactif : brute ou log-transformée ?
+
+```{ojs}
+//| echo: false
+viewof fcDiagView = Inputs.radio(
+  ["Série brute", "Log-transformée"],
+  { value: "Série brute", label: "Affichage :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const useLog = fcDiagView === "Log-transformée";
+  const yFn = d => useLog ? d.logY : d.y;
+  const yLabel = useLog ? "log(visiteurs, milliers)" : "Visiteurs (milliers)";
+  const yDom = useLog ? [-0.5, 2.5] : [0, 12];
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+
+  // Amplitudes estivales Juillet - Janvier pour chaque année
+  const ampData = [0, 1, 2].map(yi => {
+    const jan = fcBaseData[yi * 12].y;
+    const jul = fcBaseData[yi * 12 + 6].y;
+    const rawAmp = +(jul - jan).toFixed(2);
+    const logAmp = +(Math.log(jul) - Math.log(jan)).toFixed(3);
+    return { year: 2021 + yi, rawAmp, logAmp, amp: useLog ? logAmp : rawAmp };
+  });
+
+  const mainPlot = Plot.plot({
+    width: 460, height: 290,
+    x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t]||"" },
+    y: { label: yLabel, domain: yDom },
+    marks: [
+      Plot.line(fcBaseData, { x: "t", y: yFn, stroke: "#1098ad", strokeWidth: 2 }),
+      Plot.dot(fcBaseData, { x: "t", y: yFn, fill: "#1098ad", r: 2.5 })
+    ]
+  });
+
+  const ampPlot = Plot.plot({
+    width: 185, height: 200,
+    marginLeft: 48,
+    x: { label: "Année", tickFormat: d => String(d) },
+    y: { label: useLog ? "log(Jl/Jan)" : "Jl−Jan (k)", domain: [0, useLog ? 2.0 : 9] },
+    marks: [
+      Plot.barY(ampData, { x: "year", y: "amp", fill: "#e8590c", opacity: 0.85 }),
+      Plot.text(ampData, {
+        x: "year", y: d => d.amp + (useLog ? 0.05 : 0.2),
+        text: d => d.amp.toFixed(useLog ? 3 : 2),
+        fontSize: 11, fill: "#e8590c", fontWeight: "bold"
+      }),
+      Plot.ruleY([useLog ? ampData[0].logAmp : ampData[0].rawAmp],
+        { stroke: "#e8590c", strokeDasharray: "3,2", strokeOpacity: 0.5 })
+    ]
+  });
+
+  const verdict = useLog
+    ? "Amplitude log quasi-stable → les deux modèles semblent plausibles."
+    : "Amplitude brute légèrement croissante mais stable en proportion → modèle **additif** conseillé.";
+
+  return html`<div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+    <div>${mainPlot}</div>
+    <div>
+      <p style="font-size:.82em;font-weight:600;color:#555;margin:0 0 4px;">Amplitude Jul – Jan</p>
+      ${ampPlot}
+      <p style="font-size:.78em;color:#555;margin:6px 0 0;max-width:185px;">${verdict}</p>
+    </div>
+  </div>`;
+}
+```
+
+<concept id="decomposition-complete-prevision">
+
+## Décomposition en quatre étapes
+
+La décomposition (détaillée en leçon 05) suit l'algorithme classique **ratio-to-moving-average**.
+Ici, on utilise la **droite de régression** $\hat{T}_t = a + bt$ à la place de la seule MM $2\times p$,
+car cette droite peut être **extrapolée** pour calculer des prévisions au-delà des données.
+
+| Étape | Opération | Résultat |
+|:-----:|-----------|----------|
+| 1 | Chronogramme | Identifier tendance, saisonnalité |
+| 2 | MM $2\times 12$ | Estimer $\hat{T}_t$ (t = 7…30) |
+| 3 | Résidus bruts $e_t = y_t - \hat{T}_t$ | Extraire $S_t + I_t$ |
+| 4 | Moyenne par mois → centrer | Obtenir $\hat{S}_j$ (12 valeurs) |
+
+La droite $\hat{T}_t = 4{,}531 + 0{,}0317\,t$ est ensuite ajustée par régression linéaire sur les
+24 valeurs de CMA disponibles (leçon 03). Elle donne accès à $\hat{T}_t$ pour **tout** $t$,
+y compris les mois futurs.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_decomposition_complete_prevision -->
+
+### Décomposition pas-à-pas
+
+```{ojs}
+//| echo: false
+viewof fcStep = Inputs.select(
+  [1, 2, 3, 4, 5],
+  {
+    value: 1,
+    label: "Étape",
+    format: v => [
+      "1 — Série brute yₜ",
+      "2 — Tendance : MM 2×12 et droite de régression",
+      "3 — Résidus bruts eₜ = yₜ − T̂ₜ",
+      "4 — Profil saisonnier Ŝₜ extrait des résidus bruts",
+      "5 — Résidus finaux Îₜ = yₜ − T̂ₜ − Ŝₜ"
+    ][v - 1]
+  }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const allTicks = [1, 7, 13, 19, 25, 31];
+  const isAdd = fcModel === "Additif";
+
+  const stepInfo = [
+    { title: "Série brute yₜ",
+      desc: "La série mêle tendance (montée générale), saisonnalité (creux en hiver, pic en été) et irrégularités. L'objectif est de séparer ces trois composantes." },
+    { title: "Estimation de la tendance",
+      desc: "La MM 2×12 (tirets orange) lisse la saisonnalité et fournit une estimation de la tendance pour t = 7…30. La droite de régression (rouge, pointillés) prolonge cette tendance à tous les instants." },
+    { title: "Résidus bruts eₜ = yₜ − T̂ₜ",
+      desc: "Après avoir retiré la tendance (MM 2×12), il reste la composante saisonnière mélangée aux irrégularités. Le profil en dents de scie est clairement visible." },
+    { title: "Profil saisonnier Ŝₜ extrait",
+      desc: `Les résidus bruts (gris) sont moyennés par mois sur les années disponibles. La courbe rouge est le profil saisonnier ${isAdd ? "additif" : "multiplicatif"} obtenu — elle capture le mouvement cyclique régulier.` },
+    { title: "Résidus finaux Îₜ",
+      desc: `Après soustraction du profil saisonnier, il reste le résidu pur Î = yₜ − T̂ₜ ${isAdd ? "−" : "÷"} Ŝₜ. Les valeurs sont proches de ${isAdd ? "zéro" : "1"}, preuve que la décomposition capture bien les deux composantes systématiques.` }
+  ];
+
+  const info = stepInfo[fcStep - 1];
+  const cmaPoints = fcBaseData.filter(d => d.tcma !== null);
+
+  let marks = [];
+  let yDomain, yLabel;
+
+  if (fcStep === 1) {
+    yDomain = [0, 12]; yLabel = "Visiteurs (milliers)";
+    marks = [
+      Plot.line(fcBaseData, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2 }),
+      Plot.dot(fcBaseData, { x: "t", y: "y", fill: "#1098ad", r: 3 })
+    ];
+
+  } else if (fcStep === 2) {
+    yDomain = [0, 12]; yLabel = "Visiteurs (milliers)";
+    marks = [
+      Plot.line(fcBaseData, { x: "t", y: "y", stroke: "#adb5bd", strokeWidth: 1.5, opacity: 0.7 }),
+      Plot.dot(fcBaseData, { x: "t", y: "y", fill: "#adb5bd", r: 2.5, opacity: 0.7 }),
+      Plot.line(cmaPoints, { x: "t", y: "tcma", stroke: "#e8590c", strokeWidth: 2.5, strokeDasharray: "5,3" }),
+      Plot.dot(cmaPoints, { x: "t", y: "tcma", fill: "#e8590c", r: 2.5 }),
+      Plot.line(fcBaseData, { x: "t", y: "treg", stroke: "#c92a2a", strokeWidth: 1.5, strokeDasharray: "3,2" })
+    ];
+
+  } else if (fcStep === 3) {
+    yDomain = [-5.5, 6]; yLabel = "eₜ = yₜ − T̂ₜ (MM 2×12)";
+    const pos = cmaPoints.filter(d => d.rawR >= 0);
+    const neg = cmaPoints.filter(d => d.rawR < 0);
+    marks = [
+      Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+      Plot.ruleX(pos, { x: "t", y1: 0, y2: "rawR", stroke: "#339af0", strokeWidth: 2 }),
+      Plot.ruleX(neg, { x: "t", y1: 0, y2: "rawR", stroke: "#339af0", strokeWidth: 2 }),
+      Plot.dot(cmaPoints, { x: "t", y: "rawR", fill: "#339af0", r: 3.5 })
+    ];
+
+  } else if (fcStep === 4) {
+    const yRaw = isAdd ? (d => d.rawR) : (d => d.ratioR);
+    const ySeas = isAdd ? (d => d.scA) : (d => d.scM);
+    yDomain = isAdd ? [-5.5, 6] : [0.3, 2.2];
+    yLabel = isAdd ? "eₜ et profil saisonnier additif" : "eₜ (ratio) et profil saisonnier multiplicatif";
+    marks = [
+      Plot.ruleY([isAdd ? 0 : 1], { stroke: "#868e96", strokeDasharray: "4,3" }),
+      Plot.dot(cmaPoints, { x: "t", y: yRaw, fill: "#adb5bd", r: 3.5,
+        title: d => `${d.month} t=${d.t} : ${isAdd ? d.rawR : d.ratioR}` }),
+      Plot.line(cmaPoints, { x: "t", y: ySeas, stroke: "#e03131", strokeWidth: 2.5 }),
+      Plot.dot(cmaPoints, { x: "t", y: ySeas, fill: "#e03131", r: 3,
+        title: d => `Ŝ ${d.month} : ${isAdd ? d.scA : d.scM}` })
+    ];
+
+  } else {
+    // Step 5: résidus finaux
+    const rKey = isAdd ? "residA" : "residM";
+    yDomain = isAdd ? [-0.6, 0.6] : [-0.6, 0.6];
+    yLabel = isAdd ? "Îₜ = yₜ − T̂ₜ − Ŝₜ (milliers)" : "Îₜ = yₜ − T̂ₜ×Ŝₜ (milliers)";
+    const pos5 = fcBaseData.filter(d => d[rKey] >= 0);
+    const neg5 = fcBaseData.filter(d => d[rKey] < 0);
+    marks = [
+      Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+      Plot.ruleX(pos5, { x: "t", y1: 0, y2: d => d[rKey], stroke: "#2f9e44", strokeWidth: 2 }),
+      Plot.ruleX(neg5, { x: "t", y1: 0, y2: d => d[rKey], stroke: "#e03131", strokeWidth: 2 }),
+      Plot.dot(fcBaseData, { x: "t", y: d => d[rKey],
+        fill: d => d[rKey] >= 0 ? "#2f9e44" : "#e03131", r: 3 })
+    ];
+  }
+
+  return html`<div>
+    <div style="background:#f8f9fa;border-left:3px solid #339af0;padding:8px 12px;
+                border-radius:0 4px 4px 0;margin-bottom:10px;">
+      <strong style="font-size:.92em;color:#1098ad;">${info.title}</strong>
+      <p style="margin:4px 0 0;font-size:.85em;color:#555;line-height:1.5;">${info.desc}</p>
+    </div>
+    ${Plot.plot({
+      width: 660, height: 295,
+      x: { label: null, ticks: allTicks, tickFormat: t => tickMap[t]||"" },
+      y: { label: yLabel, domain: yDomain },
+      marks
+    })}
+    ${fcStep === 2 ? html`<div style="display:flex;gap:16px;margin-top:6px;font-size:.83em;">
+      <span><span style="color:#adb5bd;">—</span> Série brute</span>
+      <span><span style="color:#e8590c;">- -</span> MM 2×12</span>
+      <span><span style="color:#c92a2a;">···</span> Régression T̂ₜ = 4,531 + 0,0317t</span>
+    </div>` : ""}
+    ${fcStep === 4 ? html`<div style="display:flex;gap:16px;margin-top:6px;font-size:.83em;">
+      <span><span style="background:#adb5bd;display:inline-block;width:10px;height:10px;border-radius:50%;"></span> Résidus bruts eₜ</span>
+      <span><span style="color:#e03131;font-weight:bold;">—</span> Profil saisonnier Ŝₜ</span>
+    </div>` : ""}
+  </div>`;
+}
+```
+
+<concept id="profil-saisonnier-prevision">
+
+## Profil saisonnier et coefficients
+
+Les coefficients saisonniers résument le **comportement cyclique moyen** de la série.
+Ils sont le cœur de la prévision : une fois la tendance extrapolée, on y ajoute (ou multiplie)
+le coefficient saisonnier du mois cible.
+
+| Mois | Jan | Fév | Mar | Avr | Mai | Jun | Jul | Aoû | Sep | Oct | Nov | Déc |
+|:----:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Additif** (k) | −2,63 | −2,42 | −1,56 | −0,19 | +0,44 | +2,26 | +4,56 | +4,19 | +0,82 | −1,06 | −2,49 | −1,93 |
+| **Multiplicatif** | 0,486 | 0,530 | 0,699 | 0,961 | 1,080 | 1,423 | 1,918 | 1,839 | 1,160 | 0,785 | 0,504 | 0,618 |
+
+Somme additive $= 0{,}00$ ✓ — Moyenne multiplicative $= 1{,}00$ ✓
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_profil_saisonnier_prevision -->
+
+### Profil saisonnier interactif
+
+```{ojs}
+//| echo: false
+{
+  const isAdd = fcModel === "Additif";
+  const mnths = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  const scA = [-2.63, -2.42, -1.56, -0.19, 0.44, 2.26, 4.56, 4.19, 0.82, -1.06, -2.49, -1.93];
+  const scM = [0.486, 0.530, 0.699, 0.961, 1.080, 1.423, 1.918, 1.839, 1.160, 0.785, 0.504, 0.618];
+  const coeff = isAdd ? scA : scM;
+  const refLine = isAdd ? 0 : 1;
+  const barData = coeff.map((s, i) => ({ m: i + 1, month: mnths[i], s }));
+  const amplitude = isAdd
+    ? `amplitude totale : ${(Math.max(...scA) - Math.min(...scA)).toFixed(2)} k (Jl − Jan)`
+    : `rapport max/min : ×${(Math.max(...scM) / Math.min(...scM)).toFixed(2)} (Jl ÷ Jan)`;
+
+  return html`<div>
+    ${Plot.plot({
+      width: 660, height: 280,
+      marginLeft: 55,
+      x: { label: "Mois", domain: [1,12], ticks: [1,2,3,4,5,6,7,8,9,10,11,12],
+           tickFormat: j => mnths[j-1] || "" },
+      y: { label: isAdd ? "Coefficient saisonnier (k)" : "Coefficient saisonnier (ratio)",
+           domain: isAdd ? [-3.5, 5.5] : [0.3, 2.2] },
+      marks: [
+        Plot.ruleY([refLine], { stroke: "#868e96", strokeDasharray: "4,3" }),
+        Plot.barY(barData, {
+          x: "m", y: "s",
+          fill: d => isAdd ? (d.s >= 0 ? "#2f9e44" : "#e03131") : (d.s >= 1 ? "#2f9e44" : "#e03131"),
+          opacity: 0.82
+        }),
+        Plot.text(barData, {
+          x: "m", y: d => {
+            if (isAdd) return d.s >= 0 ? d.s + 0.18 : d.s - 0.22;
+            return d.s >= 1 ? d.s + 0.06 : d.s - 0.07;
+          },
+          text: d => isAdd ? (d.s > 0 ? "+" : "") + d.s.toFixed(2) : d.s.toFixed(3),
+          fontSize: 9.5,
+          fill: d => isAdd ? (d.s >= 0 ? "#2f9e44" : "#e03131") : (d.s >= 1 ? "#2f9e44" : "#e03131"),
+          fontWeight: "bold"
+        })
+      ]
+    })}
+    <p style="font-size:.85em;color:#555;margin-top:8px;">
+      Modèle <strong>${fcModel}</strong> — ${amplitude}.
+      ${isAdd
+        ? "Somme = <strong>0,00</strong> ✓ — les mois se compensent sur l'année."
+        : "Moyenne = <strong>1,00</strong> ✓ — les coefficients sont des ratios par rapport à la tendance."}
+    </p>
+  </div>`;
+}
+```
+
+<concept id="extrapolation-tendance-prevision">
+
+## Extrapoler la tendance par régression
+
+La MM $2\times 12$ n'est disponible que pour $t = 7$ à $30$ (leçon 02). Pour **prévoir** à
+$t > 36$, il faut extrapoler la tendance. La solution classique est d'ajuster une droite
+de régression aux valeurs de CMA disponibles.
+
+:::{#def-tendance-regression-prevision}
+## Tendance par régression linéaire
+On ajuste $\hat{T}_t = a + b\,t$ par moindres carrés sur les 24 valeurs de CMA
+$(t = 7, 8, \ldots, 30)$. Sur les données du musée :
+
+$$\hat{T}_t = 4{,}531 + 0{,}0317\,t$$
+
+**Interprétation :** la fréquentation croît de **+31{,}7 visiteurs** par mois en tendance.
+Pour janvier 2021 ($t = 1$) : $\hat{T}_1 = 4{,}563\,000$ visiteurs ; pour janvier 2024
+($t = 37$) : $\hat{T}_{37} = 5{,}704\,000$ visiteurs (+1 141 en trois ans).
+:::
+
+::: {.callout-warning title="Limites de l'extrapolation"}
+La régression suppose que la tendance **reste linéaire** au-delà de la période d'observation.
+Pour des horizons courts (quelques mois à 1–2 ans), cette hypothèse est raisonnable. Pour des
+horizons plus longs, l'incertitude s'accumule et des chocs structurels (crise, rénovation du
+musée…) peuvent invalider la prévision.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_extrapolation_tendance -->
+
+### Ajustement et régression sur la tendance
+
+```{ojs}
+//| echo: false
+{
+  const cmaPoints = fcBaseData.filter(d => d.tcma !== null);
+
+  // Régression T̂ = 4.531 + 0.0317t — ligne tracée de t=1 à t=48
+  const regLine = [{ t: 1, treg: 4.531 + 0.0317 }, { t: 48, treg: 4.531 + 0.0317 * 48 }];
+
+  return html`<div>
+    ${Plot.plot({
+      width: 660, height: 295,
+      x: { label: "t (rang temporel)", domain: [0, 50] },
+      y: { label: "Tendance (milliers de visiteurs)", domain: [4.5, 7] },
+      marks: [
+        // CMA values as dots
+        Plot.dot(cmaPoints, { x: "t", y: "tcma", fill: "#e8590c", r: 4.5,
+          title: d => `t=${d.t} (${d.month} ${d.t <= 12 ? "2021" : d.t <= 24 ? "2022" : "2023"}) : CMA = ${d.tcma}` }),
+        // Regression line (extends into forecast zone)
+        Plot.line(regLine, { x: "t", y: "treg", stroke: "#c92a2a", strokeWidth: 2 }),
+        // Vertical separator at t=36
+        Plot.ruleX([36.5], { stroke: "#868e96", strokeDasharray: "6,4", strokeOpacity: 0.8 }),
+        // Annotations: some CMA labels
+        Plot.text(
+          [{t: 7, v: 4.754, lbl: "t=7, CMA=4,754"}, {t: 30, v: 5.479, lbl: "t=30, CMA=5,479"}],
+          { x: "t", y: d => d.v + 0.08, text: "lbl", fontSize: 9.5, fill: "#e8590c",
+            textAnchor: d => d.t === 7 ? "start" : "end" }
+        )
+      ]
+    })}
+    <div style="display:flex;gap:20px;margin-top:6px;font-size:.84em;flex-wrap:wrap;">
+      <span><span style="color:#e8590c;font-weight:bold;">●</span> CMA disponibles (t=7…30)</span>
+      <span><span style="color:#c92a2a;font-weight:bold;">—</span> T̂ₜ = 4,531 + 0,0317 t (régression)</span>
+      <span style="color:#868e96;">| = limite données / prévision</span>
+    </div>
+  </div>`;
+}
+```
+
+<concept id="calcul-prevision-decomposition">
+
+## Calculer la prévision : formules
+
+Avec la droite de régression et les coefficients saisonniers, la prévision à l'horizon $h$ est
+immédiate :
+
+:::{#def-prevision-decomposition}
+## Prévision par décomposition
+
+Soient $T$ la dernière période observée, $h \geq 1$ l'horizon de prévision,
+$\hat{T}_{T+h} = a + b(T+h)$ la tendance extrapolée et $\hat{S}_{m(T+h)}$ le coefficient
+saisonnier du rang saisonnier $m(T+h)$ correspondant au mois cible.
+
+**Modèle additif :**
+$$\hat{y}_{T+h} = \hat{T}_{T+h} + \hat{S}_{m(T+h)}$$
+
+**Modèle multiplicatif :**
+$$\hat{y}_{T+h} = \hat{T}_{T+h} \times \hat{S}_{m(T+h)}$$
+:::
+
+**Exemple : prévision pour juillet 2024 ($T = 36$, $h = 7$, soit $T+h = 43$)**
+
+$$\hat{T}_{43} = 4{,}531 + 0{,}0317 \times 43 = 5{,}894 \text{ k}$$
+
+| Modèle | Calcul | Prévision |
+|:------:|--------|:---------:|
+| Additif | $5{,}894 + 4{,}56$ | **10 454 visiteurs** |
+| Multiplicatif | $5{,}894 \times 1{,}918$ | **11 304 visiteurs** |
+
+L'écart de 850 visiteurs entre les deux modèles illustre l'importance du choix : le modèle
+multiplicatif "amplifie" les pics estivaux à mesure que la tendance monte.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_calcul_prevision -->
+
+### Prévision interactive
+
+```{ojs}
+//| echo: false
+viewof fcHorizon = Inputs.range([1, 24], {
+  step: 1, value: 12,
+  label: "Horizon h (mois après déc. 2023)"
+})
+```
+
+```{ojs}
+//| echo: false
+// Données de prévision (réactives sur fcModel et fcHorizon)
+fcForecastRows = {
+  const scA = [-2.63, -2.42, -1.56, -0.19, 0.44, 2.26, 4.56, 4.19, 0.82, -1.06, -2.49, -1.93];
+  const scM = [0.486, 0.530, 0.699, 0.961, 1.080, 1.423, 1.918, 1.839, 1.160, 0.785, 0.504, 0.618];
+  const isAdd = fcModel === "Additif";
+  const T = 36;
+  const tFn = t => 4.531 + 0.0317 * t;
+  const mnths = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+
+  // Sigma = RMSE des résidus in-sample
+  const resids = fcBaseData.map(d => isAdd ? d.residA : d.residM);
+  const sigma = Math.sqrt(resids.reduce((s, r) => s + r * r, 0) / resids.length);
+
+  return Array.from({ length: fcHorizon }, (_, h) => {
+    const t = T + h + 1;
+    const mIdx = (T + h) % 12;
+    const trend = tFn(t);
+    const fit = isAdd ? trend + scA[mIdx] : trend * scM[mIdx];
+    const se = sigma * Math.sqrt(h + 1);
+    return {
+      t, h: h + 1, mIdx, month: mnths[mIdx],
+      yHat: +fit.toFixed(3),
+      lo95: +Math.max(0, fit - 1.96 * se).toFixed(3),
+      hi95: +(fit + 1.96 * se).toFixed(3),
+      lo80: +Math.max(0, fit - 1.28 * se).toFixed(3),
+      hi80: +(fit + 1.28 * se).toFixed(3),
+      sigma: +sigma.toFixed(4)
+    };
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const isAdd = fcModel === "Additif";
+  const T = 36;
+  const color = isAdd ? "#1098ad" : "#e64980";
+
+  // Labels de l'axe x
+  const tickMap = {
+    1:"Jan 21", 7:"Jul 21", 13:"Jan 22", 19:"Jul 22", 25:"Jan 23", 31:"Jul 23",
+    37:"Jan 24", 43:"Jul 24", 49:"Jan 25", 55:"Jul 25"
+  };
+  const allTicks = Object.keys(tickMap).map(Number).filter(t => t <= T + fcHorizon + 1);
+
+  // RMSE et prévision de pointe
+  const sigma = fcForecastRows.length > 0 ? fcForecastRows[0].sigma : 0;
+  const rmse = isAdd
+    ? Math.sqrt(fcBaseData.reduce((s,d) => s + d.residA**2, 0) / fcBaseData.length)
+    : Math.sqrt(fcBaseData.reduce((s,d) => s + d.residM**2, 0) / fcBaseData.length);
+
+  // Ligne de fit in-sample
+  const fitLine = fcBaseData.map(d => ({ t: d.t, fit: isAdd ? d.fitA : d.fitM }));
+
+  // Domaine y dynamique
+  const maxY = Math.max(12, ...(fcForecastRows.map(d => d.hi95)));
+  const yDom = [0, +Math.min(maxY + 0.5, 16).toFixed(1)];
+
+  return html`<div>
+    ${Plot.plot({
+      width: 680, height: 360,
+      x: { label: null, ticks: allTicks, tickFormat: t => tickMap[t]||"" },
+      y: { label: "Visiteurs (milliers)", domain: yDom },
+      marks: [
+        // IC 95 %
+        Plot.areaY(fcForecastRows, { x: "t", y1: "lo95", y2: "hi95",
+          fill: color, opacity: 0.13 }),
+        // IC 80 %
+        Plot.areaY(fcForecastRows, { x: "t", y1: "lo80", y2: "hi80",
+          fill: color, opacity: 0.28 }),
+        // Frontière passé / futur
+        Plot.ruleX([T + 0.5], {
+          stroke: "#868e96", strokeDasharray: "7,4", strokeWidth: 1.5
+        }),
+        // Données historiques
+        Plot.line(fcBaseData, { x: "t", y: "y", stroke: "#868e96", strokeWidth: 1.5 }),
+        Plot.dot(fcBaseData, { x: "t", y: "y", fill: "#868e96", r: 2.5 }),
+        // Ajustement in-sample
+        Plot.line(fitLine, { x: "t", y: "fit", stroke: color, strokeWidth: 2 }),
+        // Prévision (pointillés)
+        Plot.line(fcForecastRows, { x: "t", y: "yHat",
+          stroke: color, strokeWidth: 2, strokeDasharray: "5,3" }),
+        Plot.dot(fcForecastRows, { x: "t", y: "yHat",
+          fill: color, r: 3.2,
+          title: d => `h=${d.h} ${d.month}: ŷ=${d.yHat} [IC95: ${d.lo95}–${d.hi95}]` })
+      ]
+    })}
+    <div style="display:flex;gap:18px;margin-top:8px;font-size:.83em;flex-wrap:wrap;align-items:center;">
+      <span><span style="color:#868e96;">—</span> Historique</span>
+      <span><span style="color:${color};font-weight:bold;">—</span> Ajustement</span>
+      <span><span style="color:${color};font-weight:bold;">- -</span> Prévision h=1..${fcHorizon}</span>
+      <span style="color:#555;">σ = ${rmse.toFixed(3)} k · IC 80 % ▪ IC 95 % □ · largeur ∝ √h</span>
+    </div>
+    ${fcForecastRows.length > 0 ? html`<div style="margin-top:10px;padding:8px 12px;
+      background:#f8f9fa;border-radius:6px;font-size:.84em;color:#444;">
+      <strong>Prévision h=1 (${fcForecastRows[0].month} 2024) :</strong>
+      ŷ = <strong>${fcForecastRows[0].yHat} k</strong>
+      · IC 95 % : [${fcForecastRows[0].lo95} ; ${fcForecastRows[0].hi95}]
+      ${fcHorizon >= 6 ? html` &nbsp;|&nbsp;
+        <strong>h=${Math.min(7, fcHorizon)} (Jul 2024) :</strong>
+        ŷ = <strong>${(fcForecastRows[Math.min(6, fcHorizon-1)] || fcForecastRows[fcForecastRows.length-1]).yHat} k</strong>` : ""}
+    </div>` : ""}
+  </div>`;
+}
+```
+
+<concept id="validation-residus-prevision">
+
+## Valider la décomposition : diagnostic des résidus
+
+La qualité d'une décomposition se juge sur ses **résidus** $\hat{I}_t = y_t - \hat{T}_t - \hat{S}_{m(t)}$.
+Un bon modèle produit des résidus qui ressemblent à un bruit blanc : aucune structure, centré en
+zéro, amplitude faible.
+
+| Ce qu'on vérifie | Signal d'alarme | Cause probable |
+|:-----------------|:----------------|:---------------|
+| Graphe $\hat{I}_t$ en fonction du temps | Motif cyclique résiduel | Saisonnalité mal capturée (mauvais $p$) |
+| Graphe $\hat{I}_t$ en fonction de $\hat{T}_t$ | Variance croissante | Modèle additif sur série multiplicative |
+| Histogramme de $\hat{I}_t$ | Forte asymétrie ou valeurs aberrantes | Chocs exogènes non modélisés |
+| Racines unitaires (test ADF) | Non-stationnarité résiduelle | Tendance non linéaire |
+
+La **RMSE** (Root Mean Squared Error) des résidus mesure la précision de l'ajustement :
+
+$$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{t=1}^n \hat{I}_t^2}$$
+
+Elle sert également à construire les intervalles de confiance des prévisions.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_validation_residus -->
+
+### Diagnostic des résidus
+
+```{ojs}
+//| echo: false
+{
+  const isAdd = fcModel === "Additif";
+  const rKey = isAdd ? "residA" : "residM";
+  const residData = fcBaseData.map(d => ({ t: d.t, r: d[rKey], month: d.month }));
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+
+  const n = residData.length;
+  const mean = residData.reduce((s,d) => s + d.r, 0) / n;
+  const rmse = Math.sqrt(residData.reduce((s,d) => s + d.r**2, 0) / n);
+  const maxAbs = Math.max(...residData.map(d => Math.abs(d.r)));
+
+  const pos = residData.filter(d => d.r >= 0);
+  const neg = residData.filter(d => d.r < 0);
+
+  // Graphe temporel des résidus
+  const timePlot = Plot.plot({
+    width: 430, height: 240,
+    x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t]||"" },
+    y: { label: `Résidu ${isAdd ? "Îₜ" : "Îₜ"} (k)`, domain: [-1.2 * maxAbs, 1.2 * maxAbs] },
+    marks: [
+      Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+      Plot.ruleX(pos, { x: "t", y1: 0, y2: "r", stroke: "#2f9e44", strokeWidth: 2 }),
+      Plot.ruleX(neg, { x: "t", y1: 0, y2: "r", stroke: "#e03131", strokeWidth: 2 }),
+      Plot.dot(residData, { x: "t", y: "r",
+        fill: d => d.r >= 0 ? "#2f9e44" : "#e03131", r: 3.5,
+        title: d => `t=${d.t} ${d.month}: ${d.r.toFixed(3)} k` })
+    ]
+  });
+
+  // Histogramme
+  const histPlot = Plot.plot({
+    width: 210, height: 240,
+    marginLeft: 42,
+    x: { label: "Résidu (k)" },
+    y: { label: "Effectif" },
+    marks: [
+      Plot.rectY(residData, Plot.binX({ y: "count" }, { x: "r", thresholds: 10 })),
+      Plot.ruleX([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+      Plot.ruleX([mean], { stroke: "#e8590c", strokeWidth: 2,
+        title: `Moyenne = ${mean.toFixed(4)}` })
+    ]
+  });
+
+  return html`<div>
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:.81em;font-weight:600;color:#555;margin:0 0 4px;">
+          Résidus en fonction du temps</p>
+        ${timePlot}
+      </div>
+      <div>
+        <p style="font-size:.81em;font-weight:600;color:#555;margin:0 0 4px;">
+          Distribution des résidus</p>
+        ${histPlot}
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;margin-top:10px;padding:8px 14px;background:#f8f9fa;
+                border-radius:6px;font-size:.84em;color:#444;flex-wrap:wrap;">
+      <span>Modèle : <strong>${fcModel}</strong></span>
+      <span>Moyenne : <strong>${mean.toFixed(4)} k</strong> (≈ 0 ✓)</span>
+      <span>RMSE : <strong>${rmse.toFixed(3)} k</strong> = ${Math.round(rmse*1000)} visiteurs</span>
+      <span>Max |résidu| : <strong>${maxAbs.toFixed(3)} k</strong></span>
+    </div>
+    <p style="font-size:.83em;color:#555;margin-top:8px;">
+      ${rmse < 0.15
+        ? "✅ RMSE < 0,15 k — ajustement excellent. Aucun motif cyclique visible → résidus proches du bruit blanc."
+        : "⚠️ RMSE élevée — vérifier le choix du modèle ou la période d'estimation."}
+      ${Math.abs(mean) < 0.01 ? " La moyenne nulle confirme l'absence de biais systématique." : ""}
+    </p>
+  </div>`;
+}
+```
+
+## Exercices écrits
+
+:::{#exr-prevision-additive}
+## Prévision trimestrielle par décomposition additive
+
+Une boulangerie enregistre ses ventes trimestrielles (milliers d'euros) depuis 4 ans.
+La droite de tendance ajustée sur la CMA est $\hat{T}_t = 12 + 0{,}8\,t$ et les coefficients
+saisonniers additifs centrés sont :
+
+| T1 | T2 | T3 | T4 |
+|:--:|:--:|:--:|:--:|
+| −6,8 | +1,2 | +9,1 | −3,5 |
+
+a) Vérifier que les coefficients vérifient la contrainte du modèle additif.
+b) La dernière observation est T4 2025 ($T = 16$). Calculer les prévisions $\hat{y}_{17}$
+à $\hat{y}_{20}$ pour les quatre trimestres de 2026.
+c) Interpréter la prévision de T3 2026.
+d) Quelle prévision ponctuelle serait fournie par une extrapolation naïve ignorant la saisonnalité ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Contrainte additive :** $-6{,}8 + 1{,}2 + 9{,}1 + (-3{,}5) = 0{,}0$ ✓
+
+**b) Prévisions 2026 :**
+
+| h | $t$ | Trimestre | $\hat{T}_t = 12 + 0{,}8t$ | $\hat{S}_j$ | $\hat{y}_t$ |
+|:--:|:--:|:---------:|:------------------:|:-----------:|:-----------:|
+| 1 | 17 | T1 2026 | $12 + 13{,}6 = 25{,}6$ | $-6{,}8$ | **18,8 k€** |
+| 2 | 18 | T2 2026 | $12 + 14{,}4 = 26{,}4$ | $+1{,}2$ | **27,6 k€** |
+| 3 | 19 | T3 2026 | $12 + 15{,}2 = 27{,}2$ | $+9{,}1$ | **36,3 k€** |
+| 4 | 20 | T4 2026 | $12 + 16{,}0 = 28{,}0$ | $-3{,}5$ | **24,5 k€** |
+
+**c) Interprétation T3 2026 :** la tendance prédit 27 200 € pour ce trimestre. La haute saison
+estivale (coefficient +9,1 k€) porte la prévision à **36 300 €**, soit +33 % au-dessus de la
+tendance. C'est la période la plus favorable à la boulangerie (tourisme, etc.).
+
+**d) Extrapolation naïve :** sans saisonnalité, on prédirait $\hat{T}_{17} = 25{,}6$ k€ pour
+chaque trimestre de 2026, ignorant les écarts de 18,8 à 36,3 k€. L'erreur serait de
+$|18{,}8 - 25{,}6| = 6{,}8$ k€ au T1 et $|36{,}3 - 25{,}6| = 10{,}7$ k€ au T3 — des écarts
+très significatifs pour la gestion des stocks et du personnel.
+:::
+:::
+
+:::{#exr-prevision-musee-2024}
+## Prévision pour le musée — comparaison additif / multiplicatif
+
+En utilisant $\hat{T}_t = 4{,}531 + 0{,}0317\,t$ et les coefficients saisonniers des deux
+modèles (table ci-dessus, $T = 36$ = décembre 2023) :
+
+a) Calculer $\hat{y}$ pour **janvier 2024** ($h = 1$, $t = 37$) dans les deux modèles.
+b) Calculer $\hat{y}$ pour **juillet 2024** ($h = 7$, $t = 43$) dans les deux modèles.
+c) Calculer $\hat{y}$ pour **décembre 2024** ($h = 12$, $t = 48$) dans les deux modèles.
+d) Commenter les écarts entre les deux modèles selon la saison.
+
+:::{.callout-note collapse="true" title="Solution"}
+**Tendances extrapolées :**
+- $\hat{T}_{37} = 4{,}531 + 0{,}0317 \times 37 = 5{,}704$ k
+- $\hat{T}_{43} = 4{,}531 + 0{,}0317 \times 43 = 5{,}894$ k
+- $\hat{T}_{48} = 4{,}531 + 0{,}0317 \times 48 = 6{,}053$ k
+
+**a) Janvier 2024 ($m$ = Jan) :**
+- Additif : $5{,}704 + (-2{,}63) = \mathbf{3{,}074}$ k
+- Multiplicatif : $5{,}704 \times 0{,}486 = \mathbf{2{,}772}$ k
+- Écart : 302 visiteurs (multiplicatif prédit un creux hivernal plus prononcé)
+
+**b) Juillet 2024 ($m$ = Jul) :**
+- Additif : $5{,}894 + 4{,}56 = \mathbf{10{,}454}$ k
+- Multiplicatif : $5{,}894 \times 1{,}918 = \mathbf{11{,}304}$ k
+- Écart : 850 visiteurs (multiplicatif amplifie le pic estival)
+
+**c) Décembre 2024 ($m$ = Déc) :**
+- Additif : $6{,}053 + (-1{,}93) = \mathbf{4{,}123}$ k
+- Multiplicatif : $6{,}053 \times 0{,}618 = \mathbf{3{,}741}$ k
+- Écart : 382 visiteurs
+
+**d) Commentaire :** les deux modèles divergent davantage en **haute saison** (juillet : −850 k) qu'en
+basse saison (janvier : −302 k). Le modèle multiplicatif "amplifie" les extrêmes saisonniers à mesure
+que la tendance monte. Pour des données dont l'amplitude est démontrée constante (comme ici), le
+modèle **additif est préférable** car le multiplicatif surestime le pic estival de 850 visiteurs.
+:::
+:::
+
+:::{#exr-diagnostic-residus}
+## Interpréter un diagnostic de résidus
+
+La décomposition d'une série mensuelle de production industrielle (modèle additif) donne les
+résidus suivants (en millions d'unités) pour une année :
+
+| J | F | M | A | M | J | Jl | Ao | S | O | N | D |
+|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:-:|:-:|:-:|:-:|
+| 0,1 | −0,2 | 0,3 | 0,4 | 1,8 | 2,1 | 1,9 | 0,5 | 0,2 | −0,1 | 0,0 | 0,1 |
+
+a) Calculer la moyenne et la RMSE des résidus.
+b) Ce diagnostic est-il satisfaisant ? Justifier.
+c) Que suggèrent les valeurs élevées en mai, juin, juillet ?
+d) Quelle correction proposer ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Calculs :**
+
+Somme : $0{,}1 - 0{,}2 + 0{,}3 + 0{,}4 + 1{,}8 + 2{,}1 + 1{,}9 + 0{,}5 + 0{,}2 - 0{,}1 + 0{,}0 + 0{,}1 = 7{,}1$
+
+Moyenne : $7{,}1 / 12 = 0{,}592$ M
+
+Somme des carrés : $0{,}01 + 0{,}04 + 0{,}09 + 0{,}16 + 3{,}24 + 4{,}41 + 3{,}61 + 0{,}25 + 0{,}04 + 0{,}01 + 0 + 0{,}01 = 11{,}87$
+
+RMSE : $\sqrt{11{,}87/12} = \sqrt{0{,}989} = 0{,}995$ M
+
+**b) Diagnostic insatisfaisant** pour deux raisons :
+- La **moyenne est ≠ 0** (0,592 M) : la décomposition est **biaisée** — les coefficients saisonniers n'ont pas été correctement centrés, ou la tendance est sous-estimée.
+- La **RMSE est très élevée** (1 M sur une série de production), signe d'un ajustement médiocre.
+
+**c) Les valeurs de mai–juillet (1,8 ; 2,1 ; 1,9) forment un motif systématique** = présence d'une
+**sous-composante saisonnière non capturée**. Il est probable que les coefficients saisonniers
+actuels sous-estiment le pic de mai–juillet, peut-être parce que la période d'estimation est
+trop courte (un seul cycle) ou que la saisonnalité a changé structurellement.
+
+**d) Corrections possibles :**
+1. Recalculer les coefficients saisonniers sur plus d'années.
+2. Vérifier si la saisonnalité a évolué (coefficients temporellement variables).
+3. Envisager un modèle multiplicatif si l'amplitude croît avec la tendance.
+4. Tester un modèle STL (Seasonal-Trend decomposition using Loess) plus robuste.
+:::
+:::
+
+### Quiz — Prévision par décomposition
+
+```{ojs}
+//| echo: false
+fc_questions = [
+  {
+    enonce: "La droite de tendance T̂_t = 4,531 + 0,0317 t est ajustée sur les données du musée (T=36). Quelle est la prévision additive pour mars 2024 (h=3, t=39) sachant que Ŝ_Mar = −1,56 k ?",
+    choices: [
+      "ŷ₃₉ = 4,531 + 0,0317×39 − 1,56 = 4,208 k",
+      "ŷ₃₉ = 4,531 + 0,0317×39 − 1,56 = 4,207 k",
+      "ŷ₃₉ = (4,531 + 0,0317×39) × (−1,56) = −9,23 k",
+      "ŷ₃₉ = 4,531 × 39 − 1,56 = 175,2 k"
+    ],
+    correct: "ŷ₃₉ = 4,531 + 0,0317×39 − 1,56 = 4,207 k",
+    explication: "T̂₃₉ = 4,531 + 0,0317×39 = 4,531 + 1,2363 = 5,767 k. Prévision additive : 5,767 + (−1,56) = 4,207 k. Attention aux deux options proches (4,208 vs 4,207) : 4,531 + 1,2363 = 5,7673, arrondi à 5,767, puis 5,767 − 1,56 = 4,207. Le résultat exact est 4,207 k."
+  },
+  {
+    enonce: "Dans le modèle multiplicatif, le coefficient saisonnier de juillet est 1,918. Cela signifie que :",
+    choices: [
+      "Juillet est 1,918 milliers de visiteurs au-dessus de la tendance",
+      "La tendance est multipliée par 1,918 — juillet est en moyenne 91,8 % au-dessus de la tendance",
+      "La tendance augmente de 91,8 % en juillet",
+      "Il y a 1,918 fois plus de visiteurs en juillet qu'en août"
+    ],
+    correct: "La tendance est multipliée par 1,918 — juillet est en moyenne 91,8 % au-dessus de la tendance",
+    explication: "Dans le modèle multiplicatif, ŷ_t = T_t × S_t × I_t. Un coefficient S_Jul = 1,918 signifie que la prévision pour juillet est 1,918 × T̂_t. L'écart par rapport à la tendance est donc de (1,918 − 1) = 91,8 % au-dessus. Si la tendance est de 5 894 visiteurs (juillet 2024), la prévision est 5 894 × 1,918 ≈ 11 303 visiteurs."
+  },
+  {
+    enonce: "La RMSE des résidus d'une décomposition additive est σ = 0,12 k. Quel est l'intervalle de confiance à 95 % pour une prévision à h = 9 mois ? (z₀.₀₂₅ ≈ 1,96)",
+    choices: [
+      "ŷ ± 0,235 k",
+      "ŷ ± 0,706 k",
+      "ŷ ± 2,35 k",
+      "ŷ ± 0,12 k"
+    ],
+    correct: "ŷ ± 0,706 k",
+    explication: "L'intervalle de confiance est ŷ ± z × σ × √h = ŷ ± 1,96 × 0,12 × √9 = ŷ ± 1,96 × 0,12 × 3 = ŷ ± 0,706 k. La racine carrée de h capture le fait que l'incertitude croît avec l'horizon — à h=9, on est à ±706 visiteurs, ce qui est 3 fois plus large qu'à h=1 (±235 visiteurs)."
+  },
+  {
+    enonce: "Lors de l'examen des résidus d'une décomposition additive, on observe que les résidus d'été sont systématiquement positifs et ceux d'hiver systématiquement négatifs. Cela indique :",
+    choices: [
+      "Une décomposition parfaite — les saisons sont bien identifiées",
+      "Une saisonnalité résiduelle non capturée — les coefficients saisonniers sont sous-estimés",
+      "Une tendance non linéaire qui perturbe la décomposition",
+      "Des données aberrantes à éliminer avant toute analyse"
+    ],
+    correct: "Une saisonnalité résiduelle non capturée — les coefficients saisonniers sont sous-estimés",
+    explication: "Si les résidus montrent encore un motif saisonnier, c'est que les coefficients Ŝ_j n'ont pas complètement capturé la saisonnalité. Les causes possibles : période d'estimation trop courte (peu d'années), saisonnalité évolutive dans le temps, mauvaise valeur de p (période), ou mauvais choix du modèle (additif vs multiplicatif). Il faut revoir la décomposition."
+  },
+  {
+    enonce: "Pour décider entre modèle additif et multiplicatif, on calcule l'amplitude saisonnière Juillet − Janvier pour 4 années consécutives : 6,2 k ; 7,8 k ; 9,5 k ; 11,2 k. La tendance a doublé sur la période. Quel modèle choisir ?",
+    choices: [
+      "Additif — l'amplitude augmente d'environ 1,6 k par an, ce qui est constant",
+      "Multiplicatif — l'amplitude double approximativement quand la tendance double",
+      "Les deux modèles sont équivalents dans ce cas",
+      "Ni l'un ni l'autre — il faut une différenciation saisonnière"
+    ],
+    correct: "Multiplicatif — l'amplitude double approximativement quand la tendance double",
+    explication: "L'amplitude passe de 6,2 k à 11,2 k, soit presque le double, tandis que la tendance double. C'est la signature du modèle multiplicatif : S_t × T_t → quand T_t double, la contribution saisonnière double aussi. Un modèle additif supposant une amplitude constante serait mal ajusté ici — il sous-estimerait les pics récents et surestime les anciens."
+  },
+  {
+    enonce: "La série désaisonnalisée y_t^{SA} = y_t − Ŝ_{m(t)} (modèle additif) est utile pour :",
+    choices: [
+      "Comparer des mois différents en éliminant l'effet saisonnier structurel",
+      "Prévoir y_t car elle est plus régulière et donc plus simple à extrapoler directement",
+      "Calculer la tendance T̂_t plus précisément que la MM 2×12",
+      "Éliminer à la fois la tendance et la saisonnalité"
+    ],
+    correct: "Comparer des mois différents en éliminant l'effet saisonnier structurel",
+    explication: "La désaisonnalisation retire Ŝ_{m(t)} et laisse T_t + I_t. Elle permet de comparer janvier et juillet sur un pied d'égalité, ou de détecter un retournement de tendance que la saisonnalité masquerait. Elle n'est pas plus simple à extrapoler (I_t reste bruité), ne calcule pas T̂_t directement, et ne retire pas la tendance (seule Δ_p ou la différenciation retirent la saisonnalité stochastique)."
+  },
+  {
+    enonce: "Deux décompositions du même jeu de données donnent σ_add = 0,11 k et σ_mul = 0,19 k. Quelle conclusion est la plus rigoureuse ?",
+    choices: [
+      "Le modèle additif est strictement meilleur — on l'adopte définitivement",
+      "La RMSE est plus faible pour le modèle additif ; à confirmer par un test et un examen visuel des résidus",
+      "Le modèle multiplicatif est meilleur car il est plus général",
+      "Les deux modèles sont équivalents si |σ_add − σ_mul| < 0,1 k"
+    ],
+    correct: "La RMSE est plus faible pour le modèle additif ; à confirmer par un test et un examen visuel des résidus",
+    explication: "Une RMSE plus faible indique un meilleur ajustement in-sample, mais cela ne suffit pas à conclure définitivement. Il faut aussi : (1) vérifier visuellement que les résidus additifs ne montrent pas de motif résiduel ; (2) s'assurer que la comparaison est faite sur les mêmes données (les résidus multiplicatifs sont parfois en % et non en k) ; (3) considérer la parcimonie et l'interprétabilité. La RMSE additif étant plus faible ici, le modèle additif est préféré, sous réserve de validation."
+  },
+  {
+    enonce: "On prévoit y₄₉ = 3,5 k (h=13) avec σ=0,10 k. On observe que y₄₉ = 5,2 k. L'erreur ex-post est de 1,7 k, soit 17 σ. Quelle interprétation est correcte ?",
+    choices: [
+      "La méthode de décomposition est fondamentalement défectueuse et doit être abandonnée",
+      "Une erreur de 17 σ est un signal fort d'un événement exceptionnel non modélisé (exposition temporaire, événement spécial, etc.)",
+      "L'intervalle de confiance à 95 % aurait dû être calculé à ±2 σ √h = ±2,08 k, ce qui aurait inclus 5,2 k",
+      "La tendance a été mal ajustée et il faut recalculer avec une régression polynomiale"
+    ],
+    correct: "Une erreur de 17 σ est un signal fort d'un événement exceptionnel non modélisé (exposition temporaire, événement spécial, etc.)",
+    explication: "Une erreur de 17 σ est statistiquement impossible si les résidus suivent une loi normale (probabilité < 10⁻⁶⁴). Cela signale un choc exogène : une exposition temporaire très populaire, un événement médiatique, ou une perturbation structurelle. La décomposition classique ne peut pas anticiper de tels événements — c'est une limite inhérente à toute méthode déterministe. Le modèle n'est pas 'défectueux', il ne peut simplement pas modéliser l'imprévisible."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof fc_rep = {
+  const uid = Math.random().toString(36).slice(2, 8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(fc_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+
+  fc_questions.forEach((q, i) => {
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;
+       border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.91em;">
+       <input type="radio" name="q${i}_${uid}" data-idx="${j}"
+         style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;">
+       <span>${c}</span></label>`
+    ).join("");
+
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;
+      background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+      <p style="margin:0 0 12px;font-weight:600;font-size:.94em;line-height:1.5;">
+        <span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p>
+      <div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div>
+      <div data-expl style="display:none;margin-top:10px;padding:10px 14px;
+        border-left:3px solid #aaa;border-radius:0 4px 4px 0;
+        font-size:.87em;color:#555;font-style:italic;">${q.explication}</div>
+    </div>`;
+
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8"; l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3"; l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../05-seasonal-decomposition/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);">
+    <span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span>
+    <span>
+      <small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small>
+      <span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Saisonnalité et décomposition</span>
+    </span>
+  </a>
+  <div style="flex:1;min-width:0;"></div>
+</div>

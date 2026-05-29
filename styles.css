@@ -1,0 +1,308 @@
+/* css styles */
+
+concept {
+  display: block;
+}
+
+/* ============================================================
+   Table des matières — responsive (mobile & tablette ≤991px)
+   Par défaut, Quarto masque le TOC sur petit écran.
+   On le réaffiche ici, AU-DESSUS du contenu.
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+
+  /* Passe #quarto-content de CSS Grid → Flexbox pour pouvoir
+     réordonner les enfants avec la propriété order. */
+  #quarto-content.page-columns {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Place le TOC en premier (order: -1) et le rend visible */
+  #quarto-margin-sidebar {
+    order: -1 !important;
+    display: block !important;
+    width: 100% !important;
+    position: static !important;
+    box-sizing: border-box !important;
+    padding: 0.75rem 1.25rem 0.9rem !important;
+    margin-bottom: 0 !important;
+
+    /* Fond discret, s'adapte automatiquement au thème clair/sombre */
+    background-color: var(--bs-secondary-bg, #f8f9fa) !important;
+    border-bottom: 2px solid var(--bs-border-color, #dee2e6) !important;
+  }
+
+  /* Supprime le padding interne du nav TOC (déjà géré par la sidebar) */
+  #quarto-margin-sidebar nav#TOC {
+    padding: 0 !important;
+  }
+
+  /* Liens légèrement plus compacts sur mobile */
+  #quarto-margin-sidebar .nav-link {
+    font-size: 0.84rem !important;
+    padding: 0.15rem 0.4rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Titre "On this page" / "Table des matières" */
+  #quarto-margin-sidebar #toc-title {
+    font-size: 0.78rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: .04em !important;
+    color: var(--bs-secondary, #6c757d) !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  /* Contenu principal reste en dessous */
+  main#quarto-document-content {
+    order: 1 !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Le thème sombre est géré automatiquement par --bs-secondary-bg */
+
+/* ============================================================
+   Accueil — Cours / Modules / Leçons
+   ============================================================ */
+
+/* Section cours */
+.sl-course { margin-bottom: 3rem; }
+
+/* Bande de méta-stats du cours */
+.sl-course-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem .75rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--bs-secondary-color, #6c757d);
+  margin: -.25rem 0 1rem;
+}
+.sl-course-stats span:not(.sl-diff):not(.sl-level-range)::before {
+  content: "·";
+  margin-right: .75rem;
+  opacity: .4;
+}
+.sl-course-stats span:first-child::before { content: ""; margin: 0; }
+.sl-level-range {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-weight: normal;
+}
+
+/* Grille 2 colonnes pour les modules */
+.sl-modules {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (max-width: 767.98px) {
+  .sl-modules { grid-template-columns: 1fr; }
+}
+
+/* Carte module */
+.sl-module {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bs-body-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  transition: box-shadow .2s, transform .2s;
+}
+.sl-module:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.09);
+  transform: translateY(-1px);
+}
+
+/* En-tête de la carte — bande colorée selon niveau */
+.sl-module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .65rem 1rem .65rem .85rem;
+  background: var(--bs-secondary-bg, #f8f9fa);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  border-left: 4px solid transparent;
+}
+.sl-module-header[data-level="b"] { border-left-color: #2f9e44; }
+.sl-module-header[data-level="i"] { border-left-color: #1971c2; }
+.sl-module-header[data-level="a"] { border-left-color: #e67700; }
+
+.sl-module-title {
+  margin: 0;
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--bs-body-color);
+}
+.sl-module-count {
+  flex-shrink: 0;
+  font-size: .69rem;
+  font-weight: 600;
+  padding: .12rem .5rem;
+  border-radius: 20px;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+/* Liste des leçons */
+.sl-lessons { list-style: none; margin: 0; padding: 0; }
+
+.sl-lesson {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .42rem 1rem;
+  border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0,0,0,.06));
+  transition: background .12s;
+}
+.sl-lesson:last-child { border-bottom: none; }
+.sl-lesson:hover { background: var(--bs-tertiary-bg, #f6f6f6); }
+
+.sl-lesson-num {
+  flex-shrink: 0;
+  min-width: 1.35rem;
+  text-align: right;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--bs-secondary-color, #aaa);
+}
+.sl-lesson a {
+  flex: 1;
+  min-width: 0;
+  font-size: .87rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sl-lesson a:hover {
+  color: var(--bs-link-color, #0d6efd);
+  text-decoration: underline;
+}
+
+/* Badges de difficulté (utilisés partout) */
+.sl-diff {
+  flex-shrink: 0;
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  padding: .12rem .45rem;
+  border-radius: 20px;
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+.sl-diff-b { background: #ebfbee; color: #2f9e44; }
+.sl-diff-i { background: #e7f5ff; color: #1971c2; }
+.sl-diff-a { background: #fff4e6; color: #e67700; }
+
+/* Grille "Prochainement" */
+.sl-coming-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 767.98px) {
+  .sl-coming-grid { grid-template-columns: 1fr; }
+}
+
+.sl-coming {
+  border: 1.5px dashed var(--bs-border-color, #dee2e6);
+  border-radius: 10px;
+  padding: 1.75rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--bs-secondary-bg, #f8f9fa);
+}
+.sl-coming-icon {
+  font-size: 2rem;
+  margin-bottom: .4rem;
+  opacity: .5;
+}
+.sl-coming h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: .3rem;
+  color: var(--bs-body-color);
+}
+.sl-coming p {
+  font-size: .84rem;
+  color: var(--bs-secondary-color, #6c757d);
+  margin-bottom: .6rem;
+}
+.sl-coming-badge {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .18rem .6rem;
+  border-radius: 20px;
+  background: var(--bs-warning-bg-subtle, #fff3cd);
+  color: var(--bs-warning-text-emphasis, #664d03);
+  letter-spacing: .02em;
+}
+
+/* ============================================================
+   Mode sombre — corrections lisibilité des card headers
+   ============================================================ */
+
+/* En-tête : fond légèrement blanc translucide pour se distinguer
+   du corps de la carte sans perdre en contraste */
+body.quarto-dark .sl-module-header {
+  background: rgba(255,255,255,0.07) !important;
+  border-bottom-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Titre : blanc quasi-pur pour une lisibilité maximale */
+body.quarto-dark .sl-module-title {
+  color: rgba(255,255,255,0.92) !important;
+  font-weight: 800 !important;
+}
+
+/* Badge "n leçons" : fond et texte clairs sur fond sombre */
+body.quarto-dark .sl-module-count {
+  background: rgba(255,255,255,0.10) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: rgba(255,255,255,0.65) !important;
+}
+
+/* Séparateurs de lignes plus discrets en sombre */
+body.quarto-dark .sl-lesson {
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Hover en sombre */
+body.quarto-dark .sl-lesson:hover {
+  background: rgba(255,255,255,0.05) !important;
+}
+
+/* Liens de leçons bien lisibles */
+body.quarto-dark .sl-lesson a {
+  color: rgba(255,255,255,0.82) !important;
+}
+body.quarto-dark .sl-lesson a:hover {
+  color: #74c0fc !important;
+}
+
+/* Badges de difficulté en sombre — inverser pour plus de contraste */
+body.quarto-dark .sl-diff-b { background: rgba(47,158,68,.18)  !important; color: #69db7c !important; }
+body.quarto-dark .sl-diff-i { background: rgba(25,113,194,.18) !important; color: #74c0fc !important; }
+body.quarto-dark .sl-diff-a { background: rgba(230,119,0,.18)  !important; color: #ffa94d !important; }
+
+/* "Prochainement" en sombre */
+body.quarto-dark .sl-coming {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+body.quarto-dark .sl-coming-badge {
+  background: rgba(230,119,0,.2)  !important;
+  color: #ffa94d !important;
+}
+

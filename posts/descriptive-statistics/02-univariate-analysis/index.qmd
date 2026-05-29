@@ -1,0 +1,55 @@
+---
+title: "Module 02 — Analyse univariée"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000010"
+type: "module"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics"]
+---
+
+## À propos de ce module
+
+L'**analyse univariée** étudie une seule variable à la fois. Elle répond aux questions fondamentales : *quelles valeurs prend cette variable ? Où se situe le centre de la distribution ? Comment les observations sont-elles dispersées autour de ce centre ? Quelle forme a la distribution ?*
+
+Ce module couvre l'ensemble de la boîte à outils univariée — tableaux de fréquences, indicateurs numériques et représentations graphiques — en traitant séparément les variables qualitatives et quantitatives.
+
+::: {.callout-note title="Prérequis"}
+Module 01 — Introduction à la statistique descriptive (en particulier la leçon sur les types de variables).
+:::
+
+## Objectifs du module
+
+À l'issue de ce module, vous serez capable de :
+
+- Construire un tableau de fréquences (absolues, relatives, cumulées) pour toute variable.
+- Calculer et interpréter les indicateurs de position : mode, médiane, moyenne, quartiles.
+- Calculer et interpréter les indicateurs de dispersion : étendue, variance, écart-type, IQR, coefficient de variation.
+- Choisir et construire la représentation graphique adaptée au type de variable.
+- Identifier des valeurs atypiques à l'aide de la règle de Tukey.
+
+## Leçons
+
+| N° | Titre | Difficulté | Thèmes clés |
+|:--:|-------|:----------:|-------------|
+| 01 | [Tableaux de fréquences](01-frequency-tables/) | Débutant | Effectifs, fréquences relatives, fréquences cumulées, classes |
+| 02 | [Indicateurs de position](02-position-indicators/) | Débutant | Mode, médiane, moyenne, quartiles, interpolation |
+| 03 | [Indicateurs de dispersion](03-dispersion-indicators/) | Intermédiaire | Étendue, variance, écart-type, IQR, CV, règle de Tukey |
+| 04 | [Visualiser les variables qualitatives](04-visualizing-qualitative-variables/) | Débutant | Diagramme en barres, diagramme circulaire |
+| 05 | [Visualiser les variables quantitatives](05-visualizing-quantitative-variables/) | Intermédiaire | Histogramme, boîte à moustaches, courbe des fréquences cumulées |
+
+**Durée estimée :** 5 heures (≈ 1 heure par leçon).
+
+## Fil rouge
+
+Ce module travaille principalement sur les **quatre premières variables** du jeu de données fil rouge :
+
+| Variable | Type | Module 02 |
+|----------|------|:---------:|
+| Mode de transport | Qualitative nominale | ✓ L01, L04 |
+| Score de satisfaction (1–5) | Qualitative ordinale | ✓ L01, L02, L03 |
+| Nombre de cours par semaine | Quantitative discrète | ✓ L01, L02, L03, L05 |
+| Durée du trajet (min) | Quantitative continue | ✓ L01, L02, L03, L05 |
+
+Les deux variables restantes (heures de révision, note moyenne) sont introduites au module 03.

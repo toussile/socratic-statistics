@@ -1,0 +1,474 @@
+---
+title: "Tableaux de fréquences"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000021"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Univariate Analysis"]
+execute: 
+  eval: true
+---
+
+Avant de tracer un graphique ou de calculer une moyenne, il faut **organiser les données brutes**. Le tableau de fréquences est le premier outil de cette organisation : il recense combien de fois chaque valeur — ou chaque classe de valeurs — apparaît dans le jeu de données. Cette leçon en détaille la construction pour les quatre types de variables.
+
+::: {.callout-note title="Jeu de données fil rouge — Enquête transport étudiante"}
+Tout au long du module 02, nous travaillerons sur une **enquête menée auprès de 80 étudiants** d'une université parisienne. Quatre variables ont été relevées : le mode de transport principal, la satisfaction vis-à-vis du trajet, le nombre de cours par semaine et la durée du trajet domicile-université. Ce jeu de données couvre les quatre types de variables vus en module 01.
+:::
+
+<concept id="donnees-brutes-et-tableau">
+
+## De la donnée brute au tableau
+
+Les **données brutes** sont les observations collectées, non encore organisées. Pour 80 étudiants, cela représente 80 valeurs par variable — impossible à interpréter directement.
+
+Le **tableau de fréquences** regroupe ces valeurs en comptant les occurrences de chaque modalité ou valeur.
+
+:::{#def-frequences}
+## Effectif et fréquences
+
+Soit une variable observée sur $n$ individus, prenant $k$ modalités distinctes $v_1, v_2, \ldots, v_k$.
+
+- L'**effectif** (ou **fréquence absolue**) de la modalité $v_i$ est le nombre d'individus prenant cette valeur : $n_i$.
+- La **fréquence relative** est la proportion : $f_i = \dfrac{n_i}{n}$.
+- La **fréquence cumulée** est la proportion d'individus ayant une valeur **inférieure ou égale** à $v_i$ : $F_i = \displaystyle\sum_{j=1}^{i} f_j$.
+
+On a toujours $\displaystyle\sum_{i=1}^k n_i = n$, $\displaystyle\sum_{i=1}^k f_i = 1$ et $F_k = 1$.
+:::
+
+::: {.callout-tip title="Fréquence cumulée : sens pratique"}
+$F_i$ répond à « quelle proportion est en dessous de ce seuil ? ». Son complément $1 - F_i$ répond à « quelle proportion est au-dessus ? ». Ce sont les deux lectures les plus utiles — à condition que les modalités aient un ordre, ce qui exclut les variables nominales.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_vocabulaire_tableau -->
+
+<concept id="tableau-qualitatif">
+
+## Tableaux pour les variables qualitatives
+
+### Variable nominale
+
+Pour une variable nominale, on liste les modalités dans n'importe quel ordre (souvent par effectif décroissant) et on calcule effectifs et fréquences. **Les fréquences cumulées n'ont aucun sens** car il n'y a pas d'ordre entre les modalités.
+
+*Exemple — Variable : Mode de transport principal ($n = 80$)*
+
+| Modalité | Effectif $n_i$ | Fréquence $f_i$ (%) |
+|----------|:--------------:|:-------------------:|
+| Métro    | 32 | 40,0 % |
+| Bus      | 18 | 22,5 % |
+| Vélo     | 15 | 18,8 % |
+| À pied   | 10 | 12,5 % |
+| Voiture  |  5 |  6,3 % |
+| **Total** | **80** | **100 %** |
+
+**Lecture :** le métro est la modalité la plus fréquente (40 %) — c'est le **mode** de cette variable.
+
+### Variable ordinale
+
+Pour une variable ordinale, les modalités sont présentées dans leur **ordre naturel** et on ajoute la colonne des fréquences cumulées.
+
+*Exemple — Variable : Satisfaction vis-à-vis du trajet ($n = 80$)*
+
+| Modalité | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|----------|:--------------:|:-------------------:|:--------------------:|
+| Très insatisfait |  8 | 10,0 % |  10,0 % |
+| Insatisfait      | 16 | 20,0 % |  30,0 % |
+| Neutre           | 20 | 25,0 % |  55,0 % |
+| Satisfait        | 26 | 32,5 % |  87,5 % |
+| Très satisfait   | 10 | 12,5 % | 100,0 % |
+| **Total** | **80** | **100 %** | — |
+
+**Lecture :** $F_3 = 55{,}0\,\%$ — 55 % des étudiants ont une satisfaction **au plus neutre**. À l'inverse, $1 - F_2 = 70\,\%$ ont une satisfaction **au moins neutre**.
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_tableau_qualitatif -->
+
+<concept id="tableau-discret">
+
+## Tableau pour une variable discrète
+
+La structure est identique à la variable ordinale : valeurs dans l'**ordre croissant**, avec effectifs, fréquences et fréquences cumulées.
+
+*Exemple — Variable : Nombre de cours par semaine ($n = 80$)*
+
+| Valeur $x_i$ | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|:------------:|:--------------:|:-------------------:|:--------------------:|
+| 3 |  5 |  6,3 % |  6,3 % |
+| 4 | 12 | 15,0 % | 21,3 % |
+| 5 | 18 | 22,5 % | 43,8 % |
+| 6 | 22 | 27,5 % | 71,3 % |
+| 7 | 14 | 17,5 % | 88,8 % |
+| 8 |  9 | 11,3 % | 100,0 % |
+| **Total** | **80** | **100 %** | — |
+
+**Lecture :** $F_3 = 43{,}8\,\%$ — moins de la moitié des étudiants ont **au plus 5 cours** par semaine. La valeur modale est 6 cours (27,5 %).
+
+::: {.callout-warning title="Quand regrouper en classes ?"}
+Si une variable discrète prend de très nombreuses valeurs distinctes (ex. revenus entiers de 1 000 à 5 000 €), un tableau valeur-par-valeur devient illisible. On la traite alors comme une variable continue et on construit un tableau par classes.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_tableau_discret -->
+
+<concept id="tableau-continu">
+
+## Tableau pour une variable continue
+
+Les variables continues couvrant un intervalle, on regroupe leurs valeurs en **classes** (intervalles contigus) avant de compter.
+
+### Choisir le nombre de classes — règle de Sturge
+
+:::{#prp-sturge}
+## Règle de Sturge
+
+Pour un échantillon de taille $n$, le nombre de classes recommandé est :
+
+$$k = \left\lfloor 1 + 3{,}322 \times \log_{10}(n) \right\rceil$$
+
+où $\lfloor \cdot \rceil$ désigne l'arrondi à l'entier le plus proche.
+:::
+
+Pour $n = 80$ : $k = 1 + 3{,}322 \times \log_{10}(80) = 1 + 3{,}322 \times 1{,}903 \approx 7$ classes.
+
+### Amplitude et centre de classe
+
+L'**amplitude** $h$ est la largeur de chaque classe. On choisit une valeur ronde proche de l'étendue divisée par $k$ :
+
+$$h \approx \frac{x_{\max} - x_{\min}}{k}$$
+
+Le **centre de classe** $c_i = \dfrac{b_{i-1} + b_i}{2}$ sera utilisé pour les calculs de moyenne sur données groupées (module suivant).
+
+Les classes sont notées $[b_{i-1}\,;\, b_i[$ — fermée à gauche, ouverte à droite — sauf la dernière : $[b_{k-1}\,;\, b_k]$.
+
+*Exemple — Variable : Durée du trajet domicile-université en minutes ($n = 80$)*
+
+Étendue : $74 - 6 = 68$ min. Amplitude : $68 / 7 \approx 10$ min → on retient $h = 10$.
+
+| Classe | Centre $c_i$ | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|--------|:------------:|:--------------:|:-------------------:|:--------------------:|
+| $[0\,;\,10[$   |  5 |  3 |  3,8 % |  3,8 % |
+| $[10\,;\,20[$  | 15 | 11 | 13,8 % | 17,5 % |
+| $[20\,;\,30[$  | 25 | 18 | 22,5 % | 40,0 % |
+| $[30\,;\,40[$  | 35 | 22 | 27,5 % | 67,5 % |
+| $[40\,;\,50[$  | 45 | 14 | 17,5 % | 85,0 % |
+| $[50\,;\,60[$  | 55 |  8 | 10,0 % | 95,0 % |
+| $[60\,;\,70]$  | 65 |  4 |  5,0 % | 100,0 % |
+| **Total** | — | **80** | **100 %** | — |
+
+**Lecture :** $F_4 = 67{,}5\,\%$ — les deux tiers des étudiants mettent **moins de 40 minutes**. La classe modale est $[30\,;\,40[$ avec 22 étudiants (27,5 %).
+
+::: {.callout-note title="Classes d'amplitude inégale"}
+Lorsque les observations sont très peu nombreuses aux extrêmes, on regroupe ces classes clairsemées pour les fusionner en classes plus larges. Le tableau gagne en lisibilité, mais les amplitudes $h_i$ deviennent **différentes selon la classe**.
+
+*Exemple* — en fusionnant les extrêmes du tableau ci-dessus :
+
+| Classe | $h_i$ | Effectif $n_i$ | Fréquence $f_i$ (%) | Densité $d_i = f_i / h_i$ |
+|--------|:-----:|:--------------:|:-------------------:|:-------------------------:|
+| $[0\,;\,20[$  | 20 | 14 | 17,5 % | 0,875 %/min |
+| $[20\,;\,30[$ | 10 | 18 | 22,5 % | 2,25 %/min |
+| $[30\,;\,40[$ | 10 | 22 | 27,5 % | **2,75 %/min** |
+| $[40\,;\,50[$ | 10 | 14 | 17,5 % | 1,75 %/min |
+| $[50\,;\,70]$ | 20 | 12 | 15,0 % | 0,75 %/min |
+
+**Ce qui change :** pour l'histogramme, on ne peut plus placer $f_i$ en hauteur — une barre de largeur 20 avec hauteur 17,5 % aurait une aire double de ce qu'elle devrait. On utilise à la place la **densité de fréquence** $d_i = f_i / h_i$, qui garantit que l'aire de chaque barre reste proportionnelle à l'effectif.
+
+**Ce qui ne change pas :** les formules d'interpolation pour la médiane et les quartiles utilisent déjà $h_i$ par classe et s'appliquent telles quelles — voir la leçon suivante.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_tableau_continu -->
+
+## Outil interactif : explorer les tableaux de fréquences
+
+Sélectionnez une variable pour voir le tableau de fréquences correspondant et les principales lectures.
+
+```{ojs}
+//| echo: false
+tableData = ({
+  nom: {
+    headers: ["Modalité", "Effectif nᵢ", "Fréquence fᵢ (%)"],
+    rows: [
+      ["Métro",   32, "40,0 %"],
+      ["Bus",     18, "22,5 %"],
+      ["Vélo",    15, "18,8 %"],
+      ["À pied",  10, "12,5 %"],
+      ["Voiture",  5,  "6,3 %"],
+      ["<b>Total</b>", "<b>80</b>", "<b>100,0 %</b>"]
+    ],
+    note: "Le métro est la modalité la plus fréquente (40 %) : c'est le <strong>mode</strong>.<br>Les fréquences cumulées n'ont pas de sens ici — les modes de transport n'ont pas d'ordre naturel."
+  },
+  ord: {
+    headers: ["Modalité", "Effectif nᵢ", "Fréquence fᵢ (%)", "Fréq. cum. Fᵢ (%)"],
+    rows: [
+      ["Très insatisfait",  8, "10,0 %",  "10,0 %"],
+      ["Insatisfait",      16, "20,0 %",  "30,0 %"],
+      ["Neutre",           20, "25,0 %",  "55,0 %"],
+      ["Satisfait",        26, "32,5 %",  "87,5 %"],
+      ["Très satisfait",   10, "12,5 %", "100,0 %"],
+      ["<b>Total</b>", "<b>80</b>", "<b>100,0 %</b>", "—"]
+    ],
+    note: "<strong>F₃ = 55 %</strong> : plus de la moitié des étudiants ont une satisfaction au plus neutre.<br>À l'inverse, 1 − F₂ = 70 % ont une satisfaction au moins neutre."
+  },
+  dis: {
+    headers: ["Valeur xᵢ", "Effectif nᵢ", "Fréquence fᵢ (%)", "Fréq. cum. Fᵢ (%)"],
+    rows: [
+      [3,  5,  "6,3 %",  "6,3 %"],
+      [4, 12, "15,0 %", "21,3 %"],
+      [5, 18, "22,5 %", "43,8 %"],
+      [6, 22, "27,5 %", "71,3 %"],
+      [7, 14, "17,5 %", "88,8 %"],
+      [8,  9, "11,3 %","100,0 %"],
+      ["<b>Total</b>", "<b>80</b>", "<b>100,0 %</b>", "—"]
+    ],
+    note: "<strong>F₃ = 43,8 %</strong> : moins de la moitié des étudiants ont au plus 5 cours par semaine.<br>La valeur modale est 6 cours (27,5 %)."
+  },
+  con: {
+    headers: ["Classe", "Centre cᵢ", "Effectif nᵢ", "Fréquence fᵢ (%)", "Fréq. cum. Fᵢ (%)"],
+    rows: [
+      ["[0 ; 10[",  5,  3,  "3,8 %",  "3,8 %"],
+      ["[10 ; 20[", 15, 11, "13,8 %", "17,5 %"],
+      ["[20 ; 30[", 25, 18, "22,5 %", "40,0 %"],
+      ["[30 ; 40[", 35, 22, "27,5 %", "67,5 %"],
+      ["[40 ; 50[", 45, 14, "17,5 %", "85,0 %"],
+      ["[50 ; 60[", 55,  8, "10,0 %", "95,0 %"],
+      ["[60 ; 70]", 65,  4,  "5,0 %","100,0 %"],
+      ["<b>Total</b>", "—", "<b>80</b>", "<b>100,0 %</b>", "—"]
+    ],
+    note: "<strong>F₄ = 67,5 %</strong> : les deux tiers des étudiants mettent moins de 40 minutes.<br>La classe modale est [30 ; 40[ avec 22 étudiants (27,5 %)."
+  }
+})
+```
+
+```{ojs}
+//| echo: false
+viewof selectedVar = Inputs.select(
+  new Map([
+    ["Qualitative nominale — Mode de transport",      "nom"],
+    ["Qualitative ordinale — Satisfaction trajet",    "ord"],
+    ["Quantitative discrète — Cours par semaine",     "dis"],
+    ["Quantitative continue — Durée du trajet (min)", "con"]
+  ]),
+  { label: "Sélectionnez la variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const d = tableData[selectedVar];
+  const thCells = d.headers.map(h =>
+    `<th style="background:#e7f5ff;color:#1864ab;padding:7px 12px;border:1px solid #dee2e6;">${h}</th>`
+  ).join("");
+
+  const trRows = d.rows.map((row, i) => {
+    const bg = i % 2 === 0 ? "#fff" : "#f8f9fa";
+    const tds = row.map(cell =>
+      `<td style="padding:6px 12px;border:1px solid #dee2e6;text-align:center;">${cell}</td>`
+    ).join("");
+    return `<tr style="background:${bg};">${tds}</tr>`;
+  }).join("");
+
+  const table = `<table style="border-collapse:collapse;width:100%;font-size:0.93em;margin-bottom:14px;">
+    <thead><tr>${thCells}</tr></thead>
+    <tbody>${trRows}</tbody>
+  </table>`;
+
+  const note = `<div style="background:#e7f5ff;border-left:4px solid #339af0;
+      padding:12px 14px;border-radius:6px;">
+    <div style="font-weight:bold;color:#1864ab;margin-bottom:5px;">Ce qu'on lit dans ce tableau</div>
+    <p style="margin:0;">${d.note}</p>
+  </div>`;
+
+  return html`${table}${note}`;
+}
+```
+
+## Exercices
+
+:::{#exr-completer}
+### Compléter un tableau de fréquences
+
+Une évaluation porte sur 40 étudiants. Le tableau ci-dessous est partiellement rempli. Complétez les cellules manquantes.
+
+| Note | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|:----:|:--------------:|:-------------------:|:--------------------:|
+|  8  |  4 | ? | ? |
+| 10  |  ? | 20,0 % | ? |
+| 12  | 12 | ? | ? |
+| 14  |  ? | ? | 80,0 % |
+| 16  |  8 | ? | 100,0 % |
+| **Total** | **40** | **100 %** | — |
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+On sait que $n = 40$ et $F_4 = 80\,\%$ donc les 4 premières lignes totalisent $0{,}8 \times 40 = 32$ étudiants.
+
+| Note | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|:----:|:--------------:|:-------------------:|:--------------------:|
+|  8  |  4 | 10,0 % | 10,0 % |
+| 10  |  8 | 20,0 % | 30,0 % |
+| 12  | 12 | 30,0 % | 60,0 % |
+| 14  |  8 | 20,0 % | 80,0 % |
+| 16  |  8 | 20,0 % | 100,0 % |
+| **Total** | **40** | **100 %** | — |
+
+**Vérification :** $4 + 8 + 12 + 8 + 8 = 40$ ✓ ; ligne 14 : $32 - 4 - 8 - 12 = 8$, soit $f_4 = 20\,\%$ et $F_4 = 80\,\%$ ✓.
+:::
+:::
+
+:::{#exr-sturge-classes}
+### Construire un tableau de fréquences par classes
+
+Un employeur enregistre le revenu mensuel net (en €) de 120 salariés. Le minimum observé est 1 200 € et le maximum est 5 800 €.
+
+1. Appliquez la règle de Sturge pour déterminer le nombre de classes $k$.
+2. Calculez une amplitude $h$ arrondie à la centaine d'euros la plus proche.
+3. Donnez les bornes des $k$ classes en commençant à 1 200 €.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+**1. Nombre de classes :**
+
+$$k = 1 + 3{,}322 \times \log_{10}(120) = 1 + 3{,}322 \times 2{,}079 \approx 1 + 6{,}9 \approx 7 \text{ classes}$$
+
+**2. Amplitude :**
+
+$$h = \frac{5\,800 - 1\,200}{7} = \frac{4\,600}{7} \approx 657 \text{ €} \quad \rightarrow \text{ on arrondit à } h = 700 \text{ €}$$
+
+**3. Bornes des classes :**
+
+| Classe |
+|--------|
+| $[1\,200 \,;\, 1\,900[$ |
+| $[1\,900 \,;\, 2\,600[$ |
+| $[2\,600 \,;\, 3\,300[$ |
+| $[3\,300 \,;\, 4\,000[$ |
+| $[4\,000 \,;\, 4\,700[$ |
+| $[4\,700 \,;\, 5\,400[$ |
+| $[5\,400 \,;\, 6\,100]$ |
+
+La dernière borne (6 100 €) dépasse le maximum (5 800 €), ce qui est normal — on choisit une borne ronde qui englobe toutes les valeurs.
+:::
+:::
+
+:::{#exr-quiz}
+### Quiz — Tableaux de fréquences
+
+```{ojs}
+//| echo: false
+questions = [
+  {
+    context: "Variable : Mode de transport (n = 80)",
+    enonce:  "Le métro a un effectif de 32 sur 80 étudiants. Quelle est sa fréquence relative ?",
+    choices: ["32 %", "40 %", "25 %", "50 %"],
+    correct: "40 %",
+    explication: "f = 32 / 80 = 0,40 soit 40 %. Ne pas confondre l'effectif (32) et la fréquence (40 %)."
+  },
+  {
+    context: "Variable : Satisfaction (Très insatisfait → Très satisfait)",
+    enonce:  "Dans le tableau de satisfaction, F₂ = 30 %. Que signifie cette valeur ?",
+    choices: [
+      "30 % des étudiants sont exactement insatisfaits",
+      "30 % des étudiants sont au plus insatisfaits",
+      "30 % des étudiants sont au moins insatisfaits",
+      "30 % des étudiants sont satisfaits ou très satisfaits"
+    ],
+    correct: "30 % des étudiants sont au plus insatisfaits",
+    explication: "F₂ cumule les fréquences des deux premières modalités : proportion d'individus ayant une valeur ≤ à la 2ᵉ modalité."
+  },
+  {
+    enonce:  "Combien de classes la règle de Sturge recommande-t-elle pour n = 50 observations ?",
+    choices: ["5", "6", "7", "8"],
+    correct: "7",
+    explication: "k = 1 + 3,322 × log₁₀(50) = 1 + 3,322 × 1,699 ≈ 7 classes (arrondi le plus proche)."
+  },
+  {
+    enonce:  "Pour construire le tableau de fréquences d'une variable quantitative continue, on utilise :",
+    choices: [
+      "Les valeurs exactes, comme pour une variable discrète",
+      "Des classes (intervalles contigus)",
+      "Un ordre alphabétique des observations",
+      "Les rangs des observations"
+    ],
+    correct: "Des classes (intervalles contigus)",
+    explication: "Une variable continue peut prendre une infinité de valeurs : regrouper en classes est indispensable pour obtenir un tableau exploitable."
+  },
+  {
+    enonce:  "Quel est le centre de la classe [20 ; 30[ ?",
+    choices: ["20", "25", "30", "27,5"],
+    correct: "25",
+    explication: "Centre = (20 + 30) / 2 = 25. Il sera utilisé pour approximer les valeurs individuelles dans les calculs sur données groupées."
+  },
+  {
+    enonce:  "Pourquoi ne calcule-t-on pas de fréquences cumulées pour une variable nominale ?",
+    choices: [
+      "Parce que les effectifs sont trop faibles",
+      "Parce que les modalités n'ont pas d'ordre naturel",
+      "Parce que la somme des fréquences ne vaut pas 1",
+      "Parce qu'il faudrait trop de classes"
+    ],
+    correct: "Parce que les modalités n'ont pas d'ordre naturel",
+    explication: "Les fréquences cumulées supposent un ordre entre les modalités. Pour une variable nominale (couleur, mode de transport…), cet ordre n'existe pas."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+:::
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../../01-introduction/04-tools-overview/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Vue d'ensemble des outils</span></span></a>
+  <a href="../02-position-indicators/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Indicateurs de position</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

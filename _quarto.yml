@@ -1,0 +1,38 @@
+project:
+  type: website
+
+website:
+  title: "Socratic Statistics Lab"
+  description: "Blog de statistiques descriptives, probabilités et inférence statistique."
+  site-url: "https://tousswil.github.io/socratic-statistics/"
+  repo-url: "https://github.com/tousswil/socratic-statistics"
+  navbar:
+    logo: images/sdl-logo.svg
+    logo-alt: "Socratic Statistics Lab"
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/tousswil/socratic-statistics
+  page-footer:
+    left: |
+      © 2026 **Wilson Toussile** · Socratic Statistics Lab
+    center: ""
+    right: |
+      Propulsé par [Quarto](https://quarto.org)
+
+lang: fr
+
+format:
+  html:
+    number-sections: true
+    number-depth: 3
+    toc: true
+    toc-depth: 2
+    toc-title: "Sur cette page"
+    theme:
+      light:
+        - cosmo
+      dark:
+        - solar
+    css: styles.css
+    include-after-body: _mobile-toc.html

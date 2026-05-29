@@ -1,0 +1,111 @@
+---
+title: "Socratic Statistics Lab"
+page-layout: full
+title-block-banner: true
+toc: false
+number-sections: false
+---
+
+Progressez à votre rythme grâce à des leçons interactives — visualisations dynamiques, exercices guidés et quiz à correction instantanée.
+
+---
+
+<div class="sl-course">
+
+## 📊 Statistiques Descriptives
+
+<div class="sl-course-stats">
+  <span>4 modules</span>
+  <span>20 leçons</span>
+  <span>~10 heures</span>
+  <span class="sl-level-range"><span class="sl-diff sl-diff-b">Débutant</span> → <span class="sl-diff sl-diff-a">Avancé</span></span>
+</div>
+
+Collecter, organiser, résumer et visualiser des données : de la définition d'une variable à la décomposition d'une série temporelle.
+
+<div class="sl-modules">
+
+<!-- ── Module 01 ── -->
+<div class="sl-module">
+<div class="sl-module-header" data-level="b">
+  <span class="sl-module-title">Module 01 — Introduction</span>
+  <span class="sl-module-count">4 leçons</span>
+</div>
+<ul class="sl-lessons">
+  <li class="sl-lesson"><span class="sl-lesson-num">01</span><a href="posts/descriptive-statistics/01-introduction/01-what-is-descriptive-statistics/">Qu'est-ce que la statistique descriptive&nbsp;?</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">02</span><a href="posts/descriptive-statistics/01-introduction/02-variable-types/">Types de variables statistiques</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">03</span><a href="posts/descriptive-statistics/01-introduction/03-population-sample-and-data/">Population, échantillon et collecte de données</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">04</span><a href="posts/descriptive-statistics/01-introduction/04-tools-overview/">Panorama des outils</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+</ul>
+</div>
+
+<!-- ── Module 02 ── -->
+<div class="sl-module">
+<div class="sl-module-header" data-level="b">
+  <span class="sl-module-title">Module 02 — Analyse univariée</span>
+  <span class="sl-module-count">5 leçons</span>
+</div>
+<ul class="sl-lessons">
+  <li class="sl-lesson"><span class="sl-lesson-num">01</span><a href="posts/descriptive-statistics/02-univariate-analysis/01-frequency-tables/">Tableaux de fréquences</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">02</span><a href="posts/descriptive-statistics/02-univariate-analysis/02-position-indicators/">Indicateurs de position</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">03</span><a href="posts/descriptive-statistics/02-univariate-analysis/03-dispersion-indicators/">Indicateurs de dispersion</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">04</span><a href="posts/descriptive-statistics/02-univariate-analysis/04-visualizing-qualitative-variables/">Visualiser les variables qualitatives</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">05</span><a href="posts/descriptive-statistics/02-univariate-analysis/05-visualizing-quantitative-variables/">Visualiser les variables quantitatives</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+</ul>
+</div>
+
+<!-- ── Module 03 ── -->
+<div class="sl-module">
+<div class="sl-module-header" data-level="i">
+  <span class="sl-module-title">Module 03 — Analyse bivariée</span>
+  <span class="sl-module-count">5 leçons</span>
+</div>
+<ul class="sl-lessons">
+  <li class="sl-lesson"><span class="sl-lesson-num">01</span><a href="posts/descriptive-statistics/03-bivariate-analysis/01-introduction-bivariate-analysis/">Introduction à l'analyse bivariée</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">02</span><a href="posts/descriptive-statistics/03-bivariate-analysis/02-contingency-tables/">Tableaux de contingence</a><span class="sl-diff sl-diff-b">Débutant</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">03</span><a href="posts/descriptive-statistics/03-bivariate-analysis/03-qualitative-quantitative/">Quali × Quanti</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">04</span><a href="posts/descriptive-statistics/03-bivariate-analysis/04-quantitative-quantitative/">Quanti × Quanti</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">05</span><a href="posts/descriptive-statistics/03-bivariate-analysis/05-linear-regression/">Régression linéaire simple</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+</ul>
+</div>
+
+<!-- ── Module 04 ── -->
+<div class="sl-module">
+<div class="sl-module-header" data-level="a">
+  <span class="sl-module-title">Module 04 — Séries temporelles</span>
+  <span class="sl-module-count">6 leçons</span>
+</div>
+<ul class="sl-lessons">
+  <li class="sl-lesson"><span class="sl-lesson-num">01</span><a href="posts/descriptive-statistics/04-time-series-analysis/01-introduction-time-series/">Introduction aux séries temporelles</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">02</span><a href="posts/descriptive-statistics/04-time-series-analysis/02-moving-averages/">Moyennes mobiles</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">03</span><a href="posts/descriptive-statistics/04-time-series-analysis/03-trend-regression/">Tendance et droite de régression</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">04</span><a href="posts/descriptive-statistics/04-time-series-analysis/04-exponential-smoothing/">Lissages exponentiels</a><span class="sl-diff sl-diff-i">Intermédiaire</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">05</span><a href="posts/descriptive-statistics/04-time-series-analysis/05-seasonal-decomposition/">Saisonnalité et décomposition</a><span class="sl-diff sl-diff-a">Avancé</span></li>
+  <li class="sl-lesson"><span class="sl-lesson-num">06</span><a href="posts/descriptive-statistics/04-time-series-analysis/06-decomposition-prediction/">Prévision par décomposition</a><span class="sl-diff sl-diff-a">Avancé</span></li>
+</ul>
+</div>
+
+</div><!-- /.sl-modules -->
+</div><!-- /.sl-course -->
+
+---
+
+<p style="font-size:.9rem;font-weight:600;color:var(--bs-secondary-color,#6c757d);margin-bottom:1rem;">Prochainement</p>
+
+<div class="sl-coming-grid">
+
+<div class="sl-coming">
+  <div class="sl-coming-icon">📐</div>
+  <h3>Estimation Paramétrique</h3>
+  <p>Variables aléatoires, estimateurs, loi des grands nombres, intervalles de confiance.</p>
+  <span class="sl-coming-badge">En préparation</span>
+</div>
+
+<div class="sl-coming">
+  <div class="sl-coming-icon">🧪</div>
+  <h3>Tests Statistiques</h3>
+  <p>Hypothèses, p-valeurs, tests paramétriques et non-paramétriques.</p>
+  <span class="sl-coming-badge">En préparation</span>
+</div>
+
+</div>

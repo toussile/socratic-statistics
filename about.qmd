@@ -1,0 +1,39 @@
+---
+title: "About"
+about:
+  template: solana
+  image: images/sdl-logo.svg
+  image-width: 200px
+  image-shape: rectangle
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com
+    - icon: github
+      text: Github
+      href: https://github.com
+
+---
+
+*« La connaissance commence là où la certitude s'arrête. »*
+
+---
+
+## Le laboratoire de Statistiques
+
+**Socratic Statistics Lab** est un blog dédié exclusivement aux probabilités, aux statistiques descriptives et inférentielles, ainsi qu'à la modélisation mathématique pour la science des données.
+
+Son nom s'inspire de la méthode socratique : apprendre par le questionnement, avancer par le doute constructif, comprendre en profondeur plutôt qu'en surface.
+
+## Ce que vous trouverez ici
+
+- **Statistiques Descriptives** — collecter, organiser, résumer et présenter graphiquement des données.
+- **Probabilités** — théorie et calculs de probabilités, variables aléatoires, distributions de référence.
+- **Inférence Statistique** — estimation paramétrique, tests d'hypothèses et intervalles de confiance.
+- **Modélisation & Algèbre** — algèbre linéaire, modèles linéaires et fondations mathématiques de la Data Science.
+
+Les posts intègrent des simulations et visualisations interactives propulsées par Observable JS, exécutées entièrement dans le navigateur sans aucun serveur. Ils sont également disponibles en format PDF haute fidélité pour une lecture hors ligne.
+
+## L'auteur
+
+Je suis **Wilson Toussile**, enseignant et passionné de science des données. Ce blog est mon laboratoire public dédié à la transmission claire et rigoureuse des concepts statistiques et mathématiques fondamentaux.

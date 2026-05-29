@@ -1,0 +1,274 @@
+---
+title: "Introduction à l'analyse bivariée"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000031"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Bivariate Analysis"]
+---
+
+L'analyse univariée décrit chaque variable isolément : comment les étudiants se distribuent-ils selon leur mode de transport ? Quelle est la durée médiane du trajet ? Mais elle ne répond pas à la question suivante : *y a-t-il un lien entre ces deux variables ?* L'**analyse bivariée** franchit cette étape — elle examine si la distribution d'une variable change selon les valeurs d'une autre, et quantifie la force de ce lien.
+
+<concept id="de-univarie-a-bivarie">
+
+## De l'univarié au bivarié
+
+En univarié, la question est : *comment se distribue X ?*
+En bivarié, la question devient : *la distribution de Y est-elle différente selon les valeurs de X ?*
+
+:::{#def-liaison}
+## Liaison statistique
+Il y a **liaison statistique** entre deux variables $X$ et $Y$ si la distribution de $Y$ n'est pas la même pour toutes les modalités ou valeurs de $X$.
+
+En l'absence de liaison, connaître la valeur de $X$ ne donne aucune information sur $Y$.
+:::
+
+Trois questions naturelles dans le fil rouge illustrent ce concept :
+
+| Question | X | Y |
+|----------|---|---|
+| Les étudiants qui prennent le bus sont-ils moins satisfaits ? | Mode de transport | Satisfaction |
+| Les trajets en voiture sont-ils plus longs qu'à vélo ? | Mode de transport | Durée du trajet |
+| Réviser davantage améliore-t-il les notes ? | Heures de révision | Note moyenne |
+
+Dans les trois cas, on cherche à savoir si la connaissance de $X$ modifie notre vision de $Y$ — c'est le cœur de l'analyse bivariée.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_liaison -->
+
+<concept id="trois-configurations">
+
+## Les trois configurations
+
+Le type d'analyse à mener dépend entièrement de la **nature des deux variables**. Il existe trois configurations.
+
+```{mermaid}
+graph TD
+    P[Paire de variables] --> QQ["Qual × Qual"]
+    P --> QN["Qual × Quant"]
+    P --> NN["Quant × Quant"]
+    QQ --> TDC["Tableau de contingence\nBarres empilées / groupées\nV de Cramér"]
+    QN --> BP["Boxplots parallèles\nStatistiques par groupe\nRapport de corrélation η²"]
+    NN --> NDP["Nuage de points\nCorrélation de Pearson r\nRégression linéaire"]
+```
+
+| Configuration | Tableau | Visualisation | Mesure |
+|--------------|:-------:|:-------------:|:------:|
+| **Qual × Qual** | Contingence | Barres empilées | V de Cramér |
+| **Qual × Quant** | Stats par groupe | Boxplots parallèles | η² |
+| **Quant × Quant** | — | Nuage de points | Corrélation r |
+
+*Paires du fil rouge :*
+
+- **Transport × Satisfaction** — nominale × ordinale → **Qual × Qual**
+- **Transport × Durée du trajet** — nominale × continue → **Qual × Quant**
+- **Heures de révision × Note moyenne** — continue × continue → **Quant × Quant**
+
+::: {.callout-note title="Variable ordinale : qual ou quant ?"}
+Une variable ordinale (comme la satisfaction sur 5 niveaux) peut être traitée comme qualitative (dans un tableau de contingence) ou, par convention, comme quantitative (pour calculer une moyenne). Le choix dépend du contexte et du nombre de niveaux. Dans ce module, la satisfaction sera traitée comme qualitative.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_configurations -->
+
+<concept id="liaison-vs-causalite">
+
+## Liaison statistique ≠ causalité
+
+Observer une liaison entre $X$ et $Y$ ne permet **pas** de conclure que $X$ cause $Y$. Trois situations peuvent expliquer une corrélation sans causalité directe :
+
+**1. Variable confondante** — une troisième variable $Z$ agit sur $X$ et sur $Y$ simultanément.
+
+> Les ventes de glaces et les noyades sont fortement corrélées en été. Ce n'est pas parce que manger des glaces provoque des noyades : la **chaleur** ($Z$) entraîne à la fois davantage de consommation de glaces et davantage de baignades — donc davantage de noyades.
+
+**2. Causalité inverse** — c'est $Y$ qui cause $X$, et non l'inverse.
+
+> On observe que les hôpitaux les mieux dotés ont plus de patients malades. Les hôpitaux *causent*-ils les maladies ? Non : ce sont les besoins médicaux qui déterminent les ressources allouées.
+
+**3. Coïncidence** — avec suffisamment de variables, des corrélations statistiquement significatives apparaissent par hasard.
+
+:::{#prp-correlation-causalite}
+## Principe fondamental
+Une liaison statistique entre $X$ et $Y$, même forte, n'établit jamais à elle seule une relation de cause à effet. La causalité nécessite en plus : une théorie explicative, une temporalité cohérente ($X$ précède $Y$), et l'exclusion des variables confondantes.
+:::
+
+::: {.callout-tip title="Dans le fil rouge"}
+La corrélation entre heures de révision et note moyenne sera forte ($r \approx 0{,}75$). Cela suggère un lien, mais d'autres facteurs jouent aussi — niveau initial, motivation, qualité de l'enseignement, conditions de travail. Les heures de révision **expliquent** une partie de la variance des notes, pas leur totalité.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_causalite -->
+
+## Programme du module
+
+Ce module analyse trois paires de variables du fil rouge, en progressant du cas le plus simple vers le plus riche :
+
+| Leçon | Paire analysée | Configuration | Outil principal |
+|-------|---------------|:-------------:|-----------------|
+| L02 | Transport × Satisfaction | Qual × Qual | Tableau de contingence, profils |
+| L03 | Transport × Satisfaction | Qual × Qual | Barres empilées, V de Cramér |
+| L04 | Transport × Durée du trajet | Qual × Quant | Boxplots parallèles, η² |
+| L05 | Heures de révision × Note | Quant × Quant | Nuage de points, corrélation r |
+| L06 | Heures de révision × Note | Quant × Quant | Régression linéaire, R² |
+
+## Outil interactif : identifier la configuration
+
+Sélectionnez deux variables du fil rouge pour identifier la configuration d'analyse à appliquer.
+
+```{ojs}
+//| echo: false
+bivVars = ({
+  "Mode de transport":         "qual",
+  "Satisfaction (1–5)":        "qual",
+  "Nb de cours / semaine":     "quant",
+  "Durée du trajet (min)":     "quant",
+  "Heures de révision / sem.": "quant",
+  "Note moyenne (/20)":        "quant"
+})
+```
+
+```{ojs}
+//| echo: false
+bivConfig = (t1, t2) => {
+  const types = [t1, t2].sort();
+  if (types.every(t => t === "qual"))
+    return {label:"Qualitative × Qualitative", outil:"Tableau de contingence · Barres empilées / groupées", mesure:"V de Cramér", lecon:"Leçons 02 et 03", color:"#7048e8"};
+  if (types.every(t => t === "quant"))
+    return {label:"Quantitative × Quantitative", outil:"Nuage de points", mesure:"Corrélation de Pearson r · Régression linéaire", lecon:"Leçons 05 et 06", color:"#e8590c"};
+  return {label:"Qualitative × Quantitative", outil:"Boxplots parallèles · Statistiques par groupe", mesure:"Rapport de corrélation η²", lecon:"Leçon 04", color:"#0ca678"};
+}
+```
+
+```{ojs}
+//| echo: false
+viewof bivX = Inputs.select(Object.keys(bivVars), { label: "Variable X :" })
+```
+
+```{ojs}
+//| echo: false
+viewof bivY = Inputs.select(Object.keys(bivVars), { label: "Variable Y :", value: "Durée du trajet (min)" })
+```
+
+```{ojs}
+//| echo: false
+{
+  if (bivX === bivY)
+    return html`<div style="background:#fff5f5;border-left:4px solid #c92a2a;border-radius:8px;padding:14px;color:#c92a2a;font-style:italic;">
+      Choisissez deux variables différentes — l'analyse bivariée porte sur deux variables distinctes.</div>`;
+  const info = bivConfig(bivVars[bivX], bivVars[bivY]);
+  const row = (key, val) => `<div style="margin:4px 0;"><span style="color:#666;min-width:80px;display:inline-block;">${key}</span> ${val}</div>`;
+  return html`<div style="background:#f8f9fa;border-radius:8px;padding:14px;border-left:5px solid ${info.color};margin-top:10px;">
+    <div style="font-size:1.1em;font-weight:bold;color:${info.color};margin-bottom:8px;">${info.label}</div>
+    ${row("Outil :", info.outil)}
+    ${row("Mesure :", info.mesure)}
+    ${row("Leçon :", info.lecon)}
+  </div>`;
+}
+```
+
+### Quiz — Introduction à l'analyse bivariée
+
+```{ojs}
+//| echo: false
+biv_intro_questions = [
+  {
+    enonce: "Quelle configuration d'analyse bivariée correspond à la paire « Mode de transport × Durée du trajet » ?",
+    choices: ["Qualitative × Qualitative", "Qualitative × Quantitative", "Quantitative × Quantitative", "Aucune de ces configurations"],
+    correct: "Qualitative × Quantitative",
+    explication: "Le mode de transport est une variable qualitative nominale et la durée du trajet est une variable quantitative continue. La configuration est Qualitative × Quantitative, traitée avec des boxplots parallèles et le rapport de corrélation η²."
+  },
+  {
+    enonce: "Pour analyser la relation entre les heures de révision et la note moyenne, quel outil de visualisation est le plus adapté ?",
+    choices: ["Un tableau de contingence", "Un diagramme en barres empilées", "Un nuage de points", "Des boxplots parallèles"],
+    correct: "Un nuage de points",
+    explication: "Les heures de révision et la note moyenne sont deux variables quantitatives continues. La configuration Quant × Quant se visualise avec un nuage de points (scatter plot)."
+  },
+  {
+    enonce: "Un chercheur observe que les pays consommant plus de chocolat produisent plus de lauréats du prix Nobel. Quelle explication est la plus vraisemblable ?",
+    choices: ["La consommation de chocolat améliore les capacités cognitives", "Une variable confondante — la richesse économique — explique les deux", "Les lauréats Nobel consomment plus de chocolat après leur prix", "C'est une coïncidence sans aucune structure statistique"],
+    correct: "Une variable confondante — la richesse économique — explique les deux",
+    explication: "C'est un exemple classique de variable confondante : la richesse économique favorise à la fois une alimentation riche et un système éducatif et de recherche de haut niveau. La corrélation est réelle statistiquement mais ne reflète aucune causalité directe."
+  },
+  {
+    enonce: "Selon la définition formelle, quand dit-on qu'il y a liaison statistique entre X et Y ?",
+    choices: ["Quand r² > 0,5", "Quand la distribution de Y est différente selon les valeurs de X", "Quand X cause Y", "Quand X et Y ont la même moyenne"],
+    correct: "Quand la distribution de Y est différente selon les valeurs de X",
+    explication: "La liaison statistique est définie par le fait que la distribution de Y varie selon les modalités ou valeurs de X. Cette définition est indépendante de la causalité et du signe de la relation."
+  },
+  {
+    enonce: "La paire « Satisfaction (1–5) × Note moyenne » correspond à quelle configuration ?",
+    choices: ["Qualitative × Qualitative", "Qualitative × Quantitative", "Quantitative × Quantitative", "Quantitative × Qualitative"],
+    correct: "Qualitative × Quantitative",
+    explication: "Dans ce cours, la satisfaction (échelle 1–5) est traitée comme une variable qualitative ordinale. La note moyenne est quantitative continue. La configuration est Qualitative × Quantitative."
+  },
+  {
+    enonce: "Quelle mesure d'association est associée à la configuration Qualitative × Qualitative ?",
+    choices: ["La corrélation de Pearson r", "Le coefficient de détermination R²", "Le V de Cramér", "Le rapport de corrélation η²"],
+    correct: "Le V de Cramér",
+    explication: "Le V de Cramér mesure la force de la liaison entre deux variables qualitatives. Il est compris entre 0 (aucune liaison) et 1 (liaison parfaite). η² est réservé à Qual × Quant."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof biv_intro_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(biv_intro_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  biv_intro_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../../02-univariate-analysis/05-visualizing-quantitative-variables/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Visualisation — variables quantitatives</span></span></a>
+  <a href="../02-contingency-tables/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tableaux de contingence</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

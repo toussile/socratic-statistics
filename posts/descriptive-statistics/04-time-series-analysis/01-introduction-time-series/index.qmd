@@ -1,0 +1,419 @@
+---
+title: "Introduction aux séries temporelles"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000041"
+difficulty: "Intermediate"
+description: "Composantes d'une série temporelle (T, S, C, I), chronogramme, détection visuelle de la tendance et de la saisonnalité."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="definition-serie-temporelle">
+
+## Qu'est-ce qu'une série temporelle ?
+
+:::{#def-serie-temporelle}
+## Série temporelle
+Une **série temporelle** (ou *chronologique*) est une suite d'observations $y_1, y_2, \ldots, y_t, \ldots, y_T$ d'une même variable, mesurées à des **instants successifs régulièrement espacés**.
+
+- Le **pas de temps** (ou fréquence) est l'intervalle entre deux observations consécutives : heure, jour, mois, trimestre, année...
+- $T$ désigne le nombre total d'observations (la **longueur** ou **horizon** de la série).
+- L'indice temporel $t$ remplace l'indice individuel $i$ des données transversales.
+:::
+
+**Ce qui distingue une série temporelle des données vues jusqu'ici :**
+
+| Données transversales | Données temporelles |
+|----------------------|---------------------|
+| 80 étudiants observés une seule fois | 1 variable observée 36 fois dans le temps |
+| L'ordre des observations n'importe pas | L'ordre est fondamental — il encode l'information temporelle |
+| Analyse : distribution, liaison entre variables | Analyse : évolution, tendance, cycles, prévision |
+
+:::{#exm-serie-temporelle}
+
+- Température moyenne mensuelle d'une ville (°C) — pas : 1 mois
+- Indice des prix à la consommation trimestriel — pas : 1 trimestre
+- Nombre journalier d'entrées dans un musée — pas : 1 jour
+- Cours d'une action en bourse chaque seconde — pas : 1 seconde
+:::
+
+**Jeu de données de ce module :** visites mensuelles du Musée de la Ville (en milliers), de janvier 2021 à décembre 2023. $T = 36$ observations, pas = 1 mois.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_definition_serie -->
+
+<concept id="composantes-serie">
+
+## Les quatre composantes d'une série temporelle
+
+La décomposition classique suppose que toute série temporelle résulte de la superposition de quatre composantes :
+
+:::{#def-composantes}
+## Composantes d'une série temporelle
+
+| Composante | Notation | Description |
+|:----------:|:--------:|-------------|
+| **Tendance** | $T_t$ | Mouvement de long terme, régulier et progressif : croissance, déclin ou stabilité. |
+| **Saisonnalité** | $S_t$ | Fluctuations **périodiques** de même durée et d'amplitude approximativement constante, liées au calendrier (saisons, jours fériés, effets mensuels…). |
+| **Composante cyclique** | $C_t$ | Oscillations de longue durée (plusieurs années) non strictement périodiques, souvent liées aux cycles économiques. |
+| **Résidu (irrégulier)** | $I_t$ | Partie aléatoire inexpliquée par les trois autres composantes : événements exceptionnels, erreurs de mesure, chocs imprévisibles. |
+:::
+
+::: {.callout-note title="Cycle vs Saisonnalité"}
+La **saisonnalité** a une période fixe et connue (12 mois, 4 trimestres, 7 jours…) qui se répète de façon régulière. Le **cycle** a une durée variable et imprévisible. En statistique descriptive de niveau introductif, on confond souvent les deux ou on néglige $C_t$ devant les autres composantes.
+:::
+
+**Lecture sur le jeu de données musée :**
+
+- **$T_t$** — le nombre total de visiteurs augmente d'année en année : la fréquentation progresse tendanciellement.
+- **$S_t$** — chaque été (juillet–août) on observe un pic, chaque hiver (novembre–janvier) un creux. Le motif se répète identiquement d'année en année.
+- **$C_t$** — absent ou négligeable sur 3 ans de données.
+- **$I_t$** — légères variations d'un mois à l'autre non expliquées par la tendance ou la saisonnalité (météo, événements ponctuels, expositions temporaires…).
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_composantes -->
+
+<concept id="lecture-chronogramme">
+
+## Le chronogramme
+
+La première chose à faire face à une série temporelle est de la **tracer**.
+
+:::{#def-chronogramme}
+## Chronogramme
+Le **chronogramme** (*time plot*) est le graphique de base des séries temporelles : il représente $y_t$ en ordonnée et le temps $t$ en abscisse, les points successifs étant reliés par des segments.
+:::
+
+**Ce qu'on cherche à lire sur un chronogramme :**
+
+1. **Direction générale** — la série monte-t-elle, descend-elle, reste-t-elle stable ? → tendance
+2. **Motif répétitif** — y a-t-il des pics et des creux qui reviennent à intervalles réguliers ? → saisonnalité
+3. **Amplitude des variations** — les oscillations saisonnières sont-elles de taille constante ou croissante avec le niveau ? → choix du modèle de décomposition
+4. **Points atypiques** — un ou quelques points s'écartent-ils brutalement des voisins ? → résidus importants, événements exceptionnels
+
+::: {.callout-tip title="L'axe du temps"}
+L'axe horizontal doit **toujours** représenter le temps à échelle régulière. Un pas manquant (mois sans données) doit laisser un blanc visible, pas être omis silencieusement — sinon la représentation induit en erreur sur le rythme de la série.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_chronogramme -->
+
+<concept id="modeles-decomposition">
+
+## Modèles additif et multiplicatif
+
+La façon dont les composantes se combinent détermine le **modèle de décomposition** à utiliser.
+
+:::{#def-modele-additif}
+## Modèle additif
+Dans le **modèle additif**, les composantes s'additionnent :
+
+$$y_t = T_t + S_t + C_t + I_t$$
+
+Les composantes sont dans la **même unité** que $y_t$. L'amplitude des fluctuations saisonnières est **indépendante du niveau** de la tendance : les écarts été/hiver restent à peu près les mêmes que la série soit haute ou basse.
+:::
+
+:::{#def-modele-multiplicatif}
+## Modèle multiplicatif
+Dans le **modèle multiplicatif**, les composantes se multiplient :
+
+$$y_t = T_t \times S_t \times C_t \times I_t$$
+
+La saisonnalité et les résidus sont des **coefficients sans unité** (ratios autour de 1). L'amplitude des fluctuations saisonnières est **proportionnelle au niveau** de la tendance : quand la série monte, les écarts été/hiver s'amplifient.
+:::
+
+**Comment choisir ?** En regardant le chronogramme :
+
+```{mermaid}
+graph TD
+    A[Chronogramme] --> B{Amplitude saisonnière<br>constante ?}
+    B -- Oui --> C["Modèle additif<br>y = T + S + C + I"]
+    B -- Non, croît avec T --> D["Modèle multiplicatif<br>y = T × S × C × I"]
+    D --> E["Ou log-transformation<br>puis modèle additif"]
+```
+
+::: {.callout-note title="Équivalence par transformation logarithmique"}
+Un modèle multiplicatif $y_t = T_t \times S_t \times I_t$ se ramène à un modèle additif en prenant le logarithme : $\ln y_t = \ln T_t + \ln S_t + \ln I_t$. En pratique, on choisit souvent de log-transformer la série plutôt que de changer de formalisme.
+:::
+
+**Sur le jeu de données musée :** les écarts entre pic estival et creux hivernal sont approximativement constants (≈ 7 000 visiteurs d'écart chaque année), indépendamment du niveau de tendance. → **Modèle additif** adapté.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_modeles -->
+
+## Application interactive
+
+Explorez le chronogramme des visites mensuelles du musée. Activez les superpositions pour identifier visuellement chaque composante.
+
+```{ojs}
+//| echo: false
+tsData = [
+  {t: 1,  y: 2.1}, {t: 2,  y: 2.3}, {t: 3,  y: 3.2}, {t: 4,  y: 4.5},
+  {t: 5,  y: 5.1}, {t: 6,  y: 6.8}, {t: 7,  y: 9.2}, {t: 8,  y: 8.9},
+  {t: 9,  y: 5.6}, {t: 10, y: 3.8}, {t: 11, y: 2.4}, {t: 12, y: 3.0},
+  {t: 13, y: 2.4}, {t: 14, y: 2.6}, {t: 15, y: 3.5}, {t: 16, y: 4.9},
+  {t: 17, y: 5.5}, {t: 18, y: 7.3}, {t: 19, y: 9.8}, {t: 20, y: 9.4},
+  {t: 21, y: 6.0}, {t: 22, y: 4.1}, {t: 23, y: 2.7}, {t: 24, y: 3.3},
+  {t: 25, y: 2.6}, {t: 26, y: 2.9}, {t: 27, y: 3.8}, {t: 28, y: 5.2},
+  {t: 29, y: 5.9}, {t: 30, y: 7.8}, {t: 31, y: 10.4}, {t: 32, y: 9.9},
+  {t: 33, y: 6.4}, {t: 34, y: 4.4}, {t: 35, y: 3.0}, {t: 36, y: 3.6}
+]
+```
+
+```{ojs}
+//| echo: false
+viewof tsOpts = Inputs.checkbox(
+  ["Droite de tendance", "Repères saisonniers", "Annotations (min / max)"],
+  { label: "Superpositions :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const summerT = [6,7,8,18,19,20,30,31,32];
+  const winterT = [1,2,11,12,13,14,23,24,25,26,35,36];
+  const b0 = 4.3535, b1 = 0.0414;
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const yMax = 10.4, tMax = 31, yMin = 2.1, tMin = 1;
+
+  const marks = [];
+
+  // Seasonal background bands
+  if (tsOpts.includes("Repères saisonniers")) {
+    marks.push(
+      Plot.rect(summerT.map(t => ({t})), {
+        x1: d => d.t - 0.5, x2: d => d.t + 0.5, y1: 0, y2: 12,
+        fill: "#ffe8cc", opacity: 0.9
+      }),
+      Plot.rect(winterT.map(t => ({t})), {
+        x1: d => d.t - 0.5, x2: d => d.t + 0.5, y1: 0, y2: 12,
+        fill: "#e7f5ff", opacity: 0.9
+      })
+    );
+  }
+
+  // Main series line + dots
+  marks.push(
+    Plot.line(tsData, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2 }),
+    Plot.dot(tsData, { x: "t", y: "y", fill: "#1098ad", r: 3.5 })
+  );
+
+  // Trend line
+  if (tsOpts.includes("Droite de tendance")) {
+    const trendData = [{ t: 1, y: b0 + b1 }, { t: 36, y: b0 + b1 * 36 }];
+    marks.push(
+      Plot.line(trendData, { x: "t", y: "y", stroke: "#e8590c", strokeWidth: 2, strokeDasharray: "5,3" }),
+      Plot.text([{ t: 28, y: b0 + b1 * 28 + 0.6 }], {
+        x: "t", y: "y",
+        text: [`ŷ = ${b0.toFixed(2)} + ${b1.toFixed(4)}·t`],
+        fill: "#e8590c", fontSize: 11
+      })
+    );
+  }
+
+  // Annotations (min/max)
+  if (tsOpts.includes("Annotations (min / max)")) {
+    marks.push(
+      Plot.dot([{ t: tMax, y: yMax }], { x: "t", y: "y", symbol: "triangle", fill: "#e8590c", r: 7 }),
+      Plot.dot([{ t: tMin, y: yMin }], { x: "t", y: "y", symbol: "triangle-down", fill: "#1971c2", r: 7 }),
+      Plot.text([{ t: tMax, y: yMax + 0.7, label: `Max : ${yMax} k (Jul 2023)` }], {
+        x: "t", y: "y", text: "label", fill: "#e8590c", fontSize: 10.5, fontWeight: "bold"
+      }),
+      Plot.text([{ t: tMin + 2, y: yMin - 0.6, label: `Min : ${yMin} k (Jan 2021)` }], {
+        x: "t", y: "y", text: "label", fill: "#1971c2", fontSize: 10.5, fontWeight: "bold"
+      })
+    );
+  }
+
+  return Plot.plot({
+    width: 650, height: 380,
+    x: {
+      label: null,
+      ticks: [1, 7, 13, 19, 25, 31],
+      tickFormat: t => tickMap[t] || ""
+    },
+    y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+    marks
+  });
+}
+```
+
+## Exercices écrits
+
+:::{#exr-ts-lecture}
+## Lire et décrire un chronogramme
+
+Le tableau suivant donne les ventes trimestrielles (en millions d'euros) d'une enseigne de sport sur 3 ans :
+
+| Trimestre | T1 | T2 | T3 | T4 |
+|:----------|:--:|:--:|:--:|:--:|
+| **2021** | 18 | 24 | 31 | 42 |
+| **2022** | 20 | 27 | 34 | 46 |
+| **2023** | 22 | 30 | 37 | 51 |
+
+a) Décrire la tendance générale de la série.
+b) Identifier la composante saisonnière : quel trimestre est systématiquement le plus élevé ? Le plus bas ?
+c) Calculer, pour chaque année, l'écart entre le T4 (maximum) et le T1 (minimum). L'amplitude est-elle à peu près constante ou croissante ?
+d) En déduire si un modèle additif ou multiplicatif semble le plus adapté.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Tendance :**
+
+Les ventes augmentent d'une année à l'autre pour chaque trimestre :
+- T1 : 18 → 20 → 22 (+2 M€/an)
+- T4 : 42 → 46 → 51 (+4 à +5 M€/an)
+
+La série présente une **tendance haussière** régulière.
+
+**b) Saisonnalité :**
+
+- Trimestre le plus élevé : **T4** systématiquement (fêtes de fin d'année, achats de Noël).
+- Trimestre le plus bas : **T1** systématiquement (après-fêtes, période creuse).
+
+**c) Amplitudes T4 − T1 :**
+
+| Année | T4 | T1 | Écart |
+|:-----:|:--:|:--:|:-----:|
+| 2021 | 42 | 18 | **24** |
+| 2022 | 46 | 20 | **26** |
+| 2023 | 51 | 22 | **29** |
+
+L'écart passe de 24 à 29 M€ — il **augmente** avec le niveau général de la série.
+
+**d) Choix du modèle :**
+
+L'amplitude saisonnière croît avec la tendance → **modèle multiplicatif** adapté. Si on log-transformait la série, on reviendrait à des amplitudes approximativement stables et on pourrait utiliser un modèle additif sur $\ln y_t$.
+:::
+:::
+
+:::{#exr-ts-composantes}
+## Identifier les composantes
+
+Associer chaque description à la composante correspondante ($T_t$, $S_t$, $C_t$ ou $I_t$) :
+
+a) Les ventes de crème solaire atteignent chaque année un pic en juillet et un creux en janvier.
+b) Sur 20 ans, la consommation d'électricité en France a globalement diminué grâce aux efforts d'efficacité énergétique.
+c) Une usine a produit 200 unités de moins en mars 2022 à cause d'une panne imprévue de machine.
+d) La croissance économique suit des phases d'expansion de 5 à 8 ans alternant avec des récessions, sans période fixe.
+
+:::{.callout-note collapse="true" title="Solution"}
+a) **$S_t$** — Saisonnalité : fluctuation périodique annuelle liée au calendrier (météo → demande de crème solaire).
+
+b) **$T_t$** — Tendance : mouvement de long terme, progressif et régulier, ici une tendance baissière sur 20 ans.
+
+c) **$I_t$** — Résidu / irrégulier : événement exceptionnel ponctuel et imprévisible (panne de machine), non reproductible d'une année sur l'autre.
+
+d) **$C_t$** — Composante cyclique : oscillations de longue durée (5–8 ans) sans période fixe, liées à la conjoncture économique.
+:::
+:::
+
+### Quiz — Introduction aux séries temporelles
+
+```{ojs}
+//| echo: false
+ts_intro_questions = [
+  {
+    enonce: "Laquelle de ces suites de données constitue une série temporelle ?",
+    choices: ["Les notes de 30 élèves à un examen", "Le PIB trimestriel de la France de 2000 à 2023", "La taille et le poids de 50 patients", "Les réponses à un questionnaire de satisfaction"],
+    correct: "Le PIB trimestriel de la France de 2000 à 2023",
+    explication: "Une série temporelle est une suite d'observations d'une même variable à des instants successifs réguliers. Le PIB trimestriel est la seule option qui mesure la même variable (PIB) à intervalles réguliers (chaque trimestre) dans le temps. Les autres jeux de données sont des observations transversales — chaque ligne concerne un individu différent."
+  },
+  {
+    enonce: "La composante T_t d'une série temporelle représente :",
+    choices: ["Les fluctuations saisonnières liées au calendrier", "Le mouvement de long terme, régulier et progressif de la série", "Les variations aléatoires et imprévues", "Les oscillations économiques de 5 à 10 ans"],
+    correct: "Le mouvement de long terme, régulier et progressif de la série",
+    explication: "T_t désigne la tendance — le mouvement de fond, lent et régulier, qui donne à la série sa direction générale sur le long terme (hausse, baisse, stagnation). Les fluctuations saisonnières sont S_t, les variations aléatoires sont I_t, et les oscillations de longue durée non périodiques sont C_t."
+  },
+  {
+    enonce: "Quelle est la différence fondamentale entre la saisonnalité (S_t) et la composante cyclique (C_t) ?",
+    choices: ["S_t est toujours positive, C_t peut être négative", "S_t a une période fixe et connue (ex. 12 mois) ; C_t a une durée variable et imprévisible", "S_t affecte les données mensuelles, C_t affecte les données annuelles", "S_t est additive, C_t est multiplicative"],
+    correct: "S_t a une période fixe et connue (ex. 12 mois) ; C_t a une durée variable et imprévisible",
+    explication: "La distinction clé est la prévisibilité de la période. La saisonnalité revient à intervalles réguliers et connus (chaque juillet, chaque T4…). Le cycle, lié aux conjonctures économiques ou démographiques, a une durée variable (5 ans, 8 ans, 12 ans…) que l'on ne peut pas prévoir à l'avance."
+  },
+  {
+    enonce: "Sur le chronogramme des visites du musée, l'amplitude entre le pic estival et le creux hivernal reste ≈ 7 000 visiteurs chaque année, indépendamment du niveau de tendance. Quel modèle convient ?",
+    choices: ["Modèle multiplicatif, car la saisonnalité s'amplifie", "Modèle additif, car l'amplitude saisonnière est constante", "Les deux modèles sont équivalents dans ce cas", "Ni l'un ni l'autre — il faut un modèle non linéaire"],
+    correct: "Modèle additif, car l'amplitude saisonnière est constante",
+    explication: "Le modèle additif (y_t = T_t + S_t + I_t) est adapté quand l'amplitude des fluctuations saisonnières est indépendante du niveau de la tendance. Si les écarts été/hiver restent autour de 7 000 visiteurs quelle que soit la hauteur de la tendance, la saisonnalité est une composante additive stable — pas proportionnelle au niveau."
+  },
+  {
+    enonce: "Dans le modèle multiplicatif y_t = T_t × S_t × I_t, que vaut S_t en moyenne sur une période complète (ex. 12 mois) ?",
+    choices: ["0, car les composantes saisonnières s'annulent", "1, car les coefficients saisonniers sont des ratios qui s'équilibrent autour de 1", "T_t, car la saisonnalité est proportionnelle à la tendance", "La valeur dépend des données et ne peut pas être déterminée a priori"],
+    correct: "1, car les coefficients saisonniers sont des ratios qui s'équilibrent autour de 1",
+    explication: "Dans le modèle multiplicatif, S_t est un coefficient (ratio sans unité). Un mois avec S_t = 1,5 signifie une valeur 50 % au-dessus de la tendance ; S_t = 0,7 signifie 30 % en dessous. Pour que la saisonnalité ne crée pas de biais sur l'année, la moyenne des coefficients S_t sur une période complète doit être égale à 1. Dans le modèle additif, c'est la somme des S_t qui vaut 0."
+  },
+  {
+    enonce: "Un chronogramme montre une valeur anormalement basse en avril 2020, puis un retour immédiat au niveau habituel en mai 2020. À quelle composante cet événement appartient-il ?",
+    choices: ["Tendance T_t — la série baisse durablement à partir d'avril", "Saisonnalité S_t — avril est toujours un mois creux", "Résidu I_t — choc ponctuel et exceptionnel, non reproduit les autres années", "Composante cyclique C_t — début d'un cycle de plusieurs années"],
+    correct: "Résidu I_t — choc ponctuel et exceptionnel, non reproduit les autres années",
+    explication: "Un choc isolé sur un seul mois, non reproduit les années suivantes, qui ne correspond pas à un motif saisonnier connu, est par définition un résidu (irrégulier). En l'occurrence, avril 2020 correspond au premier confinement lié à la Covid-19 — événement exceptionnel, imprévisible et non périodique."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof ts_intro_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(ts_intro_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  ts_intro_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../../03-bivariate-analysis/05-linear-regression/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Régression linéaire simple</span></span></a>
+  <a href="../02-moving-averages/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Moyennes mobiles</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

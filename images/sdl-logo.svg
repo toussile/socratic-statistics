@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 -10 240 270" width="512" height="576">
+  <defs>
+    <!-- Glow S rouge -->
+    <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Glow D/L bleu -->
+    <filter id="glow-b" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Clip paths — cube s=110 -->
+    <clipPath id="clip-top">
+      <polygon points="132,15 227,70 132,125 37,70"/>
+    </clipPath>
+    <clipPath id="clip-left">
+      <polygon points="37,70 132,125 132,235 37,180"/>
+    </clipPath>
+    <clipPath id="clip-right">
+      <polygon points="132,125 227,70 227,180 132,235"/>
+    </clipPath>
+  </defs>
+
+  <!-- Cube abstrait : remplissage très subtil -->
+  <polygon points="132,15 227,70 132,125 37,70"   fill="#8888CC" fill-opacity="0.09"/>
+  <polygon points="37,70 132,125 132,235 37,180"   fill="#5555AA" fill-opacity="0.07"/>
+  <polygon points="132,125 227,70 227,180 132,235" fill="#6666BB" fill-opacity="0.08"/>
+
+  <!-- Fil de fer : arêtes très discrètes -->
+  <line x1="132" y1="15"  x2="227" y2="70"  stroke="#AAAADD" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="132" y1="15"  x2="37"  y2="70"  stroke="#AAAADD" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="37"  y1="70"  x2="132" y2="125" stroke="#8888BB" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="227" y1="70"  x2="132" y2="125" stroke="#8888BB" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="37"  y1="70"  x2="37"  y2="180" stroke="#8888BB" stroke-width="0.7" stroke-opacity="0.30"/>
+  <line x1="227" y1="70"  x2="227" y2="180" stroke="#8888BB" stroke-width="0.7" stroke-opacity="0.30"/>
+  <line x1="132" y1="125" x2="132" y2="235" stroke="#7777AA" stroke-width="0.5" stroke-opacity="0.20"/>
+  <line x1="37"  y1="180" x2="132" y2="235" stroke="#7777AA" stroke-width="0.7" stroke-opacity="0.28"/>
+  <line x1="227" y1="180" x2="132" y2="235" stroke="#7777AA" stroke-width="0.7" stroke-opacity="0.28"/>
+
+  <!-- S — face supérieure, rouge vif
+       rotate(90, 55, 55) : base du S orientée vers la face D (arête gauche) -->
+  <g clip-path="url(#clip-top)">
+    <g transform="matrix(0.87,-0.5,0.87,0.5,37,70)">
+      <text x="55" y="55"
+            transform="rotate(90, 55, 55)"
+            font-family="Arial,Helvetica,sans-serif"
+            font-weight="900" font-size="124"
+            text-anchor="middle" dominant-baseline="central"
+            filter="url(#glow-r)"
+            fill="#FF1A2E">S</text>
+    </g>
+  </g>
+
+  <!-- D — face gauche, bleu vif -->
+  <g clip-path="url(#clip-left)">
+    <g transform="matrix(0.87,0.5,0,1,37,70)">
+      <text x="55" y="55"
+            font-family="Arial,Helvetica,sans-serif"
+            font-weight="900" font-size="124"
+            text-anchor="middle" dominant-baseline="central"
+            filter="url(#glow-b)"
+            fill="#00A3FF">D</text>
+    </g>
+  </g>
+
+  <!-- L — face droite, bleu vif -->
+  <g clip-path="url(#clip-right)">
+    <g transform="matrix(0.87,-0.5,0,1,132,125)">
+      <text x="55" y="55"
+            font-family="Arial,Helvetica,sans-serif"
+            font-weight="900" font-size="124"
+            text-anchor="middle" dominant-baseline="central"
+            filter="url(#glow-b)"
+            fill="#00A3FF">L</text>
+    </g>
+  </g>
+</svg>

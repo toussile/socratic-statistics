@@ -1,0 +1,937 @@
+---
+title: "Moyennes mobiles"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000042"
+difficulty: "Intermediate"
+description: "Moyennes mobiles simples et centrées, opérateurs B/F/Δ/Δₚ, lissage et élimination de la saisonnalité."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="principe-lissage">
+
+## Pourquoi lisser une série ?
+
+Un chronogramme brut mêle tendance, saisonnalité et irrégularités. L'œil perçoit difficilement la trajectoire de fond quand les fluctuations saisonnières ou les chocs ponctuels dominent visuellement. Le **lissage** permet de séparer le signal du bruit.
+
+:::{#def-lissage}
+## Lissage d'une série temporelle
+**Lisser** une série $y_1, \ldots, y_T$ consiste à remplacer chaque valeur $y_t$ par une valeur lissée $\tilde{y}_t$ obtenue en faisant la moyenne d'un voisinage temporel de $y_t$, afin d'atténuer les variations à court terme et de révéler la tendance ou la tendance-cycle.
+:::
+
+**Deux objectifs distincts selon l'ordre du lissage :**
+
+| Objectif | Ordre utilisé | Résultat |
+|----------|:-------------:|----------|
+| Révéler la tendance générale | Grand (ex. $q = 12$) | Courbe très lisse |
+| Réduire le bruit sans effacer la saisonnalité | Petit (ex. $q = 3$) | Série un peu plus régulière |
+| **Éliminer la saisonnalité** | $q =$ période saisonnière | Tendance-cycle pure ($T_t + C_t$) |
+
+::: {.callout-note}
+Les moyennes mobiles sont une méthode purement **descriptive** : elles ne projettent pas la série dans le futur. La prévision par lissage exponentiel (leçon 04) est l'outil adapté pour cela.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_lissage -->
+
+<concept id="operateurs-fondamentaux">
+
+## Opérateurs sur les séries temporelles
+
+Deux opérateurs de base permettent d'écrire de façon compacte et unifiée tous les filtres de cette leçon. Les moyennes mobiles (lissage) et les opérateurs de différenciation (stationnarisation) en sont des cas particuliers.
+
+### Opérateurs retard $B$ et avance $F$
+
+:::{#def-operateur-BF}
+## Opérateurs retard $B$ et avance $F$
+L'**opérateur retard** $B$ (*backshift*) et l'**opérateur avance** $F$ (*forward shift*) sont définis par :
+
+$$B\,y_t = y_{t-1}, \qquad B^k\,y_t = y_{t-k}$$
+$$F\,y_t = y_{t+1}, \qquad F^k\,y_t = y_{t+k}$$
+
+- $B$ et $F$ sont inverses l'un de l'autre : $F = B^{-1}$, donc $F^k = B^{-k}$.
+- Par convention, $B^0 = F^0 = I$ (opérateur identité) : $I\,y_t = y_t$.
+:::
+
+### Opérateur différence $\Delta$
+
+:::{#def-operateur-difference}
+## Opérateur différence $\Delta$
+L'**opérateur différence** $\Delta$ mesure la variation entre deux pas de temps consécutifs :
+
+$$\Delta\,y_t = y_t - y_{t-1} = (1-B)\,y_t$$
+
+La **différence à la puissance $d$** est l'application $d$ fois de $\Delta$ :
+
+$$\Delta^d\,y_t = (1-B)^d\,y_t$$
+
+| Ordre | Expression | Composante éliminée |
+|:-----:|-----------|---------------------|
+| $d=1$ | $y_t - y_{t-1}$ | Tendance **linéaire** $T_t = a + bt$ |
+| $d=2$ | $y_t - 2y_{t-1} + y_{t-2}$ | Tendance **quadratique** $T_t = a + bt + ct^2$ |
+
+Chaque application de $\Delta$ supprime **1 observation** en début de série.
+:::
+
+### Différence d'ordre $p$ : $\Delta_p$
+
+:::{#def-operateur-difference-saisonniere}
+## Différence d'ordre $p$ (saisonnière)
+Pour une série de période saisonnière $p$, l'**opérateur de différence d'ordre $p$** compare chaque valeur à la même période du cycle précédent :
+
+$$\Delta_p\,y_t = y_t - y_{t-p} = (1-B^p)\,y_t$$
+
+Il élimine une composante saisonnière **déterministe et stable** de période $p$, au prix des $p$ premières observations.
+
+Pour traiter simultanément tendance et saisonnalité :
+$$\Delta^d\,\Delta_p\,y_t = (1-B)^d\,(1-B^p)\,y_t$$
+:::
+
+::: {.callout-note title="Rôle des quatre opérateurs"}
+| Opérateur | Expression | Usage |
+|-----------|-----------|-------|
+| $B$ | $B\,y_t = y_{t-1}$ | Écrire les MMs rétrospectives et les filtres |
+| $F = B^{-1}$ | $F\,y_t = y_{t+1}$ | Écrire les MMs centrées (observations futures) |
+| $\Delta = 1-B$ | $\Delta\,y_t = y_t - y_{t-1}$ | Stationnariser la tendance |
+| $\Delta_p = 1-B^p$ | $\Delta_p\,y_t = y_t - y_{t-p}$ | Stationnariser la saisonnalité |
+:::
+
+:::{#exm-operateurs-musee}
+## Application au musée ($p = 12$)
+
+| Rang $t$ | Mois | $y_t$ | $\Delta y_t$ | $\Delta_{12}\,y_t$ |
+|:--------:|------|:-----:|:------------:|:------------------:|
+| 1 | Jan 2021 | 2,1 | — | — |
+| 2 | Fév 2021 | 2,3 | $+0{,}2$ | — |
+| 13 | Jan 2022 | 2,4 | $-0{,}6$ | $+0{,}3$ |
+| 19 | Jul 2022 | 9,8 | $+2{,}5$ | $+0{,}6$ |
+| 25 | Jan 2023 | 2,6 | $-0{,}7$ | $+0{,}2$ |
+| 31 | Jul 2023 | 10,4 | $+2{,}6$ | $+0{,}6$ |
+
+- **$\Delta y_t$** reste fortement saisonnier : la différence première *n'élimine pas* la saisonnalité.
+- **$\Delta_{12}\,y_t$** est quasi-constant (+0,2 à +0,6) : la comparaison année sur année supprime la saisonnalité et révèle une légère croissance annuelle.
+:::
+
+::: {.callout-note title="Lien avec la modélisation ARIMA"}
+Les opérateurs $\Delta^d$ et $\Delta_p$ sont les briques de base des modèles **SARIMA$(p,d,q)(P,D,Q)_s$** : $d$ différences ordinaires stationnarisent la tendance, $D$ différences saisonnières la saisonnalité. Leur identification est la première étape de la méthode de Box-Jenkins.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_operateurs -->
+
+## Illustration interactive des opérateurs
+
+### Opérateurs $B$ et $F$ — décalage temporel
+
+$B\,y_t$ décale la courbe d'un pas vers la **droite** (la valeur affichée en $t$ est celle de $t-1$) ; $F\,y_t$ la décale d'un pas vers la **gauche** (la valeur en $t$ est celle de $t+1$). Cochez une ou deux cases pour superposer les courbes transformées à la série brute.
+
+```{ojs}
+//| echo: false
+opBFData = {
+  const raw = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3
+  ];
+  return raw.map((y, i) => ({
+    t: i + 1, y,
+    By: i === 0               ? null : raw[i - 1],
+    Fy: i === raw.length - 1  ? null : raw[i + 1]
+  }));
+}
+```
+
+```{ojs}
+//| echo: false
+viewof opBFChoice = Inputs.checkbox(
+  ["B·y_t (retard, orange)", "F·y_t (avance, vert)"],
+  { value: [], label: "Superposer :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const tickMap = {1:"Jan 21", 7:"Jul 21", 13:"Jan 22", 19:"Jul 22"};
+  const marks = [
+    Plot.line(opBFData, {x:"t", y:"y",  stroke:"#1098ad", strokeWidth:2}),
+    Plot.dot(opBFData,  {x:"t", y:"y",  fill:"#1098ad",   r:3})
+  ];
+  if (opBFChoice.includes("B·y_t (retard, orange)")) {
+    const d = opBFData.filter(r => r.By !== null);
+    marks.push(
+      Plot.line(d, {x:"t", y:"By", stroke:"#f76707", strokeWidth:2, strokeDasharray:"5,3"}),
+      Plot.dot(d,  {x:"t", y:"By", fill:"#f76707",   r:3})
+    );
+  }
+  if (opBFChoice.includes("F·y_t (avance, vert)")) {
+    const d = opBFData.filter(r => r.Fy !== null);
+    marks.push(
+      Plot.line(d, {x:"t", y:"Fy", stroke:"#2f9e44", strokeWidth:2, strokeDasharray:"5,3"}),
+      Plot.dot(d,  {x:"t", y:"Fy", fill:"#2f9e44",   r:3})
+    );
+  }
+  return Plot.plot({
+    width: 650, height: 280,
+    x: { label: null, ticks: [1,7,13,19], tickFormat: t => tickMap[t] || "" },
+    y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+    marks
+  });
+}
+```
+
+### Opérateurs $\Delta$ et $\Delta_p$ — élimination de tendance et saisonnalité
+
+Série trimestrielle synthétique : $y_t = 10 + 0{,}125\,t + S_t$ avec $S = (-3,\,{+}5,\,{+}8,\,-10)$, $p = 4$.
+
+```{ojs}
+//| echo: false
+opDiffData = {
+  const S = [-3, 5, 8, -10];
+  const raw = Array.from({length: 8}, (_, i) => +(10 + 0.125*(i+1) + S[i % 4]).toFixed(2));
+  const labs = ["T1 22","T2 22","T3 22","T4 22","T1 23","T2 23","T3 23","T4 23"];
+  return raw.map((y, i) => ({
+    t: i+1, label: labs[i], y,
+    delta1: i === 0 ? null : +(y - raw[i-1]).toFixed(2),
+    delta4: i < 4   ? null : +(y - raw[i-4]).toFixed(2)
+  }));
+}
+```
+
+```{ojs}
+//| echo: false
+viewof opDiffChoice = Inputs.radio(
+  ["Série brute y_t", "Δy_t — 1ère différence", "Δ₄y_t — différence d'ordre 4"],
+  { value: "Série brute y_t", label: "Opérateur :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const cfgOp = {
+    "Série brute y_t": {
+      key:"y",      color:"#1098ad", yLabel:"Ventes (k€)", domain:[-5, 22],
+      note:"Série brute — forte saisonnalité trimestrielle (pic T3, creux T4) et légère tendance croissante."
+    },
+    "Δy_t — 1ère différence": {
+      key:"delta1", color:"#f76707", yLabel:"Δy_t (k€)", domain:[-22, 12],
+      note:"Δy_t = y_t − y_{t−1} : la tendance est atténuée mais la saisonnalité subsiste fortement (+8, +3, −18, +7, …)."
+    },
+    "Δ₄y_t — différence d'ordre 4": {
+      key:"delta4", color:"#2f9e44", yLabel:"Δ₄y_t (k€)", domain:[0, 1.2],
+      note:"Δ₄y_t = y_t − y_{t−4} = 0,5 (constante) : saisonnalité entièrement éliminée. Il ne reste que 4b = 4×0,125 = 0,5, la pente de la tendance multipliée par la période."
+    }
+  };
+  const c = cfgOp[opDiffChoice];
+  const data = opDiffData.filter(d => d[c.key] !== null);
+  const chart = Plot.plot({
+    width: 650, height: 280,
+    x: { label: null, tickFormat: t => opDiffData[t-1]?.label ?? "" },
+    y: { label: c.yLabel, domain: c.domain },
+    marks: [
+      Plot.ruleY([0], {stroke:"#bbb", strokeDasharray:"4,3"}),
+      Plot.line(data, {x:"t", y: d => d[c.key], stroke:c.color, strokeWidth:2.5}),
+      Plot.dot(data,  {x:"t", y: d => d[c.key], fill:c.color,   r:4})
+    ]
+  });
+  return html`<div>${chart}
+    <p style="margin-top:6px;font-size:.87em;color:#555">${c.note}</p>
+  </div>`;
+}
+```
+
+<concept id="mm-simple">
+
+## Moyenne mobile simple (glissante)
+
+:::{#def-mm-simple}
+## Moyenne mobile simple d'ordre $q$ (glissante)
+La **moyenne mobile simple** d'ordre $q$ au rang $t$ est la moyenne arithmétique des $q$ dernières valeurs :
+
+$$MM^{(q)}y_t = \frac{1}{q}\sum_{k=0}^{q-1} y_{t-k} = \frac{y_t + y_{t-1} + \cdots + y_{t-q+1}}{q}$$
+
+En notation $B$ :
+
+$$MM^{(q)}y_t = \frac{1 + B + B^2 + \cdots + B^{q-1}}{q}\,y_t$$
+
+Elle est définie pour $t = q, q+1, \ldots, T$. Les $q-1$ premières observations ne disposent pas d'une MM complète.
+:::
+
+La MM simple est **rétrospective** : la valeur lissée au rang $t$ n'utilise que le passé jusqu'à $t$. Elle est décalée vers la droite par rapport à la série originale — ce qui la rend moins précise pour estimer la tendance au centre de la série, mais utile en prévision opérationnelle.
+
+**Exemple sur le musée (ordre $q = 3$) :**
+
+| $t$ | Mois | $y_t$ | $MM_t^{(3)}$ |
+|:---:|------|:-----:|:------------:|
+| 1 | Jan 2021 | 2,1 | — |
+| 2 | Fév 2021 | 2,3 | — |
+| 3 | Mar 2021 | 3,2 | $(2{,}1+2{,}3+3{,}2)/3 = \mathbf{2{,}53}$ |
+| 4 | Avr 2021 | 4,5 | $(2{,}3+3{,}2+4{,}5)/3 = \mathbf{3{,}33}$ |
+| 5 | Mai 2021 | 5,1 | $(3{,}2+4{,}5+5{,}1)/3 = \mathbf{4{,}27}$ |
+
+**Problème de bord :** avec un ordre $q$, on perd les $q-1$ premières observations. Pour $q = 12$ sur 36 mois, 11 valeurs sont manquantes au début — aucune à la fin.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_mm_simple -->
+
+<concept id="mm-centree">
+
+## Moyenne mobile centrée
+
+La MM glissante est décalée dans le temps. Pour estimer correctement la composante tendance-cycle $T_t + C_t$ **au rang $t$**, on lui préfère une moyenne symétrique centrée sur $t$.
+
+### Ordre impair : $q = 2k+1$
+
+:::{#def-mm-centree-impaire}
+## Moyenne mobile centrée d'ordre impair
+Pour $q = 2k+1$ (ordre impair), la **moyenne mobile centrée** au rang $t$ est :
+
+$$\widetilde{MM}^{(q)}y_t = \frac{1}{q}\sum_{j=-k}^{k} y_{t+j} = \frac{y_{t-k} + \cdots + y_t + \cdots + y_{t+k}}{2k+1}$$
+
+En notation $B$ et $F$ :
+
+$$\widetilde{MM}^{(2k+1)}y_t = \frac{B^k + \cdots + B + 1 + F + \cdots + F^k}{2k+1}\,y_t$$
+
+La symétrie $B^j \leftrightarrow F^j$ rend explicite le caractère centré : autant de retards ($B$) que d'avances ($F$).
+
+Elle est définie pour $t = k+1, \ldots, T-k$ : on perd $k$ observations **de chaque côté**.
+:::
+
+:::{#exm-mm-centree-impaire}
+## MM centrée d'ordre 3 ($k = 1$) sur le musée
+
+| $t$ | Mois | $y_t$ | $\widetilde{MM}_t^{(3)}$ |
+|:---:|------|:-----:|:------------------------:|
+| 2 | Fév 2021 | 2,3 | $(2{,}1+2{,}3+3{,}2)/3 = \mathbf{2{,}53}$ |
+| 3 | Mar 2021 | 3,2 | $(2{,}3+3{,}2+4{,}5)/3 = \mathbf{3{,}33}$ |
+| 7 | Jul 2021 | 9,2 | $(6{,}8+9{,}2+8{,}9)/3 = \mathbf{8{,}30}$ |
+:::
+
+### Ordre pair et période saisonnière : la MM $2\times p$
+
+Quand la période saisonnière $p$ est **paire** (12 pour le mensuel, 4 pour le trimestriel), une simple MM d'ordre $p$ n'est pas centrée sur un rang entier. On utilise alors un double lissage.
+
+:::{#def-mm-2xp}
+## Moyenne mobile centrée $q=2 \times k$
+Pour une période $q=2 \times k$ paire, la **MM centrée $2 \times k$** au rang $t$ est la moyenne pondérée :
+
+$$
+MM^{(2k)} y_t = \frac{1}{2k}\left(\frac{y_{t-k}}{2} + \sum_{j=-(k-1)}^{k-1} y_{t+j} + \frac{y_{t+k}}{2}\right)
+$$
+
+En notation $B$ et $F$ :
+
+$$MM^{(2k)} = \frac{1}{2k}\!\left(\frac{B^k}{2} + B^{k-1} + \cdots + 1 + \cdots + F^{k-1} + \frac{F^k}{2}\right)y_t$$
+
+Les demi-poids sur $B^k$ et $F^k$ trahissent le double lissage : les extrémités $y_{t-k}$ et $y_{t+k}$ n'interviennent qu'une seule fois, d'où leur poids moitié.
+
+Les observations aux extrémités $y_{t-k}$ et $y_{t+k}$ ont un **poids moitié** ($\frac{1}{4k}$ chacune), les observations intérieures ont un **poids double** ($\frac{1}{2k}$ chacune).
+
+Elle est définie pour $t = k+1, \ldots, T-k$ : on perd $k$ observations **de chaque côté**.
+:::
+
+**Cas mensuel $p = 12$ — MM $2\times 12$ :**
+
+$$MM^{(12)} = \frac{1}{12}\bigl(\frac{y_{t-6}}{2} + y_{t-5} + \cdots + y_0 + \cdots + y_{t+5} + \frac{y_{t+6}}{2}\bigr)$$
+
+Définie pour $t = 7, \ldots, T-6$ — soit **24 valeurs** disponibles sur nos 36 mois.
+
+**Propriété fondamentale :** en faisant la moyenne d'exactement une période complète (12 mois), la $MM^{(12)}$ **annule la composante saisonnière** dans le modèle additif et ne retient que $T_t + C_t$.
+
+**Calcul au rang $t = 13$ (janvier 2022) :**
+
+$$
+\begin{aligned}
+MM^{(12)}y_{13} &= \frac{1}{12}\big(y_7/2 + y_8 + \cdots + y_{18} + y_{19}/2\big)\\
+&= \frac{118{,}8}{24} \approx \mathbf{4{,}95} \text{ milliers}.\\
+\end{aligned}
+$$
+
+En janvier 2022, la composante tendance-cycle est estimée à environ 4 950 visiteurs — loin du pic estival (9 800) mais reflétant la montée progressive de la fréquentation.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_mm_centree -->
+
+<concept id="choix-ordre">
+
+## Choisir l'ordre du lissage
+
+L'ordre $q$ de la moyenne mobile détermine le **compromis entre réactivité et stabilité** :
+
+| Ordre $q$ | Courbe lissée | Perte aux bords | Usage typique |
+|:---------:|--------------|:---------------:|---------------|
+| Petit (3, 5) | Réactive, encore ondulée | Faible | Réduction du bruit, saisonnalité visible |
+| Moyen (6, 8) | Modérément lisse | Modérée | Tendance approximative |
+| Grand ($q = p$) | Très lisse, tendance-cycle pure | $p/2$ de chaque côté | **Élimination de la saisonnalité** |
+
+:::{#prp-elimination-saisonnalite}
+## Élimination de la saisonnalité par la MM $2 \times p$
+Dans le modèle additif $y_t = T_t + S_t + I_t$, la MM centrée $2 \times p$ satisfait :
+
+$$CMA_t \approx T_t + C_t$$
+
+La composante saisonnière $S_t$ est éliminée car la somme des coefficients saisonniers sur une période complète est nulle : $\sum_{j=1}^{p} S_j = 0$.
+:::
+
+**Règle pratique :** pour estimer proprement la tendance-cycle d'une série mensuelle, utiliser la $2\times 12$ ; pour une série trimestrielle, la $2\times 4$.
+
+::: {.callout-warning title="Perte aux bords"}
+Plus l'ordre est grand, plus les valeurs manquantes aux extrémités sont nombreuses. Avec une $2\times 12$ sur 36 mois, on perd les 6 premiers et les 6 derniers mois — soit **12 observations sur 36** (un tiers de la série). Sur des séries courtes, ce coût peut être prohibitif.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_choix_ordre -->
+
+## Application interactive
+
+Comparez l'effet de différents ordres de lissage sur le chronogramme du musée. Observez comment la MM $2\times 12$ révèle la tendance-cycle pure.
+
+```{ojs}
+//| echo: false
+mmData = {
+  const raw = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+    2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+  ];
+  const mm3 = [
+    null, 2.533, 3.333, 4.267, 5.467, 7.033, 8.3, 7.9, 6.1, 3.933, 3.067, 2.6,
+    2.667, 2.833, 3.667, 4.633, 5.9, 7.533, 8.833, 8.4, 6.5, 4.267, 3.367, 2.867,
+    2.933, 3.1, 3.967, 4.967, 6.3, 8.033, 9.367, 8.9, 6.9, 4.6, 3.667, null
+  ];
+  const mm5 = [
+    null, null, 3.44, 4.38, 5.76, 6.9, 7.12, 6.86, 5.98, 4.74, 3.44, 2.84,
+    2.78, 3.28, 3.78, 4.76, 6.2, 7.38, 7.6, 7.32, 6.4, 5.1, 3.74, 3.12,
+    3.06, 3.56, 4.08, 5.12, 6.62, 7.84, 8.08, 7.78, 6.82, 5.46, null, null
+  ];
+  const mm7 = [
+    null, null, null, 4.743, 5.714, 6.186, 6.271, 5.971, 5.671, 5.043, 4.1, 3.329,
+    3.229, 3.471, 4.171, 5.143, 6.143, 6.629, 6.714, 6.4, 6.086, 5.414, 4.429, 3.629,
+    3.514, 3.771, 4.5, 5.514, 6.557, 7.057, 7.143, 6.829, 6.5, null, null, null
+  ];
+  const mm2x12 = [
+    null, null, null, null, null, null, 4.754, 4.779, 4.804, 4.833, 4.867, 4.904,
+    4.95, 4.996, 5.033, 5.062, 5.088, 5.112, 5.133, 5.154, 5.179, 5.204, 5.233, 5.271,
+    5.317, 5.362, 5.4, 5.429, 5.454, 5.479, null, null, null, null, null, null
+  ];
+  return raw.map((y, i) => ({
+    t: i + 1, y, mm3: mm3[i], mm5: mm5[i], mm7: mm7[i], mm2x12: mm2x12[i]
+  }));
+}
+```
+
+```{ojs}
+//| echo: false
+viewof mmChoice = Inputs.select(
+  ["Aucun lissage", "MM centrée d'ordre 3", "MM centrée d'ordre 5", "MM centrée d'ordre 7", "MM 2×12 (mensuelle)"],
+  { value: "Aucun lissage", label: "Lissage :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const mmConfig = {
+    "Aucun lissage":        { key: null,     color: null,    perte: 0,  nOk: 36 },
+    "MM centrée d'ordre 3": { key: "mm3",    color: "#f76707", perte: 1, nOk: 34 },
+    "MM centrée d'ordre 5": { key: "mm5",    color: "#2f9e44", perte: 2, nOk: 32 },
+    "MM centrée d'ordre 7": { key: "mm7",    color: "#9c36b5", perte: 3, nOk: 30 },
+    "MM 2×12 (mensuelle)":  { key: "mm2x12", color: "#e8590c", perte: 6, nOk: 24 }
+  };
+  const cfg = mmConfig[mmChoice];
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+
+  const marks = [
+    Plot.line(mmData, { x: "t", y: "y", stroke: "#1098ad", opacity: 0.5, strokeWidth: 1.5 }),
+    Plot.dot(mmData, { x: "t", y: "y", fill: "#1098ad", opacity: 0.45, r: 3 })
+  ];
+
+  if (cfg.key) {
+    const smoothed = mmData.filter(d => d[cfg.key] !== null);
+    marks.push(
+      Plot.line(smoothed, { x: "t", y: d => d[cfg.key], stroke: cfg.color, strokeWidth: 2.5 }),
+      Plot.dot(smoothed, { x: "t", y: d => d[cfg.key], fill: cfg.color, r: 3.5 })
+    );
+  }
+
+  const chart = Plot.plot({
+    width: 650, height: 360,
+    x: {
+      label: null,
+      ticks: [1, 7, 13, 19, 25, 31],
+      tickFormat: t => tickMap[t] || ""
+    },
+    y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+    marks
+  });
+
+  const noteText = cfg.perte === 0
+    ? "Série brute — aucune perte aux bords."
+    : `Perte aux bords : <b>${cfg.perte} observation(s) de chaque côté</b> (${cfg.nOk} valeurs calculées sur 36). Les points sans lissage apparaissent en bleu pâle.`;
+
+  return html`<div>
+    ${chart}
+    <p style="margin-top:8px;font-size:0.87em;color:#555">${html([noteText])}</p>
+  </div>`;
+}
+```
+
+## Application interactive — Différenciation
+
+Observez l'effet des opérateurs de différenciation sur le chronogramme du musée. Comparez la série brute, la différence première $\Delta y_t$ et la différence saisonnière $\Delta_{12} y_t$.
+
+```{ojs}
+//| echo: false
+diffData = {
+  const raw = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+    2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+  ];
+  return raw.map((y, i) => ({
+    t: i + 1,
+    y,
+    delta1:  i === 0 ? null : +(y - raw[i - 1]).toFixed(2),
+    delta12: i < 12  ? null : +(y - raw[i - 12]).toFixed(2)
+  }));
+}
+```
+
+```{ojs}
+//| echo: false
+viewof diffChoice = Inputs.radio(
+  ["Série brute (y_t)", "Différence première (Δy_t)", "Différence saisonnière (Δ₁₂y_t)"],
+  { value: "Série brute (y_t)", label: "Série :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const cfgDiff = {
+    "Série brute (y_t)": {
+      key: "y", color: "#1098ad",
+      yLabel: "Visiteurs (milliers)", domain: [0, 12],
+      note: "Série brute — forte saisonnalité annuelle et légère tendance haussière."
+    },
+    "Différence première (Δy_t)": {
+      key: "delta1", color: "#f76707",
+      yLabel: "Δy_t (milliers)", domain: [-5, 4],
+      note: "Δy_t = y_t − y_{t−1} : la tendance est atténuée mais la saisonnalité subsiste (grands écarts estivaux)."
+    },
+    "Différence saisonnière (Δ₁₂y_t)": {
+      key: "delta12", color: "#2f9e44",
+      yLabel: "Δ₁₂y_t (milliers)", domain: [0, 1],
+      note: "Δ₁₂y_t = y_t − y_{t−12} : série quasi-stationnaire. La saisonnalité est supprimée — ne reste qu'une légère croissance annuelle de +0,2 à +0,6 k visiteurs."
+    }
+  };
+  const cfg = cfgDiff[diffChoice];
+  const data = diffData.filter(d => d[cfg.key] !== null);
+
+  const chart = Plot.plot({
+    width: 650, height: 300,
+    x: {
+      label: null,
+      ticks: [1, 7, 13, 19, 25, 31],
+      tickFormat: t => tickMap[t] || ""
+    },
+    y: { label: cfg.yLabel, domain: cfg.domain },
+    marks: [
+      Plot.ruleY([0], { stroke: "#bbb", strokeDasharray: "4,3" }),
+      Plot.line(data, { x: "t", y: d => d[cfg.key], stroke: cfg.color, strokeWidth: 2 }),
+      Plot.dot(data,  { x: "t", y: d => d[cfg.key], fill: cfg.color, r: 3 })
+    ]
+  });
+
+  return html`<div>
+    ${chart}
+    <p style="margin-top:8px;font-size:0.87em;color:#555">${cfg.note}</p>
+  </div>`;
+}
+```
+
+## Exercices écrits
+
+:::{#exr-mm-calcul}
+## Calculer des moyennes mobiles
+
+Voici les ventes hebdomadaires (en unités) d'un commerce sur 8 semaines :
+
+| Semaine | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|:-------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Ventes  | 42 | 38 | 51 | 44 | 49 | 41 | 55 | 47 |
+
+a) Calculer la MM glissante d'ordre 3 ($MM_t^{(3)}$) pour $t = 3$ à $t = 8$.
+b) Calculer la MM centrée d'ordre 3 ($\widetilde{MM}_t^{(3)}$) pour $t = 2$ à $t = 7$.
+c) Pour $t = 5$, comparer les deux valeurs obtenues. Laquelle est centrée sur la semaine 5 ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) MM glissante d'ordre 3 :**
+
+$$MM_t^{(3)} = \frac{y_t + y_{t-1} + y_{t-2}}{3}$$
+
+| $t$ | Calcul | $MM_t^{(3)}$ |
+|:---:|--------|:------------:|
+| 3 | $(42+38+51)/3$ | **43,7** |
+| 4 | $(38+51+44)/3$ | **44,3** |
+| 5 | $(51+44+49)/3$ | **48,0** |
+| 6 | $(44+49+41)/3$ | **44,7** |
+| 7 | $(49+41+55)/3$ | **48,3** |
+| 8 | $(41+55+47)/3$ | **47,7** |
+
+**b) MM centrée d'ordre 3 :**
+
+$$\widetilde{MM}_t^{(3)} = \frac{y_{t-1} + y_t + y_{t+1}}{3}$$
+
+| $t$ | Calcul | $\widetilde{MM}_t^{(3)}$ |
+|:---:|--------|:------------------------:|
+| 2 | $(42+38+51)/3$ | **43,7** |
+| 3 | $(38+51+44)/3$ | **44,3** |
+| 4 | $(51+44+49)/3$ | **48,0** |
+| 5 | $(44+49+41)/3$ | **44,7** |
+| 6 | $(49+41+55)/3$ | **48,3** |
+| 7 | $(41+55+47)/3$ | **47,7** |
+
+**c) Comparaison en $t = 5$ :**
+
+- MM glissante : $MM_5^{(3)} = 48{,}0$ — utilise les semaines 3, 4, 5. Elle est centrée sur $t = 4$ (milieu de la fenêtre [3 ; 5]).
+- MM centrée : $\widetilde{MM}_5^{(3)} = 44{,}7$ — utilise les semaines 4, 5, 6. Elle est bien **centrée sur $t = 5$** (milieu de [4 ; 6]).
+
+La MM centrée est le bon estimateur de la tendance *en* $t = 5$, la MM glissante est décalée d'une période.
+:::
+:::
+
+:::{#exr-mm-saisonnalite}
+## Pourquoi la MM $2 \times 4$ élimine-t-elle la saisonnalité trimestrielle ?
+
+Soit une série trimestrielle modèle additif : $y_t = T_t + S_t + I_t$ avec $p = 4$ trimestres. Les coefficients saisonniers vérifient $S_1 + S_2 + S_3 + S_4 = 0$.
+
+a) Écrire la formule de la $CMA_t^{(2\times 4)}$ (MM centrée $2\times 4$) sous forme pondérée.
+b) Montrer que, si $I_t \approx 0$, la $CMA_t^{(2\times 4)}$ est approximativement égale à $T_t$.
+c) Une série a pour coefficients saisonniers trimestriels : $S_1 = -8$, $S_2 = +5$, $S_3 = +12$, $S_4 = -9$ (unités). Vérifier que leur somme est bien nulle.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Formule de la $CMA_t^{(2\times 4)}$ :**
+
+$$CMA_t = \frac{1}{8}\left(y_{t-2} + 2y_{t-1} + 2y_t + 2y_{t+1} + y_{t+2}\right)$$
+
+Le dénominateur est $2p = 8$, les extrémités ont poids $1/8$, les valeurs intérieures ont poids $2/8 = 1/4$.
+
+**b) Élimination de la saisonnalité :**
+
+En substituant $y_t = T_t + S_t + I_t$ et en négligeant $I_t$ :
+
+$$CMA_t = \frac{1}{8}\bigl[(T_{t-2} + S_{t-2}) + 2(T_{t-1}+S_{t-1}) + 2(T_t+S_t) + 2(T_{t+1}+S_{t+1}) + (T_{t+2}+S_{t+2})\bigr]$$
+
+La partie saisonnière vaut :
+
+$$\frac{S_{t-2} + 2S_{t-1} + 2S_t + 2S_{t+1} + S_{t+2}}{8}$$
+
+Puisque la saisonnalité est périodique de période 4, les termes $S_{t-2}, S_{t-1}, S_t, S_{t+1}, S_{t+2}$ couvrent exactement une période complète (avec les extrémités à demi-poids), et leur somme pondérée vaut $\frac{1}{2}(S_1+S_2+S_3+S_4) + \frac{1}{2}(S_1+S_2+S_3+S_4) = S_1+S_2+S_3+S_4 = 0$.
+
+Donc $CMA_t \approx T_t + C_t$ (la tendance-cycle) ✓.
+
+**c) Vérification de la contrainte :**
+
+$$S_1 + S_2 + S_3 + S_4 = -8 + 5 + 12 + (-9) = 0 \checkmark$$
+
+La contrainte est bien respectée. Les T3 est le trimestre le plus fort (+12), les T1 et T4 sont en dessous de la tendance.
+:::
+:::
+
+:::{#exr-operateurs-BF}
+## Calculer avec les opérateurs $B$, $F$ et $\Delta$
+
+Soit la série $y_1 = 3$, $y_2 = 5$, $y_3 = 4$, $y_4 = 7$, $y_5 = 6$.
+
+a) Calculer $B\,y_3$, $B^2\,y_4$, $F\,y_2$, $F^2\,y_3$.
+b) Calculer $\Delta y_t = y_t - y_{t-1}$ pour $t = 2, 3, 4, 5$.
+c) Calculer $\Delta^2 y_t = (1-B)^2 y_t$ pour $t = 3, 4, 5$.
+d) Pour la série $z_t = 3 + 2t$, calculer $\Delta z_t$. Que conclure ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Calculs directs :**
+
+- $B\,y_3 = y_2 = \mathbf{5}$
+- $B^2\,y_4 = y_2 = \mathbf{5}$
+- $F\,y_2 = y_3 = \mathbf{4}$
+- $F^2\,y_3 = y_5 = \mathbf{6}$
+
+**b) Différences premières $\Delta y_t$ :**
+
+| $t$ | 2 | 3 | 4 | 5 |
+|:---:|:-:|:-:|:-:|:-:|
+| $\Delta y_t$ | $5-3=\mathbf{2}$ | $4-5=\mathbf{-1}$ | $7-4=\mathbf{3}$ | $6-7=\mathbf{-1}$ |
+
+**c) Différences du second ordre $\Delta^2 y_t = \Delta y_t - \Delta y_{t-1}$ :**
+
+| $t$ | 3 | 4 | 5 |
+|:---:|:-:|:-:|:-:|
+| $\Delta^2 y_t$ | $-1-2=\mathbf{-3}$ | $3-(-1)=\mathbf{4}$ | $-1-3=\mathbf{-4}$ |
+
+Vérification directe : $\Delta^2 y_t = y_t - 2y_{t-1} + y_{t-2}$.
+Ex. : $\Delta^2 y_4 = 7 - 2(4) + 5 = 4$ ✓
+
+**d) Effet de $\Delta$ sur une tendance linéaire :**
+
+$$\Delta z_t = z_t - z_{t-1} = (3+2t)-(3+2(t-1)) = 2$$
+
+$\Delta z_t = 2$ est une **constante** : la tendance linéaire a été éliminée, la pente $b = 2$ est préservée. Plus généralement, si $z_t = a + bt$, alors $\Delta z_t = b$.
+:::
+:::
+
+:::{#exr-operateurs-difference}
+## Opérateurs de différenciation
+
+Voici les ventes trimestrielles (en milliers d'euros) d'une boutique sur 8 trimestres ($p = 4$) :
+
+| Trimestre | T1 2022 | T2 2022 | T3 2022 | T4 2022 | T1 2023 | T2 2023 | T3 2023 | T4 2023 |
+|:---------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+| $t$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| $y_t$ | 48 | 72 | 95 | 60 | 52 | 78 | 102 | 66 |
+
+a) Calculer la différence première $\Delta y_t = y_t - y_{t-1}$ pour $t = 2, \ldots, 8$. La saisonnalité trimestrielle a-t-elle disparu ?
+b) Calculer la différence d'ordre 4 $\Delta_4\,y_t = y_t - y_{t-4}$ pour $t = 5, 6, 7, 8$. Que révèle-t-elle ?
+c) Montrer que, si $y_t = a + bt + S_t$ avec $S_{t-4} = S_t$ (saisonnalité de période 4), alors $\Delta_4\,y_t$ est une constante.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Différence première $\Delta y_t$ :**
+
+| $t$ | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|:---:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| $\Delta y_t$ | **+24** | **+23** | **−35** | **−8** | **+26** | **+24** | **−36** |
+
+Le schéma (+24, +23, −35 puis −8, +26, +24, −36, …) reproduit le même motif chaque année : la saisonnalité **n'a pas disparu** avec $\Delta$.
+
+**b) Différence d'ordre 4 $\Delta_4\,y_t$ :**
+
+| $t$ | 5 | 6 | 7 | 8 |
+|:---:|:-:|:-:|:-:|:-:|
+| $y_t$ | 52 | 78 | 102 | 66 |
+| $y_{t-4}$ | 48 | 72 | 95 | 60 |
+| $\Delta_4\,y_t$ | **+4** | **+6** | **+7** | **+6** |
+
+Les valeurs sont petites (+4 à +7 k€) et relativement stables : la comparaison année sur année élimine la saisonnalité et révèle une **croissance annuelle d'environ 5 à 7 k€** par trimestre.
+
+**c) Démonstration :**
+
+Avec $y_t = a + bt + S_t$ :
+
+$$\Delta_4\,y_t = y_t - y_{t-4} = \bigl(a + bt + S_t\bigr) - \bigl(a + b(t-4) + S_{t-4}\bigr) = 4b + (S_t - S_{t-4})$$
+
+Puisque $S_{t-4} = S_t$ (périodicité de période 4), on obtient :
+
+$$\Delta_4\,y_t = 4b = \text{constante}$$
+
+La différence d'ordre $p$ élimine exactement la composante saisonnière déterministe et la constante $a$ ; il ne reste que la pente $b$ multipliée par la période $p = 4$. ✓
+:::
+:::
+
+### Quiz — Moyennes mobiles
+
+```{ojs}
+//| echo: false
+mm_questions = [
+  {
+    enonce: "La MM glissante d'ordre q au rang t utilise les observations :",
+    choices: [
+      "y_{t−⌊q/2⌋}, …, y_t, …, y_{t+⌊q/2⌋} (centrée autour de t)",
+      "y_{t−q+1}, …, y_{t−1}, y_t (les q dernières valeurs jusqu'à t)",
+      "y_1, y_2, …, y_t (toutes les valeurs depuis le début)",
+      "y_t, y_{t+1}, …, y_{t+q−1} (les q prochaines valeurs)"
+    ],
+    correct: "y_{t−q+1}, …, y_{t−1}, y_t (les q dernières valeurs jusqu'à t)",
+    explication: "La MM glissante (trailing) d'ordre q est rétrospective : MM_t = (y_t + y_{t-1} + … + y_{t-q+1}) / q. Elle utilise les q valeurs les plus récentes en t, donc y_{t-q+1} à y_t. Elle est décalée vers le passé — la fenêtre se 'glisse' vers la droite au fil du temps."
+  },
+  {
+    enonce: "Pour une MM glissante d'ordre 5 sur une série de 40 observations, combien de valeurs lissées sont disponibles ?",
+    choices: ["40 (aucune perte)", "36 (perte de 4 valeurs en début)", "35 (perte de 5 valeurs en début)", "30 (perte de 5 valeurs à chaque extrémité)"],
+    correct: "36 (perte de 4 valeurs en début)",
+    explication: "La MM glissante d'ordre q est définie à partir de t = q (le premier rang où l'on dispose de q valeurs passées). Ici q = 5, donc la première valeur lissée est à t = 5, la dernière à t = 40 : on dispose de 40 − 5 + 1 = 36 valeurs. Les 4 premières observations (t = 1 à 4) ne disposent pas d'une fenêtre complète."
+  },
+  {
+    enonce: "Quelle est la différence principale entre une MM centrée d'ordre 3 et une MM glissante d'ordre 3 ?",
+    choices: [
+      "La MM centrée utilise 3 observations, la glissante en utilise 4",
+      "La MM centrée est symétrique autour de t (utilise t−1, t, t+1), la glissante est décalée vers le passé",
+      "La MM glissante est plus précise car elle utilise les données futures",
+      "Il n'y a pas de différence pour q = 3"
+    ],
+    correct: "La MM centrée est symétrique autour de t (utilise t−1, t, t+1), la glissante est décalée vers le passé",
+    explication: "Les deux MM d'ordre 3 utilisent 3 observations, mais pas les mêmes. La MM glissante au rang t utilise y_{t-2}, y_{t-1}, y_t — elle est centrée sur t−1. La MM centrée utilise y_{t-1}, y_t, y_{t+1} — elle est centrée exactement sur t. Pour estimer la tendance en t, la MM centrée est donc plus appropriée, au prix d'une observation perdue à chaque extrémité."
+  },
+  {
+    enonce: "Pourquoi utilise-t-on une MM 2×12 plutôt qu'une simple MM d'ordre 12 pour une série mensuelle ?",
+    choices: [
+      "Parce qu'une MM d'ordre 12 nécessite 24 observations minimum",
+      "Parce qu'une MM d'ordre 12 pour une période paire n'est pas centrée sur un rang entier — la 2×12 corrige ce décalage",
+      "Parce que la MM 2×12 élimine mieux la tendance que la MM d'ordre 12",
+      "Parce que 2×12 = 24 et il faut une fenêtre de 24 mois pour éliminer la saisonnalité annuelle"
+    ],
+    correct: "Parce qu'une MM d'ordre 12 pour une période paire n'est pas centrée sur un rang entier — la 2×12 corrige ce décalage",
+    explication: "Avec p = 12 (pair), une MM d'ordre 12 se centre entre les rangs t et t+1 — elle est décalée d'un demi-pas de temps. Pour obtenir une valeur lissée centrée exactement sur le rang entier t, on effectue un deuxième lissage d'ordre 2. C'est la MM 2×12, avec poids (1, 2, …, 2, 1)/24."
+  },
+  {
+    enonce: "Quelle propriété fondamentale possède la MM 2×12 pour une série mensuelle à saisonnalité additive ?",
+    choices: [
+      "Elle élimine la tendance et ne conserve que la saisonnalité",
+      "Elle élimine la composante saisonnière et estime la tendance-cycle T_t + C_t",
+      "Elle double les valeurs extrêmes pour mieux capturer les pics saisonniers",
+      "Elle conserve toutes les composantes mais réduit leur amplitude de moitié"
+    ],
+    correct: "Elle élimine la composante saisonnière et estime la tendance-cycle T_t + C_t",
+    explication: "La MM 2×12 fait la moyenne pondérée d'exactement une année complète de données (avec demi-poids aux extrémités). Dans le modèle additif, les coefficients saisonniers S_t satisfont S_1 + … + S_12 = 0 : leur contribution à la moyenne est nulle. La MM 2×12 extrait donc T_t + C_t (+ petit résidu)."
+  },
+  {
+    enonce: "On dispose d'une série mensuelle de 3 ans (T = 36). Après application de la MM 2×12, combien de valeurs lissées sont disponibles ?",
+    choices: ["36 (aucune perte)", "25 (perte de 11 valeurs en début)", "24 (perte de 6 valeurs à chaque extrémité)", "12 (perte d'une année entière à chaque extrémité)"],
+    correct: "24 (perte de 6 valeurs à chaque extrémité)",
+    explication: "La MM 2×12 est définie pour t = 7 à t = T − 6 = 30, soit 30 − 7 + 1 = 24 valeurs disponibles. On perd 6 observations au début (t = 1 à 6) et 6 à la fin (t = 31 à 36), parce que la formule CMA_t utilise y_{t-6} jusqu'à y_{t+6} — il faut 6 observations de chaque côté. Sur 36 mois, cela représente un tiers de la série perdu aux bords."
+  },
+  {
+    enonce: "Que vaut B³ y_t ?",
+    choices: [
+      "y_{t+3}",
+      "y_{t−3}",
+      "3 × y_t",
+      "y_t − 3"
+    ],
+    correct: "y_{t−3}",
+    explication: "L'opérateur retard B^k décale la série de k pas vers le passé : B^k y_t = y_{t−k}. Donc B³ y_t = y_{t−3}. Pour B⁰ on a B⁰ y_t = y_t (l'identité). Ce raccourci permet d'écrire toutes les sommes de retards avec une notation algébrique compacte."
+  },
+  {
+    enonce: "L'opérateur avance F est défini par F y_t = y_{t+1}. Que vaut F² y_t ?",
+    choices: [
+      "y_{t+2}",
+      "y_{t−2}",
+      "2 y_{t+1}",
+      "y_{t+1}²"
+    ],
+    correct: "y_{t+2}",
+    explication: "F² y_t = F(F y_t) = F y_{t+1} = y_{t+2}. En général F^k y_t = y_{t+k}. F et B sont inverses : F = B⁻¹, donc F^k = B^{−k}. On peut ainsi écrire y_{t+j} = F^j y_t = B^{−j} y_t, une notation unifiée pour retards et avances."
+  },
+  {
+    enonce: "Pourquoi l'opérateur F est-il nécessaire pour écrire la MM centrée d'ordre impair ?",
+    choices: [
+      "Parce que F double la valeur de la série",
+      "Parce que la MM centrée utilise des valeurs futures y_{t+j} que l'on écrit F^j y_t",
+      "Parce que F élimine la composante saisonnière",
+      "Parce que F = −B et les deux s'annulent dans la somme"
+    ],
+    correct: "Parce que la MM centrée utilise des valeurs futures y_{t+j} que l'on écrit F^j y_t",
+    explication: "La MM centrée d'ordre 2k+1 fait la moyenne de y_{t−k}, …, y_t, …, y_{t+k}. Les termes en avance (j > 0) sont y_{t+j} = F^j y_t. Sans l'opérateur F, on ne peut pas exprimer algébriquement la symétrie B^k + … + 1 + … + F^k du filtre centré. C'est précisément cette symétrie B^j ↔ F^j qui rend visible que la MM utilise autant de retards que d'avances."
+  },
+  {
+    enonce: "Que vaut Δ² y_t = (1−B)² y_t développé en termes de y_t ?",
+    choices: [
+      "y_t − 2y_{t−1} + y_{t−2}",
+      "y_t − y_{t−2}",
+      "2(y_t − y_{t−1})",
+      "(y_t − y_{t−1})²"
+    ],
+    correct: "y_t − 2y_{t−1} + y_{t−2}",
+    explication: "Δ² y_t = Δ(y_t − y_{t−1}) = (y_t − y_{t−1}) − (y_{t−1} − y_{t−2}) = y_t − 2y_{t−1} + y_{t−2}. On retrouve le même résultat en développant algébriquement : (1−B)² = 1 − 2B + B², donc (1−B)² y_t = y_t − 2By_t + B²y_t = y_t − 2y_{t−1} + y_{t−2}. Δ² élimine une tendance quadratique : si y_t = a + bt + ct², alors Δ² y_t = 2c (constante)."
+  },
+  {
+    enonce: "Qu'exprime l'opérateur différence Δy_t = y_t − y_{t−1} ?",
+    choices: [
+      "La moyenne des deux dernières observations",
+      "La variation entre deux pas de temps consécutifs",
+      "La composante saisonnière au rang t",
+      "La tendance-cycle estimée en t"
+    ],
+    correct: "La variation entre deux pas de temps consécutifs",
+    explication: "Δy_t = y_t − y_{t−1} mesure l'accroissement de la série entre t−1 et t : c'est la 'vitesse instantanée discrète'. Elle ne donne pas directement la tendance, mais l'élimine si T_t est linéaire : si y_t = a + bt + ε_t, alors Δy_t = b + Δε_t — la constante b est préservée, a disparaît."
+  },
+  {
+    enonce: "On applique Δ à une série mensuelle fortement saisonnière. Que se passe-t-il ?",
+    choices: [
+      "La saisonnalité est entièrement éliminée",
+      "La tendance linéaire est éliminée mais la saisonnalité subsiste",
+      "La tendance et la saisonnalité sont toutes deux éliminées",
+      "Aucune composante n'est modifiée"
+    ],
+    correct: "La tendance linéaire est éliminée mais la saisonnalité subsiste",
+    explication: "L'opérateur Δ = (1 − B) élimine une tendance linéaire car Δ(a + bt) = b (constante). En revanche, la saisonnalité S_t est périodique de période p > 1 : ΔS_t = S_t − S_{t−1} reproduit encore un schéma oscillatoire. Pour éliminer la saisonnalité mensuelle, il faut appliquer Δ₁₂."
+  },
+  {
+    enonce: "Pour une série trimestrielle (p = 4), que vaut Δ₄y_t si y_t = a + bt + S_t avec S_{t−4} = S_t ?",
+    choices: [
+      "0",
+      "4b (une constante indépendante de t et de S_t)",
+      "b + S_t",
+      "y_t − y_{t−1}"
+    ],
+    correct: "4b (une constante indépendante de t et de S_t)",
+    explication: "Δ₄y_t = y_t − y_{t−4} = (a + bt + S_t) − (a + b(t−4) + S_{t−4}) = 4b + (S_t − S_{t−4}). Puisque S_{t−4} = S_t par périodicité, Δ₄y_t = 4b = constante. La différence d'ordre p élimine à la fois la constante a et la saisonnalité S_t ; il ne reste que la pente b multipliée par la période p = 4."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof mm_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(mm_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  mm_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../01-introduction-time-series/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Introduction aux séries temporelles</span></span></a>
+  <a href="../03-trend-regression/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tendance et droite de régression</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

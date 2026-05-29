@@ -1,0 +1,19 @@
+# Quarto build artifacts
+**/.quarto/
+_site/
+_freeze/
+**/*.quarto_ipynb
+**/*.quarto_ipynb_*
+**/texput.log
+**/*_files/figure-latex/
+
+# Extensions non utilisées
+_extensions/
+
+# Fichiers système
+.DS_Store
+**/.DS_Store
+
+# Sorties générées (PDF, logs)
+*.pdf
+*.log

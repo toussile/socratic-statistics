@@ -1,0 +1,423 @@
+---
+title: "Visualiser les variables qualitatives"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000022"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Univariate Analysis"]
+---
+
+Un tableau de fréquences organise les données ; un graphique les rend immédiatement lisibles. Pour les variables qualitatives, trois représentations principales existent : le **diagramme en barres**, le **camembert** et les **barres ordonnées**. Le choix dépend du type de la variable (nominale ou ordinale) et de ce que l'on veut montrer.
+
+<concept id="diagramme-en-barres">
+
+## Le diagramme en barres
+
+Le diagramme en barres est le graphique de référence pour les **variables qualitatives nominales**. Une barre est tracée pour chaque modalité ; sa hauteur est proportionnelle à l'effectif (ou à la fréquence).
+
+**Caractéristiques essentielles :**
+
+- Les barres sont **séparées** — c'est ce qui les distingue visuellement de l'histogramme (leçon 03), où les barres sont contiguës.
+- L'axe des abscisses porte les modalités, l'axe des ordonnées porte les effectifs ou les fréquences.
+- L'ordre des barres est libre pour une variable nominale. En pratique, on trie souvent par **fréquence décroissante** pour faciliter la comparaison.
+
+*Exemple — Variable : Mode de transport principal ($n = 80$)*
+
+| Métro | Bus | Vélo | À pied | Voiture |
+|:-----:|:---:|:----:|:------:|:-------:|
+| 32 | 18 | 15 | 10 | 5 |
+
+Le diagramme en barres trié par effectif décroissant fait ressortir immédiatement que le métro est le mode majoritaire (40 %) et que la voiture reste marginal (6,3 %).
+
+::: {.callout-tip title="Diagramme de Pareto"}
+Trier les barres par fréquence décroissante produit un **diagramme de Pareto**, très utilisé en qualité et en gestion. Il met en évidence les modalités les plus importantes et facilite la règle « 80/20 » : souvent, 20 % des modalités concentrent 80 % des effectifs.
+:::
+
+**Ce qu'on lit dans un diagramme en barres :**
+
+- La barre la plus haute indique le **mode** (modalité la plus fréquente).
+- Comparer les hauteurs renseigne sur les **proportions relatives** entre modalités.
+- La présence de barres très courtes signale des modalités rares, éventuellement regroupables.
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_barres -->
+
+<concept id="diagramme-camembert">
+
+## Le diagramme circulaire (camembert)
+
+Le camembert (ou *pie chart*) représente les modalités comme des **secteurs d'un disque**. L'angle de chaque secteur est proportionnel à la fréquence relative : $\alpha_i = f_i \times 360°$.
+
+**Quand l'utiliser :**
+
+- Variable qualitative (nominale de préférence) avec **peu de modalités** (au plus 5 ou 6).
+- L'objectif est de montrer les **proportions d'un tout** — notamment quand une modalité est clairement dominante.
+
+**Quand l'éviter :**
+
+::: {.callout-warning title="Limites du camembert"}
+1. **Trop de modalités** : au-delà de 5-6 secteurs, le graphique devient illisible.
+2. **Proportions proches** : l'œil humain compare mal des angles entre eux. Un bar chart révèle les différences plus nettement.
+3. **Variable ordinale** : le camembert ne montre pas l'ordre des modalités ; les barres ordonnées sont alors toujours préférables.
+4. **Comparaison entre deux groupes** : deux camemberts côte à côte sont difficiles à comparer. Préférer des barres groupées.
+:::
+
+*Exemple — Transport : le camembert est acceptable (5 modalités) mais les barres restent plus précises pour comparer Bus (22,5 %) et Vélo (18,8 %), deux proportions proches.*
+
+**Barres vs camembert — tableau de décision :**
+
+| Critère | Barres | Camembert |
+|---------|:------:|:---------:|
+| Beaucoup de modalités | ✅ | ❌ |
+| Proportions proches | ✅ | ❌ |
+| Montrer qu'une modalité domine | ✅ | ✅ |
+| Variable ordinale | ✅ | ❌ |
+| Rapport ou présentation grand public | ✅ | ✅ |
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_camembert -->
+
+<concept id="barres-ordonnees">
+
+## Barres ordonnées pour les variables ordinales
+
+Pour une variable ordinale, les barres suivent impérativement l'**ordre naturel des modalités**. Changer cet ordre détruit l'information structurelle de la variable.
+
+*Exemple — Variable : Satisfaction vis-à-vis du trajet ($n = 80$)*
+
+Les barres vont de « Très insatisfait » à « Très satisfait » dans cet ordre — du pôle négatif au pôle positif. Cette disposition permet de lire d'un coup d'œil si la distribution est concentrée vers les extrêmes ou au centre.
+
+**Lectures typiques sur un diagramme en barres ordonnées :**
+
+- **Distribution centrée** : les barres les plus hautes sont au milieu (mode = modalité centrale) — distribution dite *en cloche*.
+- **Distribution asymétrique** : les barres sont plus hautes d'un côté que de l'autre, indiquant une tendance positive ou négative.
+- **Distribution bimodale** : deux barres hautes aux extrêmes, traduisant une polarisation des opinions.
+
+Dans notre exemple, la barre « Satisfait » (32,5 %) est la plus haute, et plus de la moitié des étudiants (55 %) ont une satisfaction au moins neutre — une distribution légèrement asymétrique vers les valeurs positives.
+
+::: {.callout-important}
+Trier les barres d'une variable ordinale par effectif décroissant (comme pour un Pareto) est une **erreur méthodologique grave** : cela revient à traiter une variable ordinale comme nominale et à effacer son sens.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_barres_ordonnees -->
+
+## Outil interactif : graphiques adaptés et inadaptés
+
+Explorez les représentations correctes et les erreurs fréquentes sur notre jeu de données.
+
+```{ojs}
+//| echo: false
+nomData = [
+  {m: "Métro",   n: 32, pct: "40,0 %"},
+  {m: "Bus",     n: 18, pct: "22,5 %"},
+  {m: "Vélo",    n: 15, pct: "18,8 %"},
+  {m: "À pied",  n: 10, pct: "12,5 %"},
+  {m: "Voiture", n:  5, pct:  "6,3 %"}
+]
+
+ordData = [
+  {m: "★ Très insatisfait",   n:  8},
+  {m: "★★ Insatisfait",       n: 14},
+  {m: "★★★ Neutre",           n: 22},
+  {m: "★★★★ Satisfait",       n: 35},
+  {m: "★★★★★ Très satisfait", n: 21}
+]
+```
+
+```{ojs}
+//| echo: false
+viewof vizQualVar = Inputs.select(
+  new Map([
+    ["Nominale — Mode de transport", "nom"],
+    ["Ordinale — Satisfaction",      "ord"]
+  ]),
+  { label: "Variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+vizQualChoices = vizQualVar === "nom"
+  ? new Map([
+      ["Barres (ordre libre)",              "barres"],
+      ["Barres triées par fréquence",       "pareto"],
+      ["Camembert",                         "pie"]
+    ])
+  : new Map([
+      ["Barres ordonnées ✅",               "ord_ok"],
+      ["Barres en ordre arbitraire ❌",     "ord_ko"],
+      ["Camembert ❌",                      "pie_ord"]
+    ])
+```
+
+```{ojs}
+//| echo: false
+viewof vizQualGraph = Inputs.select(vizQualChoices, { label: "Type de graphique :" })
+```
+
+```{ojs}
+//| echo: false
+{
+  const notes = {
+    barres:  {ok:true,  txt:"Recommandé pour une variable nominale. Une barre par modalité, barres séparées, ordre libre."},
+    pareto:  {ok:true,  txt:"Variante utile : trier par fréquence décroissante met en évidence la modalité dominante."},
+    pie:     {ok:true,  txt:"Acceptable ici (5 modalités). Reste moins précis que les barres pour comparer Bus (22,5 %) et Vélo (18,8 %)."},
+    ord_ok:  {ok:true,  txt:"Correct : l'ordre naturel des modalités est respecté. La distribution asymétrique vers la satisfaction est immédiatement lisible."},
+    ord_ko:  {ok:false, txt:"Erreur : les modalités sont dans un ordre arbitraire. L'ordre naturel est détruit — on ne peut plus lire la tendance de la distribution."},
+    pie_ord: {ok:false, txt:"Erreur : le camembert masque l'ordre des modalités. Pour une variable ordinale, les barres ordonnées sont toujours préférables."}
+  };
+
+  let chart;
+  const ordOrder = ordData.map(d => d.m);
+
+  if (vizQualGraph === "barres") {
+    chart = Plot.plot({
+      x: {label: "Effectif"}, y: {label: null},
+      title: "Mode de transport principal",
+      marks: [
+        Plot.barX(nomData, {y: "m", x: "n", fill: "#74c0fc", sort: {y: "-x"}}),
+        Plot.text(nomData, {y: "m", x: "n", text: d => d.pct, dx: 8, fill: "#333", sort: {y: "-x"}})
+      ]
+    });
+  } else if (vizQualGraph === "pareto") {
+    const sorted = [...nomData].sort((a,b) => b.n - a.n);
+    chart = Plot.plot({
+      x: {label: "Effectif"}, y: {label: null, domain: sorted.map(d => d.m)},
+      title: "Mode de transport (fréquence décroissante)",
+      marks: [
+        Plot.barX(sorted, {y: "m", x: "n", fill: "#339af0"}),
+        Plot.text(sorted, {y: "m", x: "n", text: d => d.pct, dx: 8, fill: "#333"})
+      ]
+    });
+  } else if (vizQualGraph === "pie") {
+    // SVG pie chart using d3
+    const w = 280, h = 280, r = 120;
+    const pieGen  = d3.pie().value(d => d.n).sort(null);
+    const arcGen  = d3.arc().innerRadius(0).outerRadius(r);
+    const colors  = d3.schemeTableau10;
+    const arcs    = pieGen(nomData);
+    const sectors = arcs.map((a, i) => {
+      const [cx, cy] = arcGen.centroid(a);
+      return `<path d="${arcGen(a)}" fill="${colors[i]}" stroke="white" stroke-width="2"/>
+              <text x="${cx*1.55}" y="${cy*1.55}" text-anchor="middle" font-size="11" fill="#333">${nomData[i].pct}</text>`;
+    });
+    chart = html`<svg width="${w}" height="${h}" viewBox="${-w/2} ${-h/2} ${w} ${h}"
+      style="font-family:sans-serif;display:block;margin:0 auto;">
+      <title>Mode de transport — Camembert</title>
+      ${sectors}
+    </svg>`;
+  } else if (vizQualGraph === "ord_ok") {
+    chart = Plot.plot({
+      x: {label: "Effectif"}, y: {label: null, domain: ordOrder},
+      title: "Satisfaction (ordre naturel ✅)",
+      marks: [
+        Plot.barX(ordData, {y: "m", x: "n", fill: "#69db7c"}),
+        Plot.text(ordData, {y: "m", x: "n", text: d => d.n + "", dx: 8, fill: "#333"})
+      ]
+    });
+  } else if (vizQualGraph === "ord_ko") {
+    const shuffled = [...ordData].sort(() => 0.4 - Math.random()).slice(0,5);
+    const koOrder = ["★★★ Neutre","★ Très insatisfait","★★★★★ Très satisfait","★★ Insatisfait","★★★★ Satisfait"];
+    chart = Plot.plot({
+      x: {label: "Effectif"}, y: {label: null, domain: koOrder},
+      title: "Satisfaction (ordre arbitraire ❌)",
+      marks: [
+        Plot.barX(ordData, {y: "m", x: "n", fill: "#ffa8a8", sort: {y: null}}),
+        Plot.text(ordData, {y: "m", x: "n", text: d => d.n + "", dx: 8, fill: "#333"})
+      ]
+    });
+  } else {
+    const w = 280, h = 280, r = 120;
+    const pieGen  = d3.pie().value(d => d.n).sort(null);
+    const arcGen  = d3.arc().innerRadius(0).outerRadius(r);
+    const colors  = d3.schemeTableau10;
+    const arcs    = pieGen(ordData);
+    const sectors = arcs.map((a, i) => {
+      const [cx, cy] = arcGen.centroid(a);
+      return `<path d="${arcGen(a)}" fill="${colors[i]}" stroke="white" stroke-width="2"/>`;
+    });
+    chart = html`<div>
+      <svg width="${w}" height="${h}" viewBox="${-w/2} ${-h/2} ${w} ${h}"
+        style="font-family:sans-serif;display:block;margin:0 auto;">
+        <title>Satisfaction — Camembert ❌</title>
+        ${sectors}
+      </svg>
+      <p style="font-size:0.85em;color:#555;text-align:center;">L'ordre naturel des modalités est invisible dans un camembert.</p>
+    </div>`;
+  }
+
+  const note = notes[vizQualGraph];
+  const noteBg  = note.ok ? "#d3f9d8" : "#ffe3e3";
+  const noteBdr = note.ok ? "#2f9e44" : "#c92a2a";
+  const noteIcon = note.ok ? "✅" : "❌";
+
+  return html`
+    ${chart}
+    <div style="background:${noteBg};border-left:4px solid ${noteBdr};
+        padding:12px 14px;border-radius:6px;margin-top:12px;">
+      <p style="margin:0;">${noteIcon} ${note.txt}</p>
+    </div>`;
+}
+```
+
+## Exercices
+
+:::{#exr-lecture-barres}
+### Lire et interpréter un diagramme en barres
+
+Dans une enquête auprès de 60 étudiants, on a relevé la **spécialité choisie en licence**. Le diagramme en barres (trié par effectif décroissant) donne les résultats suivants :
+
+| Spécialité | Effectif |
+|------------|:--------:|
+| Informatique | 21 |
+| Économie | 15 |
+| Mathématiques | 12 |
+| Biologie | 8 |
+| Autre | 4 |
+
+Répondez aux questions suivantes :
+
+1. Quelle est la fréquence relative de la spécialité « Informatique » ?
+2. Quelle proportion d'étudiants a choisi une des deux spécialités les plus populaires ?
+3. Un analyste souhaite représenter ces données avec un camembert. Est-ce pertinent ? Justifiez.
+4. La variable « Spécialité » est-elle nominale ou ordinale ? Quel impact cela a-t-il sur la présentation du graphique ?
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+1. $f_{\text{Info}} = 21 / 60 = 0{,}35$ soit **35 %**.
+
+2. Les deux spécialités les plus populaires sont Informatique (21) et Économie (15) : $(21 + 15) / 60 = 36/60 = 0{,}60$ soit **60 %** des étudiants.
+
+3. **Pertinent, mais avec réserve.** Il y a 5 modalités — limite acceptable pour un camembert. Cependant, Biologie (13,3 %) et Autre (6,7 %) donnent de petits secteurs difficiles à lire. Les barres restent plus précises pour comparer toutes les modalités.
+
+4. La spécialité est une variable **nominale** : aucun ordre naturel ne s'impose entre les disciplines. Le graphique peut donc trier les barres librement — ici par effectif décroissant (diagramme de Pareto), ce qui est une bonne pratique pour ce type de variable.
+:::
+:::
+
+:::{#exr-erreurs-graphiques}
+### Identifier les erreurs de représentation
+
+Chacun des cas suivants contient une erreur dans le choix ou la construction du graphique. Identifiez-la et proposez une correction.
+
+1. Pour représenter les résultats d'une enquête de satisfaction (Très insatisfait, Insatisfait, Neutre, Satisfait, Très satisfait), l'analyste trace un diagramme en barres **trié par effectif décroissant**.
+
+2. Pour visualiser la nationalité des 500 participants à un congrès international (32 nationalités différentes), le responsable communication réalise un **camembert à 32 secteurs**.
+
+3. Pour montrer la répartition hommes/femmes d'une équipe de 12 personnes (8 femmes, 4 hommes), le rapport utilise un **diagramme en barres** avec un axe des ordonnées commençant à 3.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+1. **Erreur :** trier par effectif décroissant une variable **ordinale** détruit son ordre naturel. Un lecteur ne peut plus voir si la distribution penche vers la satisfaction ou l'insatisfaction. → **Correction :** barres dans l'ordre naturel Très insatisfait → Très satisfait.
+
+2. **Erreur :** un camembert à 32 secteurs est illisible — les petits secteurs ne peuvent être distingués ni étiquetés. → **Correction :** regrouper les nationalités minoritaires dans une catégorie « Autres », ou utiliser un diagramme en barres horizontales trié par effectif décroissant.
+
+3. **Erreur :** couper l'axe des ordonnées à 3 (au lieu de 0) amplifie visuellement la différence entre les barres et donne l'impression que les femmes sont 4× plus nombreuses alors qu'elles sont seulement 2× plus nombreuses. → **Correction :** faire partir l'axe à 0, ou utiliser un camembert (2 modalités = cas idéal pour le camembert).
+:::
+:::
+
+:::{#exr-quiz}
+### Quiz — Visualiser les variables qualitatives
+
+```{ojs}
+//| echo: false
+viz_qual_questions = [
+  {
+    enonce: "Quelle est la principale différence visuelle entre un diagramme en barres et un histogramme ?",
+    choices: ["Le diagramme en barres a des barres horizontales", "Les barres du diagramme en barres sont séparées", "Le diagramme en barres ne comporte pas d'axe", "L'histogramme ne peut pas afficher de pourcentages"],
+    correct: "Les barres du diagramme en barres sont séparées",
+    explication: "Dans un diagramme en barres, les barres sont séparées car chaque modalité est une catégorie distincte. Dans un histogramme (variables continues), les barres sont contiguës car les classes se touchent."
+  },
+  {
+    enonce: "Pour la variable 'Mode de transport' (Métro=32, Bus=18, Vélo=15, À pied=10, Voiture=5 sur n=80), quelle est la fréquence de 'Vélo' ?",
+    context: "Variable : Mode de transport (n = 80)",
+    choices: ["15 %", "18,75 %", "20 %", "12,5 %"],
+    correct: "18,75 %",
+    explication: "f(Vélo) = 15 / 80 = 0,1875 soit 18,75 %. Attention à ne pas confondre l'effectif brut (15) avec la fréquence relative (18,75 %)."
+  },
+  {
+    enonce: "Dans quel cas un camembert est-il particulièrement inadapté ?",
+    choices: ["Quand la variable a exactement 4 modalités", "Quand on veut montrer les proportions d'un tout", "Quand deux proportions sont très proches et difficiles à distinguer visuellement", "Quand l'effectif total dépasse 50"],
+    correct: "Quand deux proportions sont très proches et difficiles à distinguer visuellement",
+    explication: "L'œil humain compare difficilement deux angles proches. Si Bus (22,5 %) et Vélo (18,8 %) ont des secteurs de taille similaire, les barres permettront de lire la différence bien plus clairement."
+  },
+  {
+    enonce: "Pour une variable ordinale 'Niveau de douleur' (Absent, Léger, Modéré, Intense, Insupportable), dans quel ordre les barres doivent-elles être tracées ?",
+    choices: ["Par effectif décroissant (Pareto)", "Dans l'ordre naturel de la douleur, du plus faible au plus fort", "Par ordre alphabétique", "Dans n'importe quel ordre, l'ordre n'a pas d'importance"],
+    correct: "Dans l'ordre naturel de la douleur, du plus faible au plus fort",
+    explication: "Pour une variable ordinale, l'ordre naturel des modalités doit toujours être respecté. Le trier autrement détruirait l'information ordinale et rendrait le graphique trompeur."
+  },
+  {
+    enonce: "Quel est l'avantage principal des barres sur le camembert pour comparer des modalités ?",
+    choices: ["Les barres sont plus colorées", "Les barres permettent de comparer des hauteurs, plus faciles à lire que des angles", "Les barres affichent toujours les effectifs absolus", "Les barres fonctionnent uniquement pour les variables nominales"],
+    correct: "Les barres permettent de comparer des hauteurs, plus faciles à lire que des angles",
+    explication: "La perception humaine compare les longueurs (hauteurs de barres) plus précisément que les angles ou les aires. C'est pourquoi les barres sont préférées dès que l'on veut comparer plusieurs modalités."
+  },
+  {
+    enonce: "Un responsable RH trace un camembert pour montrer la répartition des contrats (CDI, CDD, Intérim, Stage, Freelance, Apprentissage, Autres). Quel est le problème ?",
+    choices: ["Le camembert ne peut pas représenter des données RH", "7 secteurs rendent le graphique difficile à lire", "Il aurait dû utiliser un histogramme", "Il n'y a aucun problème"],
+    correct: "7 secteurs rendent le graphique difficile à lire",
+    explication: "Au-delà de 5 à 6 modalités, un camembert devient illisible. Avec 7 modalités, un diagramme en barres (éventuellement horizontal) serait bien plus lisible."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof viz_qual_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(viz_qual_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  viz_qual_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+:::
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../03-dispersion-indicators/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Indicateurs de dispersion</span></span></a>
+  <a href="../05-visualizing-quantitative-variables/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Visualisation — variables quantitatives</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

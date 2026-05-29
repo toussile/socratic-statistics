@@ -1,0 +1,459 @@
+---
+title: "Indicateurs de position"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000024"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Univariate Analysis"]
+---
+
+Les tableaux de fréquences décrivent la distribution d'une variable, mais pour la caractériser en un seul chiffre, on utilise des **indicateurs de position** : ils répondent à la question *« où se situe le centre de la distribution ? »*. Cette leçon présente les trois principaux — mode, médiane et moyenne — ainsi que les quartiles, qui fondent la boîte à moustaches abordée dans la leçon sur la visualisation des variables quantitatives.
+
+<concept id="mode">
+
+## Le mode
+
+:::{#def-mode}
+## Mode
+Le **mode** est la valeur (ou la classe) qui possède le plus grand effectif dans la série statistique.
+:::
+
+Son interprétation dépend du type de variable :
+
+| Type de variable | Mode | Exemple — fil rouge ($n = 80$) |
+|-----------------|------|-------------------------------|
+| Qualitative nominale | Modalité la plus fréquente | Transport : **Bus** (33 étud., 41,3 %) |
+| Qualitative ordinale | Modalité la plus fréquente | Satisfaction : score **3** (28 étud., 35 %) |
+| Quantitative discrète | Valeur entière la plus fréquente | Nb de cours : **6 cours** (22 étud., 27,5 %) |
+| Quantitative continue | Classe modale (effectif max) | Trajet : **[30 ; 40[** → mode conventionnel **35 min** |
+
+**Propriétés :**
+
+- Une distribution peut être **bimodale** (deux modes) ou **multimodale**.
+- Le mode est le **seul indicateur de position applicable aux variables qualitatives nominales**.
+- Il est **insensible aux valeurs extrêmes**.
+
+::: {.callout-warning title="Limite du mode"}
+Le mode peut ne pas être unique. Pour les données continues, il dépend du découpage en classes choisi et ne donne aucune information sur la dispersion.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_mode -->
+
+<concept id="mediane">
+
+## La médiane
+
+:::{#def-mediane}
+## Médiane
+La **médiane** $M$ est la valeur qui partage la distribution ordonnée en deux moitiés égales : 50 % des observations sont inférieures ou égales à $M$.
+
+Pour $n$ données ordonnées $x_{(1)} \leq \cdots \leq x_{(n)}$ :
+
+$$M = \begin{cases} x_{\!\left(\frac{n+1}{2}\right)} & \text{si } n \text{ est impair} \\[8pt] \dfrac{x_{\!\left(\frac{n}{2}\right)} + x_{\!\left(\frac{n}{2}+1\right)}}{2} & \text{si } n \text{ est pair} \end{cases}$$
+:::
+
+Pour des **données groupées en classes**, on localise d'abord la classe dont l'effectif cumulé dépasse $n/2$, puis on interpole linéairement :
+
+:::{#prp-mediane-groupee}
+## Médiane par interpolation linéaire
+Si la médiane appartient à la classe $[L_i\,;\,L_i+h_i[$, d'effectif $f_i$ et d'effectif cumulé précédent $F_{i-1}$ :
+
+$$M = L_i + \frac{\dfrac{n}{2} - F_{i-1}}{f_i} \times h_i$$
+:::
+
+*Application — fil rouge :*
+
+**Nombre de cours** ($n = 80$, données discrètes)
+
+Effectifs cumulés : 5, 17, 35, **57**, 71, 80. La 40e valeur tombe dans le groupe **6 cours** (positions 36 à 57). → **$M = 6$ cours**
+
+**Durée du trajet** ($n = 80$, données continues)
+
+| Classe | Effectif | Cumulé |
+|--------|:--------:|:------:|
+| [10 ; 20[ | 8 | 8 |
+| [20 ; 30[ | 15 | 23 |
+| **[30 ; 40[** | **22** | **45** |
+| [40 ; 50[ | 20 | 65 |
+| [50 ; 60[ | 10 | 75 |
+| [60 ; 70[ | 5 | 80 |
+
+La 40e valeur est dans **[30 ; 40[** (cumul passe de 23 à 45 ≥ 40).
+
+$$M = 30 + \frac{40 - 23}{22} \times 10 = 30 + 7{,}7 \approx \mathbf{37{,}7 \text{ min}}$$
+
+::: {.callout-tip title="Robustesse de la médiane"}
+Remplacer le trajet le plus long (70 min) par 200 min ne déplace pas la médiane : la 40e valeur reste dans [30 ; 40[. C'est sa principale force dans les distributions asymétriques ou en présence de valeurs extrêmes.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_mediane -->
+
+<concept id="moyenne-arithmetique">
+
+## La moyenne arithmétique
+
+:::{#def-moyenne}
+## Moyenne arithmétique
+Pour $k$ valeurs distinctes $x_i$ avec effectifs $n_i$ ($n = \sum n_i$) :
+
+$$\bar{x} = \frac{\displaystyle\sum_{i=1}^k n_i \cdot x_i}{n}$$
+
+Pour des **données groupées**, on substitue à chaque $x_i$ le centre de sa classe $m_i = \dfrac{L_i + L_{i+1}}{2}$.
+:::
+
+*Application — fil rouge :*
+
+**Nombre de cours :**
+$$\bar{x} = \frac{5 \times 3 + 12 \times 4 + 18 \times 5 + 22 \times 6 + 14 \times 7 + 9 \times 8}{80} = \frac{455}{80} \approx \mathbf{5{,}69 \text{ cours}}$$
+
+**Durée du trajet** (centres : 15, 25, 35, 45, 55, 65 min) :
+$$\bar{x} = \frac{8{\times}15 + 15{\times}25 + 22{\times}35 + 20{\times}45 + 10{\times}55 + 5{\times}65}{80} = \frac{3\,040}{80} = \mathbf{38 \text{ min}}$$
+
+**Sensibilité aux valeurs extrêmes :** si l'on remplace le trajet de 65 min par 200 min, la moyenne passe de 38 à 39,7 min — la médiane reste à 37,7 min.
+
+**Relation avec la médiane et l'asymétrie :**
+
+| Relation | Forme de la distribution |
+|----------|--------------------------|
+| $\bar{x} \approx M$ | Symétrique |
+| $\bar{x} > M$ | Queue à droite (valeurs extrêmes élevées) |
+| $\bar{x} < M$ | Queue à gauche (valeurs extrêmes basses) |
+
+Pour le trajet : $\bar{x} = 38 \approx M = 37{,}7$ → distribution quasi-symétrique.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_moyenne -->
+
+<concept id="quartiles-position">
+
+## Quartiles et résumé en cinq chiffres
+
+:::{#def-quartiles}
+## Quartiles
+Les **quartiles** $Q_1$, $Q_2 = M$ et $Q_3$ partagent la distribution ordonnée en quatre parts d'effectif égal (25 % chacune) :
+
+- $Q_1$ — premier quartile : 25 % des observations lui sont inférieures ou égales
+- $Q_2 = M$ — deuxième quartile : la médiane (50 %)
+- $Q_3$ — troisième quartile : 75 % des observations lui sont inférieures ou égales
+
+L'**écart interquartile** $\text{IQR} = Q_3 - Q_1$ mesure l'étendue des 50 % centraux.
+:::
+
+**Méthode de calcul**
+
+- **Données discrètes** : $Q_p$ est la valeur à la position $\lceil n \times p \rceil$ dans la série ordonnée.
+- **Données groupées** : interpolation linéaire identique à celle de la médiane :
+
+$$Q_p = L_i + \frac{p \cdot n - F_{i-1}}{f_i} \times h_i$$
+
+::: {.callout-tip title="Classes d'amplitude inégale"}
+Les formules d'interpolation font apparaître $h_i$ — l'amplitude de la **classe qui contient le quantile**, pas une amplitude globale. Elles s'appliquent donc telles quelles à un tableau à amplitudes inégales : il suffit d'utiliser la largeur réelle de la classe concernée. Aucun ajustement supplémentaire n'est nécessaire.
+:::
+
+*Résumé en cinq chiffres — fil rouge :*
+
+| | Min | $Q_1$ | $M$ | $Q_3$ | Max | IQR |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Nb de cours | 3 | 5 | 6 | 7 | 8 | **2** |
+| Trajet (min) | 10 | 28 | 37,7 | 47,5 | 70 | **19,5** |
+
+::: {.callout-note title="Lien avec la boîte à moustaches"}
+Le résumé $(\min,\ Q_1,\ M,\ Q_3,\ \max)$ est exactement ce dont la boîte à moustaches (boxplot) a besoin : la boîte s'étend de $Q_1$ à $Q_3$, la ligne intérieure marque $M$, et les moustaches rejoignent les valeurs extrêmes non aberrantes.
+:::
+
+**Quel indicateur choisir selon le type de variable ?**
+
+```{mermaid}
+graph TD
+    T[Variable] --> Q[Qualitative]
+    T --> N[Quantitative]
+    Q --> NOM[Nominale]
+    Q --> ORD[Ordinale]
+    N --> DIS[Discrète]
+    N --> CON[Continue]
+    NOM --> MNOM["Mode"]
+    ORD --> MORD["Mode · Médiane"]
+    DIS --> MDIS["Mode · Méd. · Moy. · Quartiles"]
+    CON --> MCON["Classe modale · Méd. · Moy. · Quartiles"]
+```
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_quartiles -->
+
+## Application interactive
+
+Sélectionnez une variable pour visualiser sa distribution et lire les indicateurs de position.
+
+```{ojs}
+//| echo: false
+viewof posVar = Inputs.select(
+  new Map([
+    ["Nombre de cours par semaine (discrète)", "cours"],
+    ["Durée du trajet en minutes (continue)",  "trajet"]
+  ]),
+  { label: "Variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  // Data
+  const coursVals = [3,4,5,6,7,8];
+  const coursEff  = [5,12,18,22,14,9];
+  const modeCours = 6, moyenneCours = 5.69, medCours = 6;
+  const q1Cours = 5, q3Cours = 7, iqrCours = 2;
+
+  const trajetBins = [
+    {x0:10,x1:20,n:8}, {x0:20,x1:30,n:15}, {x0:30,x1:40,n:22},
+    {x0:40,x1:50,n:20}, {x0:50,x1:60,n:10}, {x0:60,x1:70,n:5}
+  ];
+  const moyTrajet = 38, medTrajet = 37.7, modeTrajet = 35;
+  const q1Trajet = 28, q3Trajet = 47.5, iqrTrajet = 19.5;
+
+  // Legend
+  const legend = html`<div style="display:flex;gap:16px;margin:6px 0;font-size:0.88em;flex-wrap:wrap;">
+    <span><span style="color:#e67e22;font-weight:bold;font-size:1.2em;">—</span> Mode</span>
+    <span><span style="color:#3b5bdb;font-weight:bold;font-size:1.2em;">—</span> Moyenne</span>
+    <span><span style="color:#0ca678;font-weight:bold;font-size:1.2em;">—</span> Médiane</span>
+  </div>`;
+
+  let chart, tableHtml;
+
+  if (posVar === "cours") {
+    const data = coursVals.map((v,i) => ({x: v, y: coursEff[i]}));
+    chart = Plot.plot({
+      x: {label: "Nombre de cours / semaine", tickValues: coursVals},
+      y: {label: "Effectif", domain: [0, 28]},
+      title: `Mode = ${modeCours} cours | Médiane = ${medCours} cours | Moyenne = ${moyenneCours} cours`,
+      marks: [
+        Plot.barY(data, {x: "x", y: "y", fill: "#b2f2d4", insetLeft: 14, insetRight: 14}),
+        Plot.ruleX([modeCours],    {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moyenneCours], {stroke: "#3b5bdb", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([medCours],     {stroke: "#0ca678", strokeWidth: 2, strokeDasharray: "5,3"})
+      ]
+    });
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:0.91em;">
+      <tr style="background:#e9f9f0;color:#0ca678;"><th style="padding:6px 10px;border:1px solid #dee2e6;">Indicateur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Valeur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Détail</th></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Mode</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">6 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">22 étudiants sur 80 (27,5 %)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Médiane Q₂</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">6 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">40e valeur ordonnée → groupe 6 (positions 36–57)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Moyenne</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">5,69 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">455 / 80</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₁</td><td style="padding:6px 10px;border:1px solid #dee2e6;">5 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">20e valeur ordonnée → groupe 5 (positions 18–35)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃</td><td style="padding:6px 10px;border:1px solid #dee2e6;">7 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">60e valeur ordonnée → groupe 7 (positions 58–71)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>IQR</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">2 cours</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃ − Q₁ = 7 − 5</td></tr>
+    </table>`;
+  } else {
+    chart = Plot.plot({
+      x: {label: "Durée du trajet (min)", domain: [10, 70]},
+      y: {label: "Effectif", domain: [0, 25]},
+      title: `Médiane = ${medTrajet} min | Moyenne = ${moyTrajet} min | Mode = [30;40[ → 35 min`,
+      marks: [
+        Plot.rect(trajetBins, {x1: "x0", x2: "x1", y1: 0, y2: "n", fill: "#b2f2d4", stroke: "#0ca678", strokeWidth: 1.2}),
+        Plot.ruleX([modeTrajet], {stroke: "#e67e22", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([moyTrajet],  {stroke: "#3b5bdb", strokeWidth: 2, strokeDasharray: "5,3"}),
+        Plot.ruleX([medTrajet],  {stroke: "#0ca678", strokeWidth: 2, strokeDasharray: "5,3"})
+      ]
+    });
+    tableHtml = `<table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:0.91em;">
+      <tr style="background:#e9f9f0;color:#0ca678;"><th style="padding:6px 10px;border:1px solid #dee2e6;">Indicateur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Valeur</th><th style="padding:6px 10px;border:1px solid #dee2e6;">Détail</th></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Classe modale</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">[30 ; 40[</td><td style="padding:6px 10px;border:1px solid #dee2e6;">22 étudiants — mode conventionnel : 35 min</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Médiane Q₂</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">37,7 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">30 + (40 − 23)/22 × 10 (interpolation dans [30 ; 40[)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Moyenne</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">38 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">3 040 / 80 (avec centres de classes)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₁</td><td style="padding:6px 10px;border:1px solid #dee2e6;">28 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">20 + (20 − 8)/15 × 10 (interpolation dans [20 ; 30[)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃</td><td style="padding:6px 10px;border:1px solid #dee2e6;">47,5 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">40 + (60 − 45)/20 × 10 (interpolation dans [40 ; 50[)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #dee2e6;"><b>IQR</b></td><td style="padding:6px 10px;border:1px solid #dee2e6;">19,5 min</td><td style="padding:6px 10px;border:1px solid #dee2e6;">Q₃ − Q₁ = 47,5 − 28</td></tr>
+    </table>`;
+  }
+
+  return html`${legend}${chart}${tableHtml}`;
+}
+```
+
+## Exercices
+
+:::{#exr-position-indiv}
+## Notes à un contrôle
+
+Les notes de 15 étudiants à un contrôle sur 10 sont, dans l'ordre croissant :
+
+$$4,\ 5,\ 5,\ 6,\ 6,\ 7,\ 7,\ 7,\ 7,\ 7,\ 8,\ 8,\ 8,\ 9,\ 10$$
+
+a) Déterminer le mode.
+b) Calculer la médiane.
+c) Calculer la moyenne.
+d) Calculer $Q_1$, $Q_3$ et l'IQR.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Mode = 7** — la valeur 7 apparaît 5 fois, plus que toute autre.
+
+**b) Médiane** — $n = 15$ (impair), position $\frac{15+1}{2} = 8$. La 8e valeur est **$M = 7$**.
+
+**c) Moyenne** — Somme = $4+5+5+6+6+7+7+7+7+7+8+8+8+9+10 = 104$.
+$$\bar{x} = \frac{104}{15} \approx \mathbf{6{,}93}$$
+On remarque que $\bar{x} = 6{,}93 < M = 7$ : la note 4 tire légèrement la moyenne vers le bas.
+
+**d) Quartiles** ($n = 15$) :
+
+- $Q_1$ : position $\lceil 15 \times 0{,}25 \rceil = 4$ → $x_{(4)} = \mathbf{6}$
+- $Q_3$ : position $\lceil 15 \times 0{,}75 \rceil = 12$ → $x_{(12)} = \mathbf{8}$
+- $\text{IQR} = 8 - 6 = \mathbf{2}$
+
+Résumé en cinq chiffres : (4, 6, 7, 8, 10).
+:::
+:::
+
+:::{#exr-position-satisfaction}
+## Satisfaction des étudiants
+
+Le tableau donne la distribution des scores de satisfaction des 80 étudiants (de 1 = très insatisfait à 5 = très satisfait) :
+
+| Score | 1 | 2 | 3 | 4 | 5 | Total |
+|:-----:|:-:|:-:|:-:|:-:|:-:|:-----:|
+| Effectif | 4 | 12 | 28 | 26 | 10 | 80 |
+
+a) Identifier le mode.
+b) Calculer la médiane.
+c) Calculer la moyenne.
+d) Calculer $Q_1$, $Q_3$ et l'IQR.
+e) Interpréter la relation entre mode, médiane et moyenne.
+
+:::{.callout-note collapse="true" title="Solution"}
+**Effectifs cumulés :** 4, 16, 44, 70, 80.
+
+**a) Mode = 3** (28 étudiants, 35 %).
+
+**b) Médiane** — position 40 : cumul passe de 16 à 44 ≥ 40 → 40e valeur dans score 3. **$M = 3$**.
+
+**c) Moyenne :**
+$$\bar{x} = \frac{4{\times}1 + 12{\times}2 + 28{\times}3 + 26{\times}4 + 10{\times}5}{80} = \frac{266}{80} \approx \mathbf{3{,}33}$$
+
+**d) Quartiles :**
+
+- $Q_1$ : position 20 → cumul 16 < 20 ≤ 44 → score 3 → **$Q_1 = 3$**
+- $Q_3$ : position 60 → cumul 44 < 60 ≤ 70 → score 4 → **$Q_3 = 4$**
+- $\text{IQR} = 4 - 3 = \mathbf{1}$
+
+**e) Interprétation** — Mode = Médiane = $Q_1$ = 3, tandis que $\bar{x} = 3{,}33 > M$ : légère asymétrie à droite due aux scores 4 et 5 qui tirent la moyenne au-dessus de la médiane. L'IQR = 1 indique que les 50 % centraux des étudiants se concentrent entre les scores 3 et 4 : la satisfaction est globalement homogène.
+:::
+:::
+
+### Quiz — Indicateurs de position
+
+```{ojs}
+//| echo: false
+questions_pos = [
+  {
+    enonce: "Parmi les indicateurs suivants, lequel est le seul applicable à une variable qualitative nominale (ex. : mode de transport) ?",
+    choices: ["La médiane", "La moyenne", "Le mode", "Le premier quartile Q₁"],
+    correct: "Le mode",
+    explication: "La médiane et les quartiles nécessitent un ordre (variable au moins ordinale) ; la moyenne requiert des valeurs numériques. Le mode — modalité la plus fréquente — s'applique à tout type de variable, y compris les nominales, car il ne suppose ni ordre ni calcul arithmétique."
+  },
+  {
+    context: "Nb de cours : 3(5), 4(12), 5(18), 6(22), 7(14), 8(9)",
+    enonce: "Pour le nombre de cours par semaine (n = 80), les effectifs cumulés sont 5, 17, 35, 57, 71, 80. Quelle est la médiane ?",
+    choices: ["5 cours", "6 cours", "7 cours", "5,69 cours"],
+    correct: "6 cours",
+    explication: "Pour n = 80 données, la médiane est à la position 40. L'effectif cumulé passe de 35 (valeur 5) à 57 (valeur 6) : la 40e valeur est donc dans le groupe 6 cours. Remarque : 5,69 est la moyenne, pas la médiane."
+  },
+  {
+    enonce: "La moyenne de la durée du trajet, calculée avec les centres de classes (15, 25, 35, 45, 55, 65 min) et les effectifs (8, 15, 22, 20, 10, 5), vaut :",
+    choices: ["35 min — centre de la classe modale", "37,7 min — valeur de la médiane", "38 min", "40 min"],
+    correct: "38 min",
+    explication: "Σ(nᵢ × mᵢ) = 8×15 + 15×25 + 22×35 + 20×45 + 10×55 + 5×65 = 3 040. Moyenne = 3 040 / 80 = 38 min."
+  },
+  {
+    enonce: "Un étudiant ayant un trajet de 150 min est ajouté à l'échantillon. Quel indicateur est le plus affecté ?",
+    choices: ["Le mode", "La médiane", "La moyenne", "Le premier quartile Q₁"],
+    correct: "La moyenne",
+    explication: "La moyenne est sensible aux valeurs extrêmes : 150 min est très éloigné des autres valeurs et tire fortement la moyenne vers le haut. La médiane reste robuste : avec n = 81, la valeur centrale reste vraisemblablement dans [30 ; 40[."
+  },
+  {
+    enonce: "Pour la durée du trajet, on trouve x̄ = 38 min et M ≈ 37,7 min. Que peut-on en déduire sur la forme de la distribution ?",
+    choices: [
+      "Distribution fortement asymétrique à gauche (x̄ << M)",
+      "Distribution quasi-symétrique avec légère queue à droite (x̄ > M)",
+      "Distribution fortement asymétrique à droite (x̄ >> M)",
+      "Rien — seul l'histogramme peut l'indiquer"
+    ],
+    correct: "Distribution quasi-symétrique avec légère queue à droite (x̄ > M)",
+    explication: "x̄ > M indique une queue à droite. Ici x̄ = 38 > M = 37,7 mais l'écart est très faible (0,3 min), indiquant une distribution quasi-symétrique avec une très légère asymétrie positive."
+  },
+  {
+    enonce: "Pour le nombre de cours, Q₁ = 5 et Q₃ = 7. Quelle est la valeur de l'IQR et que représente-t-il ?",
+    choices: [
+      "IQR = 5 — valeur du premier quartile",
+      "IQR = 1 — moitié de l'écart entre Q₁ et Q₃",
+      "IQR = 2 — étendue des 50 % centraux",
+      "IQR = 6 — valeur médiane"
+    ],
+    correct: "IQR = 2 — étendue des 50 % centraux",
+    explication: "IQR = Q₃ − Q₁ = 7 − 5 = 2. Il mesure l'étendue de la moitié centrale des données (40 étudiants entre 5 et 7 cours par semaine). C'est un indicateur de dispersion robuste."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof rep_pos = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(questions_pos.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  questions_pos.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../01-frequency-tables/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tableaux de fréquences</span></span></a>
+  <a href="../03-dispersion-indicators/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Indicateurs de dispersion</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

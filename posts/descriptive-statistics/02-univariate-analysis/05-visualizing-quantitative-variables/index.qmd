@@ -1,0 +1,523 @@
+---
+title: "Visualiser les variables quantitatives"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000023"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Univariate Analysis"]
+---
+
+Pour les variables quantitatives, les graphiques sont construits sur un axe numérique continu — ce qui les distingue fondamentalement des diagrammes en barres et camemberts de la leçon précédente. Quatre représentations couvrent l'essentiel : le **diagramme en bâtons** pour les variables discrètes, l'**histogramme** pour les variables continues, la **fonction de répartition** (visualisée par l'ogive) pour les fréquences cumulées, et la **boîte à moustaches** pour un résumé visuel complet en cinq chiffres.
+
+<concept id="diagramme-en-batons">
+
+## Le diagramme en bâtons
+
+Le diagramme en bâtons est réservé aux **variables quantitatives discrètes**. Chaque valeur entière possible reçoit un bâton (barre fine) dont la hauteur est proportionnelle à l'effectif.
+
+**Ce qui le distingue du diagramme en barres (qualitatif) :**
+
+- L'axe des abscisses est **numérique et continu** : les valeurs sont ordonnées et leurs distances sont significatives.
+- Les bâtons sont fins et séparés, mais les espaces entre eux ne représentent pas de données manquantes — ils traduisent simplement que la variable est discrète.
+- L'ordre des bâtons est **imposé** : valeurs croissantes de gauche à droite.
+
+*Exemple — Variable : Nombre de cours par semaine ($n = 80$)*
+
+| 3 | 4 | 5 | 6 | 7 | 8 |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| 5 | 12 | 18 | 22 | 14 | 9 |
+
+La valeur modale est **6 cours** (22 étudiants, 27,5 %). La distribution est légèrement asymétrique à gauche : peu d'étudiants ont moins de 4 cours, le gros de l'effectif se concentre entre 5 et 7.
+
+::: {.callout-tip title="Bâtons vs barres : le test rapide"}
+Posez-vous la question : l'axe des x est-il une **mesure numérique** (nombre de cours, score, âge…) ou des **catégories** (ville, spécialité…) ?
+- Mesure numérique → bâtons (ou histogramme)
+- Catégories → barres
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_batons -->
+
+<concept id="histogramme">
+
+## L'histogramme
+
+L'histogramme est le graphique de référence pour les **variables quantitatives continues**. Il représente la distribution des données par classes, avec une contrainte essentielle : les barres sont **contiguës** (sans espace), ce qui traduit la continuité de la variable.
+
+**Construction à partir du tableau de fréquences :**
+
+- L'axe des abscisses porte les bornes des classes.
+- La hauteur de chaque barre est proportionnelle à l'**effectif** (ou à la fréquence) de la classe — à condition que toutes les classes aient la **même amplitude**.
+- Si les amplitudes sont inégales, on utilise la **densité de fréquence** $d_i = f_i / h_i$ en ordonnée, de sorte que l'**aire** de chaque barre reste proportionnelle à la fréquence.
+
+:::{#prp-histogramme-aire}
+## Propriété fondamentale de l'histogramme
+
+Pour un histogramme à amplitudes égales $h$, la somme des aires de toutes les barres est proportionnelle à 1 :
+
+$$\sum_{i=1}^{k} n_i \times h = n \times h \quad \text{(effectifs)} \qquad \text{ou} \qquad \sum_{i=1}^{k} f_i = 1 \quad \text{(fréquences)}$$
+
+C'est pourquoi l'histogramme encode l'information dans les **aires**, et non dans les hauteurs seules — contrairement au diagramme en barres.
+:::
+
+*Exemple — Variable : Durée du trajet en minutes ($n = 80$, $h = 10$ min)*
+
+| Classe | $[0;10[$ | $[10;20[$ | $[20;30[$ | $[30;40[$ | $[40;50[$ | $[50;60[$ | $[60;70]$ |
+|--------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Effectif | 3 | 11 | 18 | 22 | 14 | 8 | 4 |
+| Fréquence | 3,8 % | 13,8 % | 22,5 % | 27,5 % | 17,5 % | 10,0 % | 5,0 % |
+
+La classe modale est $[30\,;\,40[$ — c'est la barre la plus haute. La distribution est légèrement asymétrique à droite : peu d'étudiants ont de très longs trajets, mais ils tirent la distribution vers les grandes valeurs.
+
+### Formes typiques d'histogrammes
+
+```{mermaid}
+graph LR
+    A["Distribution\nsymétrique\n(en cloche)"] --- B["Distribution\nasymétrique\nà droite\n(queue →)"]
+    B --- C["Distribution\nasymétrique\nà gauche\n(← queue)"]
+    C --- D["Distribution\nbimodale\n(deux pics)"]
+```
+
+| Forme | Ce que cela signifie | Exemple typique |
+|-------|---------------------|-----------------|
+| **Symétrique** | La moyenne et la médiane coïncident ; valeurs équilibrées des deux côtés | Tailles adultes |
+| **Asymétrique à droite** | Masse à gauche, queue vers les hautes valeurs ; moyenne > médiane | Revenus, durées de trajet |
+| **Asymétrique à gauche** | Masse à droite, queue vers les basses valeurs ; moyenne < médiane | Scores à un examen facile |
+| **Bimodale** | Deux pics distincts — signe de deux sous-populations mélangées | Tailles mixte hommes/femmes |
+
+::: {.callout-warning title="Histogramme ≠ diagramme en barres"}
+La confusion la plus fréquente est de tracer un histogramme avec des espaces entre les barres, ou un diagramme en barres (qualitatif) avec des barres contiguës. L'absence ou la présence d'espace n'est pas esthétique : elle encode le type de variable.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_histogramme -->
+
+<concept id="ogive">
+
+## L'ogive des fréquences cumulées
+
+L'ogive est la représentation graphique des **fréquences cumulées** $F_i$ en fonction des valeurs ou des bornes supérieures des classes. Elle permet de répondre visuellement à des questions du type : *quelle proportion des individus est en dessous d'un seuil donné ?*
+
+**Construction pour une variable continue :**
+
+On place un point pour chaque borne supérieure $b_i$ à la hauteur $F_i$, en ajoutant le point de départ $(b_0, 0)$. On relie les points par des segments.
+
+*Exemple — Ogive de la durée du trajet ($n = 80$)*
+
+| Borne sup. | 0 | 10 | 20 | 30 | 40 | 50 | 60 | 70 |
+|------------|:-:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| $F_i$ (%) | 0 | 3,8 | 17,5 | 40,0 | 67,5 | 85,0 | 95,0 | 100,0 |
+
+**Lire les quartiles sur une ogive :**
+
+En traçant des horizontales à 25 %, 50 % et 75 %, on projette sur l'axe des x pour lire approximativement $Q_1$, la médiane $Q_2$ et $Q_3$.
+
+Sur notre ogive : la ligne à 50 % croise la courbe entre 30 et 40 min → la médiane est estimée à environ **33–34 min**. La lecture précise par interpolation linéaire sera vue dans la leçon sur les mesures de position.
+
+**Construction pour une variable discrète :**
+
+L'ogive discrète est une **fonction en escalier** : $F_i$ reste constante entre deux valeurs consécutives, puis saute à la valeur suivante.
+
+::: {.callout-note title="Ogive et quantiles"}
+L'ogive est l'outil graphique naturel pour les **quantiles** : tout quantile d'ordre $\alpha$ se lit en cherchant $y = \alpha$ sur l'axe vertical et en lisant la valeur correspondante en abscisse.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_ogive -->
+
+<concept id="fonction-de-repartition">
+
+## La fonction de répartition empirique
+
+L'ogive est la représentation graphique d'un objet mathématique fondamental : la **fonction de répartition empirique** (FdR).
+
+:::{#def-fdr}
+## Fonction de répartition empirique
+
+Pour un échantillon de $n$ observations, la **fonction de répartition empirique** associe à chaque valeur $x$ la proportion d'observations inférieures ou égales à $x$ :
+
+$$\hat{F}_n(x) = \frac{\text{nombre d'observations} \leq x}{n}$$
+:::
+
+**Propriétés :**
+
+- $\hat{F}_n$ est comprise entre 0 et 1, et **non décroissante**.
+- $\hat{F}_n(x) = 0$ avant la première valeur observée ; $\hat{F}_n(x) = 1$ à partir du maximum.
+- Sur **données discrètes** : c'est une **fonction en escalier** — elle saute à chaque valeur observée.
+- Sur **données continues groupées** : on interpole linéairement entre les bornes de classes — c'est exactement l'**ogive**.
+
+La FdR et l'ogive ne sont pas deux objets distincts : la FdR est la définition mathématique, l'ogive en est la représentation graphique.
+
+::: {.callout-note title="Lire un quantile sur la FdR"}
+Le quantile d'ordre $\alpha$ se lit en cherchant $\hat{F}_n(x) = \alpha$ sur l'axe vertical, puis en lisant $x$ sur l'axe horizontal — c'est exactement la même opération que sur l'ogive.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_fdr -->
+
+<concept id="boite-a-moustaches">
+
+## La boîte à moustaches
+
+La boîte à moustaches (*boxplot*) est un graphique compact qui résume la distribution d'une variable quantitative à partir de cinq valeurs clés lues directement sur la FdR.
+
+### Les quartiles
+
+:::{#def-quartiles}
+## Quartiles
+
+Les **quartiles** $Q_1$, $Q_2$, $Q_3$ partagent la distribution ordonnée en quatre parties d'effectif égal :
+
+- $Q_1$ : $\hat{F}_n(Q_1) = 0{,}25$ — 25 % des observations sont inférieures ou égales à $Q_1$.
+- $Q_2$ (médiane) : $\hat{F}_n(Q_2) = 0{,}50$.
+- $Q_3$ : $\hat{F}_n(Q_3) = 0{,}75$ — 75 % des observations sont inférieures ou égales à $Q_3$.
+
+L'**écart interquartile** $IQR = Q_3 - Q_1$ mesure l'étendue des 50 % centraux.
+:::
+
+### Construction
+
+La boîte à moustaches s'appuie sur le **résumé à cinq chiffres** : min, $Q_1$, $Q_2$, $Q_3$, max.
+
+```
+min      Q1          Q2          Q3       max
+ |        |           |           |         |
+ ·───── [══════════╪══════════] ──────────  ·
+         ◄── boîte (IQR) ──►
+```
+
+1. La **boîte** s'étend de $Q_1$ à $Q_3$ — elle contient les 50 % centraux.
+2. Le **trait médian** est tracé à $Q_2$ à l'intérieur de la boîte.
+3. Les **moustaches** partent des bords de la boîte jusqu'au dernier point dans $[Q_1 - 1{,}5 \cdot IQR\;;\; Q_3 + 1{,}5 \cdot IQR]$.
+4. Les **valeurs aberrantes** (*outliers*) : tout point hors des moustaches est affiché individuellement.
+
+### Ce qu'on lit dans une boîte à moustaches
+
+| Observation | Ce qu'elle indique |
+|-------------|-------------------|
+| Position du trait $Q_2$ dans la boîte | Symétrie : centré = symétrique, décalé = asymétrique |
+| Largeur de la boîte ($IQR$) | Dispersion des 50 % centraux |
+| Inégalité des moustaches | Asymétrie des queues de distribution |
+| Points isolés au-delà des moustaches | Valeurs aberrantes potentielles |
+
+*Exemple — Durée du trajet ($n = 80$)*
+
+Lus sur l'ogive par interpolation : $Q_1 \approx 23$ min, $Q_2 \approx 34$ min, $Q_3 \approx 44$ min, $IQR \approx 21$ min.
+
+Moustache inférieure jusqu'à $\max(0;\; 23 - 31{,}5) = 0$ min ; moustache supérieure jusqu'à $\min(70;\; 44 + 31{,}5) \approx 70$ min. Aucune valeur aberrante. Le trait médian légèrement décalé à gauche dans la boîte confirme l'asymétrie à droite vue sur l'histogramme.
+
+::: {.callout-tip title="Boxplot : l'outil de comparaison par excellence"}
+Le boxplot révèle toute sa puissance quand on compare **plusieurs groupes** côte à côte — par exemple, la durée du trajet selon le mode de transport. Centre, dispersion et outliers sont visibles en un seul coup d'œil.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_boxplot -->
+
+## Outil interactif : bâtons, histogramme, FdR et boîte à moustaches
+
+Explorez les quatre graphiques sur les données de l'enquête transport.
+
+```{ojs}
+//| echo: false
+viewof vizQuantVar = Inputs.select(
+  new Map([
+    ["Discrète — Cours par semaine",     "disc"],
+    ["Continue — Durée du trajet (min)", "cont"]
+  ]),
+  { label: "Variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+vizQuantChoices = vizQuantVar === "disc"
+  ? new Map([["Diagramme en bâtons", "batons"], ["FdR empirique (escalier)", "fdr_d"]])
+  : new Map([["Histogramme", "histo"], ["FdR / Ogive", "fdr_c"], ["Boîte à moustaches", "boxplot"]])
+```
+
+```{ojs}
+//| echo: false
+viewof vizQuantGraph = Inputs.select(vizQuantChoices, { label: "Type de graphique :" })
+```
+
+```{ojs}
+//| echo: false
+{
+  const notes = {
+    batons:  "Bâtons fins et séparés — chaque valeur entière est représentée individuellement. Valeur modale : 6 cours (27,5 %).",
+    fdr_d:   "La FdR discrète est une fonction en escalier : chaque saut correspond à une valeur observée. La ligne à 50 % donne la médiane = 6 cours.",
+    histo:   "Barres contiguës — signature de l'histogramme. Classe modale [30;40[ avec 27,5 %. Distribution asymétrique à droite.",
+    fdr_c:   "La FdR continue (ogive) est croissante de 0 % à 100 %. Q1, Q2, Q3 se lisent en projetant depuis y = 25 %, 50 %, 75 %. F̂(40) = 67,5 %.",
+    boxplot: "Résumé en 5 chiffres : min ≈ 10, Q1 = 28, Q2 = 37,7, Q3 = 47,5, max ≈ 70 min. IQR = 19,5 min. Pas d'outlier."
+  };
+
+  // Données cours
+  const coursVals = [3,4,5,6,7,8];
+  const coursEff  = [5,12,18,22,14,9];
+  const coursCum  = [5,17,35,57,71,80].map(v => v/80*100);
+
+  // Données trajet (bins)
+  const trajetBins = [
+    {x0:0,x1:10,n:3},{x0:10,x1:20,n:11},{x0:20,x1:30,n:18},
+    {x0:30,x1:40,n:22},{x0:40,x1:50,n:14},{x0:50,x1:60,n:8},{x0:60,x1:70,n:4}
+  ];
+  const trajetCum = trajetBins.map((_, i, arr) => ({
+    x: arr[i].x1,
+    F: arr.slice(0,i+1).reduce((s,b)=>s+b.n,0)/80*100
+  }));
+  trajetCum.unshift({x:0, F:0});
+
+  let chart;
+  const data_cours = coursVals.map((v,i)=>({x:v, y:coursEff[i]}));
+
+  if (vizQuantGraph === "batons") {
+    chart = Plot.plot({
+      x: {label: "Nombre de cours / semaine", tickValues: coursVals},
+      y: {label: "Effectif", domain:[0,28]},
+      title: "Nombre de cours par semaine",
+      marks: [
+        Plot.barY(data_cours, {x:"x", y:"y", fill:"#ffa94d", insetLeft:15, insetRight:15}),
+        Plot.text(data_cours, {x:"x", y:"y", text:d=>d.y+"", dy:-8, fill:"#333"})
+      ]
+    });
+  } else if (vizQuantGraph === "fdr_d") {
+    const steps = [{x:2.5,F:0},...coursVals.map((v,i)=>({x:v,F:coursCum[i]}))];
+    const pts   = coursVals.map((v,i)=>({x:v,F:coursCum[i]}));
+    chart = Plot.plot({
+      x: {label:"Nombre de cours", tickValues:coursVals, domain:[2.5,9]},
+      y: {label:"F̂ₙ(x) (%)", domain:[0,110]},
+      title: "FdR empirique — Cours par semaine",
+      marks: [
+        Plot.line(steps, {x:"x", y:"F", stroke:"#ffa94d", strokeWidth:2.5, curve:"step-after"}),
+        Plot.dot(pts, {x:"x", y:"F", fill:"#ffa94d", r:4}),
+        Plot.ruleY([50], {stroke:"#999", strokeDasharray:"4,2"})
+      ]
+    });
+  } else if (vizQuantGraph === "histo") {
+    chart = Plot.plot({
+      x: {label:"Durée du trajet (min)", domain:[0,70]},
+      y: {label:"Effectif", domain:[0,26]},
+      title: "Histogramme — Durée du trajet (n = 80)",
+      marks: [
+        Plot.rect(trajetBins, {x1:"x0",x2:"x1",y1:0,y2:"n",fill:"#74c0fc",stroke:"white"})
+      ]
+    });
+  } else if (vizQuantGraph === "fdr_c") {
+    chart = Plot.plot({
+      x: {label:"Durée du trajet (min)", domain:[0,72]},
+      y: {label:"F̂(x) (%)", domain:[0,105]},
+      title: "Ogive (FdR continue) — Durée du trajet",
+      marks: [
+        Plot.line(trajetCum, {x:"x", y:"F", stroke:"#74c0fc", strokeWidth:2.5}),
+        Plot.dot(trajetCum,  {x:"x", y:"F", fill:"#74c0fc", r:4}),
+        Plot.ruleY([25,50,75], {stroke:"#adb5bd", strokeDasharray:"4,2"}),
+        Plot.text([{x:72,y:25,t:"Q₁"},{x:72,y:50,t:"Q₂"},{x:72,y:75,t:"Q₃"}],
+          {x:"x", y:"y", text:"t", fill:"#555", fontSize:11})
+      ]
+    });
+  } else {
+    // Boxplot using manual rendering
+    const q1=28, med=37.7, q3=47.5, whisLo=10, whisHi=70;
+    const boxData = [{label:"Durée (min)", q1, med, q3, min:whisLo, max:whisHi}];
+    chart = Plot.plot({
+      x: {label:"Durée du trajet (min)", domain:[0,80]},
+      y: {label:null},
+      height: 150,
+      title: "Boîte à moustaches — Durée du trajet",
+      marks: [
+        Plot.ruleX(boxData, {x1:"min", x2:"max", y:"label", stroke:"#339af0", strokeWidth:2}),
+        Plot.rect(boxData, {x1:"q1", x2:"q3", y1:d=>d.label, y2:d=>d.label, insetTop:-20, insetBottom:-20, fill:"#74c0fc80", stroke:"#339af0", strokeWidth:2}),
+        Plot.tickX(boxData, {x:"med", y:"label", stroke:"#1864ab", strokeWidth:3}),
+        Plot.dot([{x:whisLo},{x:whisHi}], {x:"x", y:()=>"Durée (min)", fill:"#339af0"})
+      ]
+    });
+  }
+
+  return html`
+    ${chart}
+    <div style="background:#e7f5ff;border-left:4px solid #339af0;padding:12px 14px;border-radius:6px;margin-top:12px;">
+      <p style="margin:0;">${notes[vizQuantGraph]}</p>
+    </div>`;
+}
+```
+
+## Exercices
+
+:::{#exr-lire-histogramme}
+### Lire et interpréter un histogramme
+
+Un médecin mesure la taille (en cm) de 100 patients adultes. Les données sont regroupées dans le tableau suivant :
+
+| Classe | Effectif $n_i$ | Fréquence $f_i$ (%) | Fréq. cum. $F_i$ (%) |
+|--------|:--------------:|:-------------------:|:--------------------:|
+| $[155\,;\,160[$ |  5 |  5,0 % |  5,0 % |
+| $[160\,;\,165[$ | 15 | 15,0 % | 20,0 % |
+| $[165\,;\,170[$ | 25 | 25,0 % | 45,0 % |
+| $[170\,;\,175[$ | 30 | 30,0 % | 75,0 % |
+| $[175\,;\,180[$ | 18 | 18,0 % | 93,0 % |
+| $[180\,;\,185]$ |  7 |  7,0 % | 100,0 % |
+| **Total** | **100** | **100 %** | — |
+
+1. Quelle est la classe modale ?
+2. Quelle proportion de patients mesure **moins de 170 cm** ?
+3. Décrivez la forme générale de la distribution (symétrique, asymétrique, bimodale ?). Justifiez à partir des fréquences cumulées.
+4. Un kinésithérapeute souhaite savoir quelle proportion de patients mesure **entre 165 et 175 cm**. Calculez cette valeur.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+1. La classe modale est **$[170\,;\,175[$** avec 30 patients (30 %) — c'est la barre la plus haute de l'histogramme.
+
+2. $F_3 = 45{,}0\,\%$ — **45 % des patients** mesurent moins de 170 cm.
+
+3. La distribution est **légèrement asymétrique à gauche** (queue vers les petites valeurs) : $F_3 = 45\,\%$ montre que moins de la moitié des patients sont en dessous du centre de la plage de valeurs, et la queue gauche est légèrement plus longue. Elle s'approche cependant d'une distribution symétrique.
+
+4. Proportion entre 165 et 175 cm = $f_3 + f_4 = 25\,\% + 30\,\% = \mathbf{55\,\%}$.
+:::
+:::
+
+:::{#exr-ogive}
+### Construire et lire une ogive
+
+En utilisant le tableau de l'exercice précédent (tailles de 100 patients) :
+
+1. Donnez les coordonnées $(x_i,\, F_i)$ des huit points de l'ogive (point de départ inclus).
+2. La médiane se situe dans quelle classe ? Estimez sa valeur par interpolation linéaire.
+3. $Q_3$ tombe exactement sur une borne de classe. Laquelle ? Que signifie $Q_3$ ici ?
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+**1. Points de l'ogive :**
+
+$(155\,;\,0\,\%)$, $(160\,;\,5\,\%)$, $(165\,;\,20\,\%)$, $(170\,;\,45\,\%)$, $(175\,;\,75\,\%)$, $(180\,;\,93\,\%)$, $(185\,;\,100\,\%)$
+
+**2. Médiane :**
+
+$F_3 = 45\,\% < 50\,\% < 75\,\% = F_4$, donc la médiane est dans la classe $[170\,;\,175[$.
+
+Par interpolation linéaire :
+
+$$Q_2 = 170 + \frac{0{,}50 - 0{,}45}{0{,}75 - 0{,}45} \times 5 = 170 + \frac{0{,}05}{0{,}30} \times 5 \approx 170{,}8 \text{ cm}$$
+
+**3. $Q_3$ :**
+
+$F_4 = 75\,\%$ exactement → $Q_3 = 175$ cm. Cela signifie que **75 % des patients mesurent au plus 175 cm**, ou encore que seulement 25 % dépassent 175 cm.
+:::
+:::
+
+:::{#exr-quiz}
+### Quiz — Visualiser les variables quantitatives
+
+```{ojs}
+//| echo: false
+viz_quant_questions = [
+  {
+    enonce: "Quelle est la caractéristique visuelle distinctive de l'histogramme par rapport au diagramme en barres ?",
+    choices: ["Ses barres sont toujours de la même hauteur", "Ses barres sont contiguës (sans espace entre elles)", "Il n'a pas d'axe des ordonnées", "Il est réservé aux variables nominales"],
+    correct: "Ses barres sont contiguës (sans espace entre elles)",
+    explication: "L'absence d'espace entre les barres traduit la continuité de la variable : il n'y a pas de 'trou' possible entre deux classes. C'est la signature visuelle de l'histogramme."
+  },
+  {
+    enonce: "Pour représenter le nombre d'enfants par foyer (0, 1, 2, 3, 4…), quel graphique choisir ?",
+    choices: ["Histogramme", "Diagramme en bâtons", "Camembert", "Diagramme en barres (qualitatif)"],
+    correct: "Diagramme en bâtons",
+    explication: "Le nombre d'enfants est une variable quantitative discrète : elle prend des valeurs entières issues d'un comptage. Le diagramme en bâtons représente chaque valeur entière individuellement."
+  },
+  {
+    enonce: "Dans le tableau de la durée de trajet, la classe [30;40[ a le plus grand effectif (22 étudiants). Comment s'appelle cette classe ?",
+    context: "Durée du trajet (n = 80) — classes de largeur 10 min",
+    choices: ["Classe médiane", "Classe modale", "Classe quartile", "Classe de référence"],
+    correct: "Classe modale",
+    explication: "La classe modale est celle qui a le plus grand effectif — elle correspond au pic de l'histogramme."
+  },
+  {
+    enonce: "Sur l'ogive de la durée du trajet, F(40) = 67,5 %. Qu'est-ce que cela signifie ?",
+    choices: ["67,5 % des étudiants ont un trajet de plus de 40 minutes", "67,5 % des étudiants ont un trajet d'exactement 40 minutes", "67,5 % des étudiants ont un trajet d'au plus 40 minutes", "67,5 % des étudiants ont un trajet compris entre 30 et 40 minutes"],
+    correct: "67,5 % des étudiants ont un trajet d'au plus 40 minutes",
+    explication: "F(x) est la fréquence cumulée : elle représente la proportion d'individus ayant une valeur inférieure ou égale à x. F(40) = 67,5 % signifie que les deux tiers des étudiants ont un trajet qui ne dépasse pas 40 minutes."
+  },
+  {
+    enonce: "Un histogramme montre une longue queue à droite (vers les grandes valeurs). Que peut-on en déduire sur la relation entre moyenne et médiane ?",
+    choices: ["La moyenne est inférieure à la médiane", "La moyenne est supérieure à la médiane", "La moyenne est égale à la médiane", "On ne peut rien en déduire sans calcul"],
+    correct: "La moyenne est supérieure à la médiane",
+    explication: "Les valeurs extrêmes élevées (queue droite) tirent la moyenne vers le haut sans affecter autant la médiane. Dans toute distribution asymétrique à droite : moyenne > médiane > mode."
+  },
+  {
+    enonce: "Pour construire un histogramme à amplitudes inégales, quelle grandeur placer en ordonnée ?",
+    choices: ["L'effectif brut de chaque classe", "La fréquence relative en pourcentage", "La densité de fréquence dᵢ = fᵢ / hᵢ", "Le centre de chaque classe"],
+    correct: "La densité de fréquence dᵢ = fᵢ / hᵢ",
+    explication: "Quand les classes ont des amplitudes différentes, la densité de fréquence dᵢ = fᵢ / hᵢ garantit que l'aire de chaque barre reste proportionnelle à la fréquence."
+  },
+  {
+    enonce: "Quelle est la valeur de F̂ₙ(x) lorsque x est strictement supérieur à la valeur maximale de l'échantillon ?",
+    choices: ["0 — aucune observation n'est au-delà du maximum", "0,5 — la moitié des observations sont en dessous", "1 (100 %) — toutes les observations sont inférieures ou égales à x", "Elle n'est pas définie au-delà du maximum"],
+    correct: "1 (100 %) — toutes les observations sont inférieures ou égales à x",
+    explication: "F̂ₙ(x) = #{observations ≤ x} / n. Dès que x dépasse le maximum, toutes les n observations vérifient la condition, donc F̂ₙ(x) = 1."
+  },
+  {
+    enonce: "Dans une boîte à moustaches, que représente la boîte (rectangle) ?",
+    choices: ["L'ensemble des données, du minimum au maximum", "Les 50 % centraux des données, du premier au troisième quartile (Q1 à Q3)", "Les 25 % des données les plus proches de la médiane", "L'écart entre la moyenne et l'écart-type"],
+    correct: "Les 50 % centraux des données, du premier au troisième quartile (Q1 à Q3)",
+    explication: "La boîte s'étend de Q1 à Q3 et contient exactement 50 % des observations. Sa largeur est l'IQR = Q3 − Q1. La ligne à l'intérieur marque la médiane."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof viz_quant_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(viz_quant_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  viz_quant_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+:::
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../04-visualizing-qualitative-variables/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Visualisation — variables qualitatives</span></span></a>
+  <a href="../../03-bivariate-analysis/01-introduction-bivariate-analysis/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Introduction à l'analyse bivariée</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

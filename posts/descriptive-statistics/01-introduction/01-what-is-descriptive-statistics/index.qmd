@@ -1,0 +1,243 @@
+---
+title: "Qu'est-ce que la statistique descriptive ?"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000010"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000011"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", Introduction]
+---
+
+La statistique est présente dans chaque aspect de notre vie quotidienne : prévisions météo, résultats d'examens, indicateurs économiques, recommandations médicales. Dans cette première leçon, nous posons les bases conceptuelles de la **statistique descriptive** et la distinguons clairement de la statistique inférentielle.
+
+<concept id="definition-et-quotidien">
+
+## La statistique dans notre quotidien
+
+Avant toute définition formelle, observons quelques situations concrètes :
+
+- **"La température moyenne à Paris en juillet est de 25 °C"** — on condense des milliers de relevés en un seul indicateur.
+- **"60 % des étudiants ont validé cet examen"** — on décrit la performance d'un groupe.
+- **"Ce quartier compte 3 200 habitants au km²"** — on caractérise une zone géographique.
+- **"Les ventes ont progressé de 12 % sur un an"** — on compare des données dans le temps.
+
+Dans chacun de ces cas, on cherche à **décrire** une réalité observable à partir de données collectées. C'est précisément le rôle de la statistique descriptive.
+
+> **Définition.** La **statistique descriptive** est l'ensemble des méthodes permettant de **collecter**, **organiser**, **résumer** et **présenter** des données de manière claire et synthétique, sans chercher à généraliser au-delà des données effectivement observées.
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_definition -->
+
+<concept id="trois-objectifs">
+
+## Les trois objectifs fondamentaux
+
+La statistique descriptive poursuit trois objectifs complémentaires et progressifs :
+
+| Objectif | Ce que cela signifie | Exemple |
+|----------|----------------------|---------|
+| **Décrire** | Caractériser les données brutes telles qu'elles sont | Lister les 200 salaires d'une entreprise |
+| **Résumer** | Condenser l'information en quelques indicateurs clés | Calculer la moyenne et la médiane des salaires |
+| **Visualiser** | Représenter graphiquement la structure des données | Tracer un histogramme des salaires |
+
+Ces objectifs s'enchaînent naturellement : on commence par décrire pour pouvoir résumer, puis on résume pour visualiser de façon pertinente.
+
+::: {.callout-tip title="Pourquoi résumer ?"}
+Un tableau de 500 lignes est impossible à interpréter directement. Un seul indicateur bien choisi (par exemple la médiane des salaires) dit souvent plus qu'une liste exhaustive.
+:::
+</concept>
+
+<concept id="descriptive-vs-inferentielle">
+
+## Descriptive vs Inférentielle : une distinction fondamentale
+
+La statistique se divise en deux grandes branches qu'il est essentiel de distinguer dès le départ :
+
+**La statistique descriptive** se limite à décrire les données disponibles. Elle s'arrête rigoureusement à ce qui a été observé.
+
+> *Exemple :* "Dans notre groupe de 200 employés, le salaire moyen est de 2 850 €."
+> → On décrit **ce groupe précis**. Point.
+
+**La statistique inférentielle** utilise un **échantillon** pour tirer des conclusions sur une **population** plus large, avec une quantification de l'incertitude.
+
+> *Exemple :* "D'après ce sondage de 1 000 personnes, on estime que le salaire moyen en France est de 2 500 € ± 80 €."
+> → On **généralise** à l'ensemble des travailleurs français à partir d'un sous-groupe.
+
+**Tableau comparatif :**
+
+| Critère | Descriptive | Inférentielle |
+|---------|-------------|---------------|
+| Données analysées | Toute la population **ou** un échantillon | Uniquement un échantillon |
+| Objectif | Décrire ce qu'on observe | Généraliser à une population |
+| Incertitude | Aucune (on décrit le réel observé) | Présente (marge d'erreur, p-value) |
+| Outils typiques | Moyenne, histogramme, tableau de fréquences | Tests d'hypothèse, intervalles de confiance |
+
+::: {.callout-important}
+Dans ce cours, nous nous concentrons exclusivement sur la **statistique descriptive**. La statistique inférentielle fera l'objet d'un cours séparé.
+:::
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_distinction -->
+
+<concept id="processus-analyse">
+
+## Le processus d'une analyse descriptive
+
+Une analyse descriptive bien conduite suit un processus structuré en six étapes :
+
+```
+1. COLLECTER    →  Enquêtes, mesures, sources secondaires
+       ↓
+2. NETTOYER     →  Traiter les valeurs manquantes, erreurs, doublons
+       ↓
+3. ORGANISER    →  Tableaux de fréquences, tri, structuration
+       ↓
+4. RÉSUMER      →  Indicateurs numériques (moyenne, médiane, écart-type…)
+       ↓
+5. VISUALISER   →  Graphiques adaptés au type de variable
+       ↓
+6. INTERPRÉTER  →  Tirer des conclusions claires et nuancées
+```
+
+Chaque module de ce cours correspond à une famille d'outils utilisés dans les étapes 3 à 6.
+</concept>
+
+## Exercices
+
+:::{#exr-processus}
+### Appliquer le processus d'analyse
+
+Un service de vélo en libre-service souhaite analyser l'utilisation de ses 300 stations sur un mois. Les données disponibles incluent : nombre de trajets par jour, durée des trajets, stations les plus utilisées, profil des utilisateurs (abonnés vs occasionnels), et incidents signalés.
+
+**1.** Associez chacun des éléments ci-dessous à l'une des six étapes du processus d'analyse descriptive.
+
+| Élément | Étape |
+|---------|-------|
+| Calculer le nombre moyen de trajets par station | |
+| Tracer un histogramme des durées de trajet | |
+| Supprimer les trajets d'une durée de 0 seconde (erreurs capteurs) | |
+| Relever automatiquement les données via les bornes numériques | |
+| Construire un tableau classant les stations par fréquentation | |
+| Conclure que les stations proches des gares sont les plus fréquentées | |
+
+**2.** L'analyste calcule que la durée moyenne d'un trajet est de 14 minutes. Peut-il affirmer que « les habitants de la ville font en moyenne des trajets de 14 minutes à vélo » ? Justifiez votre réponse.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+**1. Correspondance étapes — éléments :**
+
+| Élément | Étape |
+|---------|-------|
+| Calculer le nombre moyen de trajets par station | **Résumer** |
+| Tracer un histogramme des durées de trajet | **Visualiser** |
+| Supprimer les trajets d'une durée de 0 seconde | **Nettoyer** |
+| Relever automatiquement les données via les bornes | **Collecter** |
+| Construire un tableau classant les stations | **Organiser** |
+| Conclure que les stations proches des gares sont les plus fréquentées | **Interpréter** |
+
+**2.** Non. La moyenne de 14 minutes décrit uniquement les données de ce service sur ce mois précis — elle ne porte que sur les utilisateurs du vélo en libre-service, pas sur l'ensemble des habitants. Généraliser à la population entière relèverait de la **statistique inférentielle**, qui exige un échantillonnage représentatif et une quantification de l'incertitude.
+:::
+:::
+
+:::{#exr-quiz}
+### Descriptive ou Inférentielle ?
+
+Pour chaque affirmation, déterminez s'il s'agit de statistique **descriptive** ou **inférentielle**. Répondez à toutes les questions pour accéder au récapitulatif final.
+
+```{ojs}
+//| echo: false
+questions_q01 = [
+  {
+    enonce: "La note moyenne de la classe au dernier contrôle est de 12,4 / 20.",
+    choices: ["Descriptive", "Inférentielle"],
+    correct: "Descriptive",
+    explication: "On résume une caractéristique de la classe entière, sans généraliser à d'autres classes ou populations. C'est de la statistique descriptive."
+  },
+  {
+    enonce: "D'après un sondage auprès de 1 200 Français, 63 % seraient favorables à cette réforme.",
+    choices: ["Descriptive", "Inférentielle"],
+    correct: "Inférentielle",
+    explication: "On utilise un échantillon (1 200 personnes) pour estimer l'opinion de toute la population française. La généralisation est au cœur de l'inférence statistique."
+  },
+  {
+    enonce: "Ce graphique montre la répartition des ventes par région pour l'année 2025.",
+    choices: ["Descriptive", "Inférentielle"],
+    correct: "Descriptive",
+    explication: "On présente et organise des données de ventes réelles, sans chercher à prédire ou généraliser au-delà. C'est purement descriptif."
+  },
+  {
+    enonce: "L'analyse révèle un lien statistiquement significatif (p < 0,01) entre tabagisme et risque de cancer.",
+    choices: ["Descriptive", "Inférentielle"],
+    correct: "Inférentielle",
+    explication: "'Statistiquement significatif' implique un test d'hypothèse et une généralisation à une population. C'est de l'inférence statistique."
+  },
+  {
+    enonce: "Le tableau recense le nombre d'accidents de la route par jour de la semaine en 2024.",
+    choices: ["Descriptive", "Inférentielle"],
+    correct: "Descriptive",
+    explication: "On dénombre et organise des données existantes sur l'année 2024. Il n'y a aucune généralisation au-delà de ces données : c'est de la statistique descriptive."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof rep_q01 = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(questions_q01.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  questions_q01.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+:::
+
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <div style="flex:1;min-width:0;"></div>
+  <a href="../02-variable-types/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Types de variables</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

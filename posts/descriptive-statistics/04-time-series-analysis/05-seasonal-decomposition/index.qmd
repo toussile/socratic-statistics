@@ -1,0 +1,494 @@
+---
+title: "Saisonnalité et décomposition"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000045"
+difficulty: "Advanced"
+description: "Décomposition additive et multiplicative, calcul des coefficients saisonniers, série désaisonnalisée."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="decomposition-additive">
+
+## La décomposition additive en pratique
+
+L'objectif de la **décomposition** est de séparer explicitement les composantes d'une série temporelle : tendance $T_t$, saisonnalité $S_t$ et résidu $I_t$. On passe ainsi d'un graphique difficile à lire à trois signaux distincts et interprétables.
+
+:::{#def-decomposition-additive}
+## Décomposition additive
+Dans le **modèle additif** $y_t = T_t + S_t + I_t$, la décomposition produit trois séries :
+
+- $\hat{T}_t$ — tendance estimée (via MM $2\times p$ ou régression)
+- $\hat{S}_t$ — coefficients saisonniers (un par saison, periode fixe $p$)
+- $\hat{I}_t = y_t - \hat{T}_t - \hat{S}_t$ — résidu (irrégulier)
+:::
+
+**Algorithme de décomposition additive classique :**
+
+1. **Estimer la tendance** $\hat{T}_t$ par la MM $2\times p$ (élimine la saisonnalité).
+2. **Calculer les résidus bruts** $e_t = y_t - \hat{T}_t$ (contiennent $S_t + I_t$).
+3. **Moyenne par saison** — pour chaque rang saisonnier $j \in \{1, \ldots, p\}$, calculer $\bar{e}_j = \frac{1}{n_j}\sum_{t :\, t \bmod p = j} e_t$.
+4. **Centrer les coefficients** — soustraire la moyenne des $\bar{e}_j$ pour que $\sum_j \hat{S}_j = 0$.
+5. **Calculer le résidu** — $\hat{I}_t = y_t - \hat{T}_t - \hat{S}_t$.
+
+Cette procédure s'appelle le **ratio-to-moving-average** dans sa version additive.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_decomposition_additive -->
+
+<concept id="coefficients-saisonniers">
+
+## Calculer les coefficients saisonniers
+
+L'étape 3 (moyenne par saison) est le cœur de la méthode. Elle extrait le **profil saisonnier moyen** de la série.
+
+:::{#def-coefficients-saisonniers}
+## Coefficients saisonniers (modèle additif)
+Pour une série mensuelle ($p = 12$), les **coefficients saisonniers** $\hat{S}_1, \ldots, \hat{S}_{12}$ vérifient :
+
+$$\sum_{j=1}^{12} \hat{S}_j = 0$$
+
+Un coefficient $\hat{S}_j > 0$ indique que le mois $j$ est **au-dessus** de la tendance en moyenne (haute saison). Un coefficient $\hat{S}_j < 0$ indique un mois **en dessous** de la tendance (basse saison).
+:::
+
+**Application sur le musée** (à partir de la MM $2\times 12$ de la leçon 02, définie pour $t = 7$ à $30$) :
+
+**Résidus bruts** $e_t = y_t - CMA_t$ pour $t = 7, \ldots, 30$ :
+
+| Mois | Résidu 2021 | Résidu 2022 | Résidu 2023 | Moyenne brute |
+|:----:|:-----------:|:-----------:|:-----------:|:-------------:|
+| Jan | — | −2,55 | −2,72 | **−2,63** |
+| Fév | — | −2,40 | −2,46 | **−2,43** |
+| Mar | — | −1,53 | −1,60 | **−1,57** |
+| Avr | — | −0,16 | −0,23 | **−0,20** |
+| Mai | — | +0,41 | +0,45 | **+0,43** |
+| Jun | — | +2,19 | +2,32 | **+2,26** |
+| Jul | +4,45 | +4,67 | — | **+4,56** |
+| Aoû | +4,12 | +4,25 | — | **+4,18** |
+| Sep | +0,80 | +0,82 | — | **+0,81** |
+| Oct | −1,03 | −1,10 | — | **−1,07** |
+| Nov | −2,47 | −2,53 | — | **−2,50** |
+| Déc | −1,90 | −1,97 | — | **−1,94** |
+
+Somme des moyennes brutes $\approx -0{,}10$ → correction $-0{,}10/12 \approx -0{,}008$
+
+**Coefficients saisonniers centrés :**
+
+| J | F | M | A | M | J | Jl | Ao | S | O | N | D |
+|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:-:|:-:|:-:|:-:|
+| **−2,63** | **−2,42** | **−1,56** | **−0,19** | **+0,44** | **+2,26** | **+4,56** | **+4,19** | **+0,82** | **−1,06** | **−2,49** | **−1,93** |
+
+Somme $= 0{,}00$ ✓
+
+**Lecture :** en juillet, le musée accueille en moyenne **4 560 visiteurs de plus** que ne le prédit la tendance. En janvier, il en accueille **2 630 de moins**. L'amplitude saisonnière totale est $4{,}56 - (-2{,}63) = 7{,}19$ milliers.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_coefficients_saisonniers -->
+
+<concept id="desaisonnalisation">
+
+## La série désaisonnalisée
+
+Une fois les coefficients saisonniers connus, on peut construire la **série désaisonnalisée** : une version de $y_t$ dont la composante saisonnière a été retirée.
+
+:::{#def-serie-desaisonnalisee}
+## Série désaisonnalisée (modèle additif)
+La **série désaisonnalisée** est :
+
+$$y_t^{\text{SA}} = y_t - \hat{S}_{m(t)}$$
+
+où $\hat{S}_{m(t)}$ est le coefficient saisonnier du rang saisonnier $m(t) \in \{1, \ldots, p\}$ correspondant à $t$.
+
+La série $y_t^{\text{SA}} \approx T_t + I_t$ ne contient plus la fluctuation périodique.
+:::
+
+La série désaisonnalisée est très utilisée en économie et statistiques officielles : le **PIB en volume CVS-CJO** (corrigé des variations saisonnières et des jours ouvrables) en est l'exemple le plus connu.
+
+::: {.callout-note title="Désaisonnalisation ≠ lissage"}
+Désaisonnaliser $\neq$ lisser. La série désaisonnalisée conserve les irrégularités $I_t$ : elle n'est pas nécessairement régulière. Elle révèle simplement les fluctuations que la saisonnalité masquait — notamment les retournements de tendance.
+:::
+
+**Résidu final :** $\hat{I}_t = y_t - \hat{T}_t - \hat{S}_{m(t)}$. Un résidu important signal un événement exceptionnel (cf. leçon 01).
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_desaisonnalisation -->
+
+<concept id="additif-vs-multiplicatif">
+
+## Décomposition multiplicative
+
+Quand l'amplitude des fluctuations saisonnières **croît proportionnellement** au niveau de la tendance, le modèle additif est inadapté.
+
+:::{#def-modele-multiplicatif-decomp}
+## Décomposition multiplicative
+Dans le **modèle multiplicatif** $y_t = T_t \times S_t \times I_t$ :
+
+- Les **coefficients saisonniers** $\hat{S}_j$ sont des **ratios** (sans unité) : $\hat{S}_j > 1$ (saison haute), $\hat{S}_j < 1$ (saison basse).
+- Leur contrainte de normalisation est : $\displaystyle\sum_{j=1}^{p} \hat{S}_j = p$ (moyenne = 1).
+- Les résidus bruts sont des ratios : $e_t = y_t / \hat{T}_t$ (au lieu de $y_t - \hat{T}_t$).
+:::
+
+**Exemple :** si $\hat{S}_{\text{Jul}} = 1{,}80$, cela signifie que juillet est en moyenne 80 % au-dessus de la tendance. Si $\hat{S}_{\text{Jan}} = 0{,}55$, janvier est 45 % en dessous de la tendance.
+
+```{mermaid}
+graph LR
+    A[Chronogramme] --> B{Amplitude saisonnière<br>constante ?}
+    B -- Oui --> C["Modèle additif<br>y = T + S + I<br>S_j en unités brutes"]
+    B -- Non, croît avec T --> D["Modèle multiplicatif<br>y = T × S × I<br>S_j en ratios"]
+    D --> E["Ou log-transformation<br>puis modèle additif"]
+```
+
+**Sur le musée :** les écarts été/hiver restent stables (≈ 7 000 visiteurs/an) indépendamment du niveau → **modèle additif** justifié.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_additif_multiplicatif -->
+
+## Application interactive
+
+Explorez la décomposition additive complète des visites mensuelles du musée.
+
+```{ojs}
+//| echo: false
+dcData = {
+  const y = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+    2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+  ];
+  const cma = [
+    null, null, null, null, null, null,
+    4.754, 4.779, 4.804, 4.833, 4.867, 4.904,
+    4.950, 4.996, 5.033, 5.062, 5.088, 5.112,
+    5.133, 5.154, 5.179, 5.204, 5.233, 5.271,
+    5.317, 5.362, 5.400, 5.429, 5.454, 5.479,
+    null, null, null, null, null, null
+  ];
+  // Seasonal coefficients (centered, sum=0)
+  const sc = [-2.63, -2.42, -1.56, -0.19, 0.44, 2.26, 4.56, 4.19, 0.82, -1.06, -2.49, -1.93];
+  return y.map((yi, i) => {
+    const t = i + 1;
+    const mIdx = i % 12; // 0-based month index
+    const trend = cma[i];
+    const seasonal = sc[mIdx];
+    const sa = yi - seasonal; // seasonally adjusted
+    const resid = (trend !== null) ? +(yi - trend - seasonal).toFixed(3) : null;
+    return { t, y: yi, trend, seasonal, sa, resid };
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+viewof dcVue = Inputs.radio(
+  ["Série originale + tendance", "Composante saisonnière", "Série désaisonnalisée", "Résidus"],
+  { value: "Série originale + tendance", label: "Vue :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const months = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+
+  if (dcVue === "Série originale + tendance") {
+    const trendPts = dcData.filter(d => d.trend !== null);
+    return html`<div>
+      ${Plot.plot({
+        width: 650, height: 340,
+        x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t]||"" },
+        y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+        marks: [
+          Plot.line(dcData, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2 }),
+          Plot.dot(dcData, { x: "t", y: "y", fill: "#1098ad", r: 3.2 }),
+          Plot.line(trendPts, { x: "t", y: "trend", stroke: "#e8590c", strokeWidth: 2.5, strokeDasharray: "5,3" }),
+          Plot.dot(trendPts, { x: "t", y: "trend", fill: "#e8590c", r: 2.5 })
+        ]
+      })}
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:.87em;">
+        <span><span style="color:#1098ad;font-weight:bold">—</span> Série brute $y_t$</span>
+        <span><span style="color:#e8590c;font-weight:bold">- -</span> Tendance MM 2×12</span>
+      </div>
+    </div>`;
+
+  } else if (dcVue === "Composante saisonnière") {
+    const sc = [-2.63, -2.42, -1.56, -0.19, 0.44, 2.26, 4.56, 4.19, 0.82, -1.06, -2.49, -1.93];
+    const barData = sc.map((s, i) => ({ month: months[i], j: i + 1, s }));
+    return html`<div>
+      ${Plot.plot({
+        width: 650, height: 300,
+        x: { label: "Mois", tickFormat: (j) => months[j-1] || "", ticks: [1,2,3,4,5,6,7,8,9,10,11,12] },
+        y: { label: "Coefficient saisonnier (milliers)", domain: [-4, 6] },
+        marks: [
+          Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+          Plot.barY(barData, { x: "j", y: "s",
+            fill: d => d.s >= 0 ? "#2f9e44" : "#e03131", opacity: 0.85 }),
+          Plot.text(barData, {
+            x: "j", y: d => d.s + (d.s >= 0 ? 0.2 : -0.25),
+            text: d => d.s.toFixed(2), fontSize: 10,
+            fill: d => d.s >= 0 ? "#2f9e44" : "#e03131", fontWeight: "bold"
+          })
+        ]
+      })}
+      <p style="font-size:.87em;color:#555;margin-top:8px;">Amplitude saisonnière : <b>7,19 k</b> (jul − jan). Somme des coefficients = <b>0,00</b> ✓</p>
+    </div>`;
+
+  } else if (dcVue === "Série désaisonnalisée") {
+    return html`<div>
+      ${Plot.plot({
+        width: 650, height: 340,
+        x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t]||"" },
+        y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+        marks: [
+          Plot.line(dcData, { x: "t", y: "y", stroke: "#1098ad", opacity: 0.35, strokeWidth: 1.5 }),
+          Plot.line(dcData, { x: "t", y: "sa", stroke: "#9c36b5", strokeWidth: 2.5 }),
+          Plot.dot(dcData, { x: "t", y: "sa", fill: "#9c36b5", r: 3 })
+        ]
+      })}
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:.87em;">
+        <span><span style="color:#1098ad;font-weight:bold;opacity:.6">—</span> Série brute (fond)</span>
+        <span><span style="color:#9c36b5;font-weight:bold">—</span> Désaisonnalisée $y_t - \hat S_{m(t)}$</span>
+      </div>
+    </div>`;
+
+  } else {
+    const residPts = dcData.filter(d => d.resid !== null);
+    const pos = residPts.filter(d => d.resid >= 0);
+    const neg = residPts.filter(d => d.resid < 0);
+    const rmse = Math.sqrt(residPts.reduce((s,d) => s + d.resid**2, 0) / residPts.length).toFixed(3);
+    return html`<div>
+      ${Plot.plot({
+        width: 650, height: 300,
+        x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t]||"" },
+        y: { label: "Résidu (milliers)", domain: [-2, 2] },
+        marks: [
+          Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+          Plot.ruleX(pos, { x: "t", y1: 0, y2: "resid", stroke: "#2f9e44", strokeWidth: 2 }),
+          Plot.ruleX(neg, { x: "t", y1: 0, y2: "resid", stroke: "#e03131", strokeWidth: 2 }),
+          Plot.dot(residPts, { x: "t", y: "resid",
+            fill: d => d.resid >= 0 ? "#2f9e44" : "#e03131", r: 3.5 })
+        ]
+      })}
+      <p style="font-size:.87em;color:#555;margin-top:8px;">RMSE des résidus : <b>${rmse} k</b> — valeurs faibles, décomposition satisfaisante.</p>
+    </div>`;
+  }
+}
+```
+
+## Exercices écrits
+
+:::{#exr-coeff-saisonniers}
+## Calculer des coefficients saisonniers trimestriels
+
+Une boulangerie enregistre ses ventes trimestrielles (en milliers d'euros) sur 3 ans. La tendance-cycle a été estimée par MM $2\times 4$ :
+
+| Trimestre | T1 | T2 | T3 | T4 |
+|:----------|:--:|:--:|:--:|:--:|
+| **Ventes 2021** | 18 | 26 | 34 | 22 |
+| **Ventes 2022** | 19 | 27 | 36 | 23 |
+| **Ventes 2023** | 20 | 29 | 38 | 25 |
+| **CMA 2021** | — | 25,1 | 25,3 | 25,5 |
+| **CMA 2022** | 25,7 | 25,9 | 26,1 | 26,3 |
+| **CMA 2023** | 26,5 | 26,7 | — | — |
+
+a) Calculer les résidus bruts $e_t = y_t - CMA_t$ pour les trimestres disponibles.
+b) Calculer les moyennes brutes par trimestre.
+c) Centrer les coefficients (soustraire la moyenne des 4 valeurs) et vérifier que leur somme est nulle.
+d) Interpréter les coefficients obtenus.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Résidus bruts $e_t = y_t - CMA_t$ :**
+
+| T | Ventes | CMA | $e_t$ |
+|:-:|:------:|:---:|:-----:|
+| T2-2021 | 26 | 25,1 | +0,9 |
+| T3-2021 | 34 | 25,3 | +8,7 |
+| T4-2021 | 22 | 25,5 | −3,5 |
+| T1-2022 | 19 | 25,7 | −6,7 |
+| T2-2022 | 27 | 25,9 | +1,1 |
+| T3-2022 | 36 | 26,1 | +9,9 |
+| T4-2022 | 23 | 26,3 | −3,3 |
+| T1-2023 | 20 | 26,5 | −6,5 |
+| T2-2023 | 29 | 26,7 | +2,3 |
+
+**b) Moyennes brutes par trimestre :**
+
+- T1 : $(−6{,}7 − 6{,}5)/2 = −6{,}60$
+- T2 : $(0{,}9 + 1{,}1 + 2{,}3)/3 = +1{,}43$
+- T3 : $(8{,}7 + 9{,}9)/2 = +9{,}30$
+- T4 : $(−3{,}5 − 3{,}3)/2 = −3{,}40$
+
+Somme $= -6{,}60 + 1{,}43 + 9{,}30 - 3{,}40 = +0{,}73$
+
+**c) Centrage :** correction $= 0{,}73 / 4 = 0{,}18$
+
+- $\hat{S}_{\text{T1}} = -6{,}60 - 0{,}18 = \mathbf{-6{,}78}$
+- $\hat{S}_{\text{T2}} = +1{,}43 - 0{,}18 = \mathbf{+1{,}25}$
+- $\hat{S}_{\text{T3}} = +9{,}30 - 0{,}18 = \mathbf{+9{,}12}$
+- $\hat{S}_{\text{T4}} = -3{,}40 - 0{,}18 = \mathbf{-3{,}58}$
+
+Somme $= -6{,}78 + 1{,}25 + 9{,}12 - 3{,}58 = +0{,}01 \approx 0$ ✓ (arrondi)
+
+**d) Interprétation :**
+
+T3 est la haute saison (+9,12 k€ au-dessus de la tendance) — cohérent avec l'été pour une boulangerie (tourisme, vacances). T1 est la très basse saison (−6,78 k€). L'amplitude saisonnière est $9{,}12 − (−6{,}78) = 15{,}90$ k€, soit environ 60 % de la tendance (≈ 26 k€) — saisonnalité très forte.
+:::
+:::
+
+:::{#exr-desaisonnalisation}
+## Interpréter une série désaisonnalisée
+
+Une entreprise de jouets annonce que ses ventes désaisonnalisées ont augmenté de 8 % au T4 2023 par rapport au T4 2022. Ses ventes brutes, elles, ont augmenté de 3 %.
+
+a) Laquelle des deux informations — brutes ou désaisonnalisées — est plus utile pour évaluer la croissance réelle de l'entreprise ? Pourquoi ?
+b) Sachant que les ventes brutes T4 2022 étaient de 120 M€ et le coefficient saisonnier $\hat{S}_{\text{T4}} = +45$ M€, donner la valeur désaisonnalisée en T4 2022.
+c) Déduire les ventes brutes en T4 2023 (à partir des +8 % désaisonnalisés et du même coefficient saisonnier).
+
+:::{.callout-note collapse="true" title="Solution"}
+**a)** L'information **désaisonnalisée** est plus pertinente pour évaluer la croissance réelle. Les ventes brutes T4 sont structurellement gonflées par la saisonnalité de Noël chaque année — la hausse de 3 % est en partie due au simple fait que T4 est toujours une bonne période. La hausse de 8 % **après désaisonnalisation** mesure la progression véritable par rapport à la même période l'année précédente, à saisonnalité comparable.
+
+**b)** Ventes désaisonnalisées T4 2022 :
+
+$$y^{\text{SA}}_{\text{T4-2022}} = y_{\text{T4-2022}} - \hat{S}_{\text{T4}} = 120 - 45 = \mathbf{75 \text{ M€}}$$
+
+**c)** Ventes désaisonnalisées T4 2023 $= 75 \times 1{,}08 = 81$ M€.
+
+Ventes brutes T4 2023 $= y^{\text{SA}}_{\text{T4-2023}} + \hat{S}_{\text{T4}} = 81 + 45 = \mathbf{126 \text{ M€}}$.
+
+(Vérification : hausse brute $= (126 - 120)/120 = 5\%$, pas 3 % — les deux chiffres peuvent diverger si la saisonnalité évolue légèrement d'une année à l'autre.)
+:::
+:::
+
+### Quiz — Saisonnalité et décomposition
+
+```{ojs}
+//| echo: false
+sd_questions = [
+  {
+    enonce: "Dans la décomposition additive, que représentent les résidus bruts e_t = y_t − CMA_t ?",
+    choices: [
+      "Uniquement le résidu aléatoire I_t",
+      "La composante saisonnière S_t et le résidu I_t mélangés",
+      "La tendance T_t et la saisonnalité S_t",
+      "L'erreur de mesure de la MM 2×12"
+    ],
+    correct: "La composante saisonnière S_t et le résidu I_t mélangés",
+    explication: "La MM 2×12 estime T_t et élimine S_t. Donc e_t = y_t − CMA_t ≈ y_t − T_t = S_t + I_t. Les résidus bruts contiennent à la fois la composante saisonnière et les irrégularités. L'étape suivante (moyenne par mois) permet d'extraire S_t en moyennant sur plusieurs années, ce qui atténue I_t."
+  },
+  {
+    enonce: "Pour une série mensuelle, pourquoi la somme des 12 coefficients saisonniers doit-elle être nulle (modèle additif) ?",
+    choices: [
+      "Par convention statistique, pour faciliter les calculs",
+      "Parce que les coefficients sont des probabilités et doivent sommer à 1",
+      "Pour garantir que la composante saisonnière ne crée pas de biais annuel : elle monte et descend autour de la tendance sans l'affecter sur l'année",
+      "Parce que la MM 2×12 a exactement 12 poids qui somment à 1"
+    ],
+    correct: "Pour garantir que la composante saisonnière ne crée pas de biais annuel : elle monte et descend autour de la tendance sans l'affecter sur l'année",
+    explication: "La condition ∑S_j = 0 assure que la saisonnalité est 'neutre' sur une année complète : les mois au-dessus de la tendance compensent exactement les mois en dessous. Sans cette contrainte, les coefficients saisonniers confondraient une partie de la tendance. C'est l'équivalent du fait que ΣS_j = p dans le modèle multiplicatif (moyenne = 1)."
+  },
+  {
+    enonce: "Le coefficient saisonnier de juillet est +4,56 (milliers) et la tendance en juillet 2023 est de 5,42 k. Quelle est la prévision de la valeur brute pour juillet 2023 ?",
+    choices: ["9,98 k", "0,86 k", "4,56 k", "5,42 k"],
+    correct: "9,98 k",
+    explication: "Valeur prédite = T_t + S_j = 5,42 + 4,56 = 9,98 milliers. La décomposition permet de reconstituer une prévision de la série brute en ajoutant le coefficient saisonnier du mois correspondant à la valeur de tendance prédite."
+  },
+  {
+    enonce: "Dans le modèle multiplicatif, un coefficient saisonnier S_j = 1,3 signifie que :",
+    choices: [
+      "La valeur de la série est 1,3 unité au-dessus de la tendance en saison j",
+      "La valeur de la série est 30 % au-dessus de la tendance en saison j",
+      "La tendance est multipliée par 0,3 en saison j",
+      "L'amplitude saisonnière annuelle est 1,3"
+    ],
+    correct: "La valeur de la série est 30 % au-dessus de la tendance en saison j",
+    explication: "Dans le modèle multiplicatif, y_t = T_t × S_t × I_t. Si S_j = 1,3, la valeur prédite est 1,3 × T_t, soit 30 % au-dessus de la tendance. Contrairement au modèle additif où S_j est en unités brutes, les coefficients multiplicatifs sont des ratios sans unité."
+  },
+  {
+    enonce: "Quelle différence y a-t-il entre la série désaisonnalisée et la série lissée par MM 2×12 ?",
+    choices: [
+      "Ce sont exactement les mêmes",
+      "La désaisonnalisée conserve les irrégularités I_t, la MM 2×12 les atténue",
+      "La désaisonnalisée supprime la tendance, la MM 2×12 supprime la saisonnalité",
+      "La désaisonnalisée utilise des poids exponentiels, la MM 2×12 des poids uniformes"
+    ],
+    correct: "La désaisonnalisée conserve les irrégularités I_t, la MM 2×12 les atténue",
+    explication: "La MM 2×12 estime T_t en moyennant sur une année — ce qui atténue à la fois S_t ET I_t. La série désaisonnalisée y_t − Ŝ_{m(t)} ne retire que S_t : elle conserve T_t + I_t. Résultat : la désaisonnalisée est moins lisse que la MM 2×12 (les irrégularités y restent visibles), mais elle révèle les retournements de tendance que le lissage masquerait."
+  },
+  {
+    enonce: "On observe que l'amplitude saisonnière d'une série annuelle double quand la tendance double. Quel modèle est le plus approprié ?",
+    choices: [
+      "Modèle additif, car l'amplitude saisonnière suit la tendance",
+      "Modèle multiplicatif, car l'amplitude est proportionnelle au niveau de la tendance",
+      "Lissage SES, car la série est trop complexe pour être décomposée",
+      "Modèle additif après différenciation première"
+    ],
+    correct: "Modèle multiplicatif, car l'amplitude est proportionnelle au niveau de la tendance",
+    explication: "Le critère de choix est l'évolution de l'amplitude saisonnière avec le niveau. Si l'écart entre pic et creux saisonniers reste constant (en valeur absolue), le modèle additif convient. Si cet écart croît proportionnellement au niveau de la tendance, il faut le modèle multiplicatif — ou une log-transformation suivie d'un modèle additif."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof sd_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(sd_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  sd_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../04-exponential-smoothing/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Lissages exponentiels</span></span></a>
+  <a href="../06-decomposition-prediction/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;text-align:right;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Prévision par décomposition</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

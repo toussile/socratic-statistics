@@ -1,0 +1,73 @@
+---
+title: "Module 04 — Séries temporelles"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+type: "module"
+difficulty: "Intermediate"
+categories: [Statistics, "Descriptive Statistics"]
+listing:
+  - id: ts-lessons
+    contents: "*/index.qmd"
+    type: table
+    fields: [title, description, difficulty]
+    field-display-names:
+      title: "Leçon"
+      description: "Thèmes clés"
+      difficulty: "Niveau"
+    sort: false
+    filter-ui: false
+    sort-ui: false
+---
+
+## À propos de ce module
+
+Une **série temporelle** est une suite d'observations d'une même variable mesurée à intervalles réguliers dans le temps. L'objectif de l'analyse descriptive des séries temporelles est de comprendre *comment* et *pourquoi* une variable évolue : tendance de long terme, fluctuations saisonnières, cycles, irrégularités.
+
+Ce module aborde les outils classiques de description et de décomposition d'une série temporelle, en s'appuyant sur des données économiques, climatiques et démographiques accessibles.
+
+::: {.callout-note title="Prérequis"}
+- Module 02 — Analyse univariée (indicateurs de position et de dispersion, visualisation).
+- Module 03 — Analyse bivariée (régression linéaire simple, lecture d'un nuage de points).
+:::
+
+## Objectifs du module
+
+À l'issue de ce module, vous serez capable de :
+
+- Représenter graphiquement une série temporelle et en identifier les composantes visuelles.
+- Distinguer tendance, composante saisonnière, composante cyclique et résidu.
+- Calculer une moyenne mobile simple et centrée pour lisser une série.
+- Ajuster une droite de tendance par régression linéaire et extrapoler prudemment.
+- Appliquer un lissage exponentiel simple (SES) et interpréter le paramètre $\alpha$.
+- Étendre au lissage de Holt (double exponentiel) pour les séries avec tendance.
+- Étendre au lissage de Holt-Winters (triple exponentiel) pour les séries avec tendance et saisonnalité.
+- Calculer des coefficients saisonniers et interpréter les écarts à la tendance.
+- Choisir entre décomposition additive et multiplicative selon la structure de la série.
+- Calculer une prévision par décomposition et construire un intervalle de confiance.
+
+## Leçons
+
+:::{#ts-lessons}
+:::
+
+**Durée estimée :** 7 heures.
+
+## Les lissages exponentiels — vue d'ensemble
+
+Les lissages exponentiels forment une famille de méthodes qui assignent aux observations passées des poids décroissant exponentiellement avec l'ancienneté. Contrairement aux moyennes mobiles (qui pondèrent uniformément une fenêtre fixe), les lissages exponentiels utilisent **toute l'histoire de la série** tout en privilégiant les observations récentes.
+
+La leçon 04 traite les trois niveaux de la famille, chacun ajoutant une composante supplémentaire :
+
+| Méthode | Paramètres | Formule de lissage | Adapté à |
+|---------|:----------:|--------------------|----------|
+| **SES** — Simple Exponential Smoothing | $\alpha \in (0,1)$ | $\hat{S}_t = \alpha\, y_t + (1-\alpha)\,\hat{S}_{t-1}$ | Série sans tendance ni saisonnalité |
+| **Holt** — double exponentiel | $\alpha,\, \beta \in (0,1)$ | Lissage du niveau + lissage de la tendance | Série avec tendance, sans saisonnalité |
+| **Holt-Winters** — triple exponentiel | $\alpha,\, \beta,\, \gamma \in (0,1)$ | Lissage du niveau + tendance + composante saisonnière | Série avec tendance **et** saisonnalité |
+
+**Rôle du paramètre $\alpha$ :** plus $\alpha$ est proche de 1, plus le lissage réagit rapidement aux variations récentes (peu de mémoire) ; plus $\alpha$ est proche de 0, plus la série lissée est stable mais lente à s'adapter (forte mémoire). Le choix optimal de $\alpha$ (et de $\beta$, $\gamma$) est discuté en leçon 04.
+
+## Jeu de données
+
+Ce module utilisera un ou plusieurs jeux de données à fréquence temporelle régulière (mensuelle ou trimestrielle), distincts du fil rouge. Les données seront présentées dans la leçon 01.

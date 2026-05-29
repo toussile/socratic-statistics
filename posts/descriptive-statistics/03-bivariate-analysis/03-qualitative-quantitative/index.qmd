@@ -1,0 +1,473 @@
+---
+title: "Analyse bivariée — Variable qualitative × Variable quantitative"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000010"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000033"
+difficulty: "Intermediate"
+categories: [Statistics, "Descriptive Statistics", "Bivariate Analysis"]
+---
+
+<concept id="contexte-qual-quant">
+
+## Comparer des distributions par groupe
+
+Lorsque $X$ est **qualitative** et $Y$ est **quantitative**, la question centrale est :
+
+> *La distribution de $Y$ est-elle différente d'un groupe de $X$ à l'autre ?*
+
+Si la distribution de $Y$ est identique quel que soit le groupe, $X$ et $Y$ sont indépendantes. Si au contraire les groupes présentent des niveaux, des dispersions ou des formes différentes, il existe une liaison.
+
+:::{#def-analyse-qual-quant}
+## Analyse qual × quant
+Étudier la liaison entre une variable qualitative $X$ (à $k$ modalités $1, \ldots, k$) et une variable quantitative $Y$ consiste à décrire et comparer les **distributions conditionnelles** de $Y$ au sein de chaque groupe de $X$.
+
+Les trois outils complémentaires sont :
+
+| Outil | Ce qu'il mesure |
+|-------|-----------------|
+| Statistiques conditionnelles | Niveaux, dispersions et positions par groupe |
+| Boîtes à moustaches côte à côte | Comparaison visuelle des distributions |
+| Rapport de corrélation $\eta^2$ | Intensité globale de la liaison (0 à 1) |
+:::
+
+**Sur le fil rouge :** $X$ = Mode de transport (4 modalités), $Y$ = Durée du trajet (min). On cherche à savoir si la durée du trajet dépend du mode de transport choisi.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_contexte_qual_quant -->
+
+<concept id="statistiques-conditionnelles">
+
+## Statistiques conditionnelles
+
+La première étape est de calculer les indicateurs usuels de position et de dispersion **au sein de chaque groupe**.
+
+:::{#def-moyenne-conditionnelle}
+## Moyenne conditionnelle
+La **moyenne conditionnelle** de $Y$ dans le groupe $i$ est :
+
+$$\bar{y}_i = \frac{1}{n_i} \sum_{j \in \text{groupe } i} y_j$$
+
+où $n_i$ est l'effectif du groupe $i$ et la somme porte sur toutes les observations appartenant à ce groupe.
+:::
+
+De même, on calcule pour chaque groupe $i$ :
+
+- L'**écart-type conditionnel** $\sigma_i$ — mesure la dispersion interne du groupe.
+- La **médiane conditionnelle** $M_i$ — position centrale robuste.
+
+::: {.callout-note}
+Si toutes les moyennes conditionnelles $\bar{y}_i$ sont égales à la moyenne globale $\bar{y}$, cela suggère l'absence de liaison (mais ne la prouve pas — les distributions peuvent différer par leur forme ou leur dispersion).
+:::
+
+**Statistiques conditionnelles sur le fil rouge :**
+
+| Mode de transport | $n_i$ | $\bar{y}_i$ (min) | $\sigma_i$ (min) | $M_i$ (min) |
+|:------------------|:-----:|:-----------------:|:----------------:|:-----------:|
+| Bus               |  33   |       ≈ 46        |      ≈ 10        |    ≈ 45     |
+| Voiture           |  24   |       ≈ 41        |      ≈ 11        |    ≈ 40     |
+| Vélo              |  14   |       ≈ 28        |      ≈  7        |    ≈ 27     |
+| Pied              |   9   |       ≈ 17        |      ≈  4        |    ≈ 17     |
+| **Total**         |  80   |     **≈ 38**      |    **≈ 13,5**    |  **≈ 38**   |
+
+Les moyennes conditionnelles varient de 17 à 46 minutes — un écart considérable pour une variable dont la plage est [10 ; 70]. Les groupes Pied et Vélo ont des trajets nettement plus courts, avec une dispersion bien plus faible. Cette hétérogénéité entre groupes est le premier signal d'une liaison.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_stats_conditionnelles -->
+
+<concept id="visualisation-boites">
+
+## Boîtes à moustaches côte à côte
+
+Les statistiques conditionnelles chiffrent la liaison ; le graphique la rend immédiatement visible.
+
+:::{#def-boxplots-cote}
+## Boîtes à moustaches côte à côte
+Un **diagramme de boîtes à moustaches côte à côte** (*side-by-side box plots*) représente, pour chaque modalité de $X$, la distribution de $Y$ sous forme d'une boîte à moustaches :
+
+- **Ligne centrale** → médiane $M_i$
+- **Boîte** → de $Q_{1,i}$ à $Q_{3,i}$ (intervalle interquartile $\text{IQR}_i$)
+- **Moustaches** → s'étendent jusqu'aux observations non aberrantes ($Q_{1,i} - 1{,}5 \times \text{IQR}_i$ et $Q_{3,i} + 1{,}5 \times \text{IQR}_i$)
+- **Points isolés** → valeurs au-delà des moustaches (potentiellement aberrantes)
+:::
+
+**Ce que le graphique révèle :**
+
+- Si les boîtes sont **à des hauteurs très différentes** → les médianes conditionnelles diffèrent → liaison probable.
+- Si les boîtes **se chevauchent peu** → les distributions sont bien séparées → liaison forte.
+- Si les boîtes **se superposent presque entièrement** → les groupes sont similaires → liaison faible.
+
+**Lecture sur le fil rouge :** Les quatre boîtes sont nettement décalées verticalement. La boîte "Pied" (≈ 12–22 min) ne se chevauche pas avec la boîte "Bus" (≈ 38–54 min). La boîte "Voiture" a une dispersion plus grande (σ ≈ 11) que "Pied" (σ ≈ 4), signalant que les automobilistes habitent à des distances très variées.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_boxplots -->
+
+<concept id="rapport-correlation">
+
+## Rapport de corrélation $\eta^2$
+
+Les boîtes à moustaches donnent une impression visuelle ; le **rapport de corrélation** la quantifie.
+
+### Décomposition de la variance
+
+L'idée centrale est de partager la variabilité totale de $Y$ en deux composantes.
+
+:::{#def-decomposition-variance}
+## Décomposition de la variance (SCT = SCE + SCR)
+Soit $\bar{y}$ la moyenne globale et $\bar{y}_i$ la moyenne du groupe $i$. On définit :
+
+$$\underbrace{SCT}_{\text{Total}} = \underbrace{SCE}_{\text{Expliquée}} + \underbrace{SCR}_{\text{Résiduelle}}$$
+
+avec :
+
+$$SCT = \sum_{i=1}^{n} (y_i - \bar{y})^2 \qquad SCE = \sum_{k=1}^{K} n_k (\bar{y}_k - \bar{y})^2 \qquad SCR = \sum_{k=1}^{K} \sum_{i \in k} (y_i - \bar{y}_k)^2$$
+
+- **SCT** (*Somme des Carrés Totale*) : dispersion totale de $Y$ autour de la moyenne globale.
+- **SCE** (*Somme des Carrés Expliquée*) : part de variabilité due aux différences **entre groupes**.
+- **SCR** (*Somme des Carrés Résiduelle*) : part de variabilité due aux différences **au sein des groupes**.
+:::
+
+### Le rapport de corrélation
+
+:::{#def-eta-carre}
+## Rapport de corrélation $\eta^2$
+Le **rapport de corrélation** est la proportion de variance totale expliquée par le regroupement :
+
+$$\eta^2 = \frac{SCE}{SCT} \in [0\,;\,1]$$
+
+- $\eta^2 = 0$ : toutes les moyennes conditionnelles sont égales → aucune liaison.
+- $\eta^2 = 1$ : toutes les observations d'un groupe ont exactement la même valeur → liaison parfaite.
+:::
+
+**Grille d'interprétation :**
+
+| $\eta^2$ | Interprétation |
+|:--------:|----------------|
+| $[0\,;\,0{,}01[$ | Liaison négligeable |
+| $[0{,}01\,;\,0{,}06[$ | Liaison faible |
+| $[0{,}06\,;\,0{,}14[$ | Liaison modérée |
+| $[0{,}14\,;\,1]$ | Liaison forte |
+
+::: {.callout-note}
+Ces seuils (Cohen, 1988) sont des repères conventionnels, pas des règles absolues. L'interprétation doit toujours tenir compte du contexte.
+:::
+
+**Calcul sur le fil rouge :**
+
+$$SCT = 80 \times 13{,}45^2 \approx 14\,472 \quad \text{(min}^2\text{)}$$
+
+$$SCE = 33 \times (46 - 38)^2 + 24 \times (41-38)^2 + 14 \times (28-38)^2 + 9 \times (17-38)^2$$
+$$= 33 \times 64 + 24 \times 9 + 14 \times 100 + 9 \times 441 = 2\,112 + 216 + 1\,400 + 3\,969 = 7\,697$$
+
+$$SCR = 14\,472 - 7\,697 = 6\,775$$
+
+$$\eta^2 = \frac{7\,697}{14\,472} \approx \mathbf{0{,}53}$$
+
+**Interprétation :** Le mode de transport explique environ **53 % de la variabilité** de la durée du trajet — une liaison forte. Le reste (47 %) reflète les différences individuelles au sein de chaque groupe (distance domicile-école, itinéraire, congestion…).
+
+::: {.callout-tip title="$\eta^2$ et corrélation de Pearson"}
+Pour deux variables quantitatives, on verra que $r^2$ (carré du coefficient de Pearson) joue un rôle analogue à $\eta^2$ : il mesure la proportion de variance de $Y$ expliquée par une relation **linéaire** avec $X$. Le rapport de corrélation $\eta^2$, lui, capte toute forme de relation entre groupes — linéaire ou non.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_eta_carre -->
+
+## Application interactive
+
+Explorez la liaison entre le mode de transport et la durée du trajet à travers trois vues complémentaires.
+
+```{ojs}
+//| echo: false
+qqGroups = ({
+  Bus:     {label:"Bus",     color:"#339af0", n:33, mean:46.0, sd:10.0, q1:39, med:46, q3:53, min:18, max:67},
+  Voiture: {label:"Voiture", color:"#f76707", n:24, mean:41.0, sd:11.0, q1:33, med:41, q3:49, min:17, max:67},
+  Velo:    {label:"Vélo",    color:"#2f9e44", n:14, mean:28.0, sd: 7.0, q1:22, med:27, q3:33, min:13, max:47},
+  Pied:    {label:"Pied",    color:"#862e9c", n: 9, mean:17.0, sd: 4.0, q1:14, med:17, q3:20, min:10, max:26}
+})
+```
+
+```{ojs}
+//| echo: false
+qqAll   = ({n:80, mean:38.0, sd:13.45, median:37.7})
+```
+
+```{ojs}
+//| echo: false
+qqSCT   = 14427.5
+```
+
+```{ojs}
+//| echo: false
+qqSCE   =  7649.5
+```
+
+```{ojs}
+//| echo: false
+qqSCR   =  6778.0
+```
+
+```{ojs}
+//| echo: false
+qqEta2  = +(qqSCE/qqSCT).toFixed(3)
+```
+
+```{ojs}
+//| echo: false
+viewof qqVue = Inputs.radio(
+  new Map([
+    ["Boîtes à moustaches",    "box"],
+    ["Statistiques par groupe", "stats"],
+    ["Décomposition η²",       "eta"]
+  ]),
+  { label: "Vue :", value: "box" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const grps = Object.values(qqGroups);
+
+  if (qqVue === "box") {
+    const boxData = grps.flatMap(g => [
+      {transport:g.label, stat:"min",  val:g.min,  color:g.color},
+      {transport:g.label, stat:"q1",   val:g.q1,   color:g.color},
+      {transport:g.label, stat:"med",  val:g.med,  color:g.color},
+      {transport:g.label, stat:"q3",   val:g.q3,   color:g.color},
+      {transport:g.label, stat:"max",  val:g.max,  color:g.color}
+    ]);
+    const bpData = grps.map(g => ({
+      x:g.label, q1:g.q1, q3:g.q3, med:g.med, min:g.min, max:g.max, color:g.color
+    }));
+    const chart = Plot.plot({
+      x: {label:"Mode de transport", domain:grps.map(g=>g.label)},
+      y: {label:"Durée du trajet (min)", domain:[0,80]},
+      title: "Distribution de la durée selon le mode de transport",
+      marks: [
+        // Whiskers
+        Plot.ruleX(bpData, {x:"x", y1:"min", y2:"q1", stroke:d=>d.color, strokeWidth:1.5}),
+        Plot.ruleX(bpData, {x:"x", y1:"q3",  y2:"max", stroke:d=>d.color, strokeWidth:1.5}),
+        // Box
+        Plot.rect(bpData, {x1:d=>d.x, x2:d=>d.x, y1:"q1", y2:"q3", fill:d=>d.color+"40", stroke:d=>d.color, strokeWidth:2, insetLeft:-18, insetRight:-18}),
+        // Median
+        Plot.tickX(bpData, {x:"x", y:"med", stroke:d=>d.color, strokeWidth:3}),
+        // Grand mean
+        Plot.ruleY([qqAll.mean], {stroke:"#e8590c", strokeDasharray:"5,3", strokeWidth:1.5})
+      ]
+    });
+    return html`${chart}
+      <p style="font-size:0.85em;color:#555;margin-top:4px;">La ligne orange pointillée indique la moyenne globale (${qqAll.mean} min).</p>`;
+  }
+
+  if (qqVue === "stats") {
+    const hd = `<tr style="background:#fdf3e7;color:#e8590c;">
+      <th style="padding:6px 10px;border:1px solid #dee2e6;">Groupe</th>
+      <th style="padding:6px 10px;border:1px solid #dee2e6;">n</th>
+      <th style="padding:6px 10px;border:1px solid #dee2e6;">Moyenne (min)</th>
+      <th style="padding:6px 10px;border:1px solid #dee2e6;">Écart-type (min)</th>
+      <th style="padding:6px 10px;border:1px solid #dee2e6;">Médiane (min)</th></tr>`;
+    const rows = grps.map(g => `<tr>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;font-weight:bold;color:${g.color};">${g.label}</td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;">${g.n}</td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;">${g.mean.toFixed(1)}</td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;">${g.sd.toFixed(1)}</td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;">${g.med}</td></tr>`).join("");
+    const tot = `<tr style="background:#fdf3e7;">
+      <td style="padding:6px 10px;border:1px solid #dee2e6;"><b>Total</b></td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;"><b>${qqAll.n}</b></td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;"><b>${qqAll.mean.toFixed(1)}</b></td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;"><b>${qqAll.sd.toFixed(2)}</b></td>
+      <td style="padding:6px 10px;border:1px solid #dee2e6;text-align:center;"><b>${qqAll.median}</b></td></tr>`;
+    return html`<table style="border-collapse:collapse;width:100%;margin-top:8px;">${hd}${rows}${tot}</table>
+      <p style="font-size:0.87em;color:#555;margin-top:8px;">Les moyennes varient de ${Math.min(...grps.map(g=>g.mean)).toFixed(1)} à ${Math.max(...grps.map(g=>g.mean)).toFixed(1)} min — écart de ${(Math.max(...grps.map(g=>g.mean))-Math.min(...grps.map(g=>g.mean))).toFixed(1)} min entre le mode le plus lent (Bus) et le plus rapide (Pied).</p>`;
+  }
+
+  // eta²
+  const pctSCE = (qqEta2*100).toFixed(1);
+  const pctSCR = ((1-qqEta2)*100).toFixed(1);
+  return html`
+    <div style="background:#f8f9fa;border-radius:8px;padding:16px;margin-top:8px;">
+      <h5 style="margin:0 0 10px;">Décomposition η² = SCE / SCT</h5>
+      <div style="margin:8px 0;font-size:0.92em;">
+        <strong>SCT</strong> (Somme des Carrés Totale) = ${qqSCT.toFixed(1)} — variance totale de la durée (tous groupes confondus)
+      </div>
+      <div style="margin:8px 0;font-size:0.92em;">
+        <strong>SCE</strong> (Somme des Carrés Expliquée) = ${qqSCE.toFixed(1)} — variabilité inter-groupes (due aux différences de moyennes)
+      </div>
+      <div style="margin:8px 0;font-size:0.92em;">
+        <strong>SCR</strong> (Somme des Carrés Résiduelle) = ${qqSCR.toFixed(1)} — variabilité intra-groupes (individuelle)
+      </div>
+      <div style="display:flex;gap:4px;height:24px;border-radius:4px;overflow:hidden;margin:12px 0;">
+        <div style="width:${pctSCE}%;background:#339af0;display:flex;align-items:center;justify-content:center;color:white;font-size:0.8em;font-weight:bold;">SCE</div>
+        <div style="width:${pctSCR}%;background:#dee2e6;display:flex;align-items:center;justify-content:center;font-size:0.8em;color:#555;">SCR</div>
+      </div>
+      <p style="font-size:1.05em;font-weight:bold;color:#e8590c;margin:8px 0 0;">
+        η² = ${qqSCE.toFixed(1)} / ${qqSCT.toFixed(1)} = ${qqEta2} → Le mode de transport explique ${pctSCE} % de la variabilité de la durée du trajet.
+      </p>
+    </div>`;
+}
+```
+
+## Exercices
+
+:::{#exr-qual-quant-lecture}
+## Lire des statistiques conditionnelles
+
+Un sondage auprès de 60 élèves donne les résultats suivants pour la variable *Heures de sommeil* selon le *niveau scolaire* (Secondaire, Lycée, Supérieur) :
+
+| Niveau | $n_i$ | $\bar{y}_i$ (h) | $\sigma_i$ (h) |
+|:-------|:-----:|:---------------:|:--------------:|
+| Secondaire | 20 | 8,5 | 0,8 |
+| Lycée | 25 | 7,2 | 1,1 |
+| Supérieur | 15 | 6,4 | 1,3 |
+| **Total** | 60 | — | — |
+
+a) Calculer la moyenne globale $\bar{y}$ (pondérée par les effectifs).
+b) Le fait que $\sigma_{\text{Supérieur}} > \sigma_{\text{Secondaire}}$ indique-t-il que les étudiants du supérieur dorment en moyenne moins bien ? Expliquer.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Moyenne globale pondérée :**
+
+$$\bar{y} = \frac{20 \times 8{,}5 + 25 \times 7{,}2 + 15 \times 6{,}4}{60} = \frac{170 + 180 + 96}{60} = \frac{446}{60} \approx \mathbf{7{,}43 \text{ h}}$$
+
+**b) Interprétation de l'écart-type conditionnel :**
+
+Non. L'écart-type $\sigma_i$ mesure la **dispersion interne** au sein d'un groupe — il indique à quel point les observations sont étalées autour de la moyenne du groupe. Un $\sigma$ plus grand signifie que les durées de sommeil sont plus hétérogènes entre étudiants du supérieur (certains dorment 5 h, d'autres 8 h), pas qu'ils dorment moins bien en moyenne. C'est la moyenne conditionnelle $\bar{y}_i$ qui mesure le niveau moyen.
+:::
+:::
+
+:::{#exr-qual-quant-eta}
+## Calculer et interpréter η²
+
+Reprendre les données de l'exercice précédent (60 élèves, 3 niveaux, $\bar{y} \approx 7{,}43$ h).
+
+a) Calculer la SCE (somme des carrés expliquée par le niveau scolaire).
+b) Sachant que $\sigma_{\text{total}} \approx 1{,}05$ h, calculer SCT puis $\eta^2$.
+c) Interpréter $\eta^2$ dans ce contexte.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) SCE :**
+
+$$SCE = n_1(\bar{y}_1 - \bar{y})^2 + n_2(\bar{y}_2 - \bar{y})^2 + n_3(\bar{y}_3 - \bar{y})^2$$
+$$= 20(8{,}5 - 7{,}43)^2 + 25(7{,}2 - 7{,}43)^2 + 15(6{,}4 - 7{,}43)^2$$
+$$= 20 \times 1{,}145 + 25 \times 0{,}053 + 15 \times 1{,}061$$
+$$= 22{,}9 + 1{,}3 + 15{,}9 = \mathbf{40{,}1}$$
+
+**b) SCT et η² :**
+
+$$SCT = n \times \sigma_{\text{total}}^2 = 60 \times 1{,}05^2 = 60 \times 1{,}1025 = 66{,}15$$
+
+$$\eta^2 = \frac{SCE}{SCT} = \frac{40{,}1}{66{,}15} \approx \mathbf{0{,}61}$$
+
+**c) Interprétation :**
+
+$\eta^2 \approx 0{,}61$ indique une **liaison forte** : le niveau scolaire explique environ 61 % de la variabilité des durées de sommeil. Les 39 % restants correspondent à des facteurs individuels non capturés par le niveau scolaire (activités extrascolaires, heure de coucher…).
+:::
+:::
+
+### Quiz — Analyse qual × quant
+
+```{ojs}
+//| echo: false
+qual_quant_questions = [
+  {
+    enonce: "Que mesure la moyenne conditionnelle ȳᵢ de Y dans le groupe i ?",
+    choices: ["La médiane de Y pour les observations du groupe i", "La valeur moyenne de Y pour les observations appartenant au groupe i de X", "La valeur de Y la plus fréquente dans le groupe i", "La proportion de Y par rapport au total"],
+    correct: "La valeur moyenne de Y pour les observations appartenant au groupe i de X",
+    explication: "La moyenne conditionnelle ȳᵢ = (1/nᵢ) Σ yⱼ est la moyenne arithmétique de Y calculée uniquement sur les observations du groupe i."
+  },
+  {
+    enonce: "Dans le tableau des statistiques conditionnelles Transport × Durée, quelle observation indique le plus clairement une liaison ?",
+    choices: ["Les effectifs des groupes sont différents", "Les moyennes conditionnelles varient de ≈ 17 min (Pied) à ≈ 46 min (Bus)", "L'écart-type global est de 13,45 min", "Le groupe Bus a le plus grand effectif (33 étudiants)"],
+    correct: "Les moyennes conditionnelles varient de ≈ 17 min (Pied) à ≈ 46 min (Bus)",
+    explication: "Un écart de 46 − 17 = 29 minutes entre la moyenne du groupe Bus et celle du groupe Pied est le signal le plus fort que la durée du trajet dépend du mode de transport."
+  },
+  {
+    enonce: "Sur un diagramme de boîtes à moustaches côte à côte, que signifie un fort chevauchement des boîtes de deux groupes ?",
+    choices: ["Les deux groupes ont des distributions de Y très similaires — la liaison est faible pour ce contraste", "Les deux groupes sont identiques", "Y ne varie pas au sein des groupes", "La liaison est très forte pour ce contraste"],
+    correct: "Les deux groupes ont des distributions de Y très similaires — la liaison est faible pour ce contraste",
+    explication: "Quand les boîtes de deux groupes se chevauchent largement, leurs distributions interquartiles sont proches — connaître l'appartenance à l'un ou l'autre groupe n'apporte pas beaucoup d'information sur Y."
+  },
+  {
+    enonce: "Dans la décomposition SCT = SCE + SCR, que représente la SCR ?",
+    choices: ["La variabilité de Y entre les différents groupes", "La variabilité de Y due aux différences entre individus au sein d'un même groupe", "La variance de X", "La somme des effectifs de chaque groupe"],
+    correct: "La variabilité de Y due aux différences entre individus au sein d'un même groupe",
+    explication: "SCR mesure à quel point les observations s'écartent de leur moyenne de groupe. C'est la part de variabilité que le regroupement par X n'explique pas."
+  },
+  {
+    enonce: "Le rapport de corrélation η² vaut 0,53 pour la liaison Transport × Durée. Quelle interprétation est correcte ?",
+    choices: ["η² > 0,5 signifie que la liaison est significative", "Le mode de transport explique 53 % de la variabilité de la durée du trajet", "53 % des étudiants ont un trajet conforme à la moyenne", "η² = 0,53 est la corrélation de Pearson"],
+    correct: "Le mode de transport explique 53 % de la variabilité de la durée du trajet",
+    explication: "η² = SCE/SCT = proportion de variance totale expliquée par le regroupement. η² ≈ 0,53 signifie que 53 % de la dispersion totale de Y s'explique par les différences de moyennes entre groupes."
+  },
+  {
+    enonce: "Si η² = 0 pour la liaison entre X et Y, qu'est-ce que cela implique nécessairement ?",
+    choices: ["Toutes les observations ont la même valeur", "Toutes les moyennes conditionnelles ȳᵢ sont égales à la moyenne globale ȳ", "X et Y ont la même variance", "Les effectifs des groupes sont identiques"],
+    correct: "Toutes les moyennes conditionnelles ȳᵢ sont égales à la moyenne globale ȳ",
+    explication: "η² = SCE/SCT = 0 implique SCE = 0, donc ȳₖ = ȳ pour tout k. Toutes les moyennes conditionnelles sont égales à la moyenne globale — connaître le groupe n'apporte aucune information sur le niveau moyen de Y."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof qual_quant_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(qual_quant_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  qual_quant_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../02-contingency-tables/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tableaux de contingence</span></span></a>
+  <a href="../04-quantitative-quantitative/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Quanti × Quanti</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

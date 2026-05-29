@@ -1,0 +1,44 @@
+---
+title: "Module 01 — Introduction à la statistique descriptive"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000020"
+type: "module"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics"]
+---
+
+## À propos de ce module
+
+La statistique descriptive a pour objectif de **résumer et représenter** un jeu de données de façon rigoureuse et interprétable, sans généraliser au-delà des données observées. Ce premier module pose les fondations conceptuelles indispensables à tous les modules suivants.
+
+Vous y apprendrez à reconnaître la nature d'une variable, à distinguer population et échantillon, et à situer chaque outil statistique dans la démarche d'analyse. Ces repères seront mobilisés à chaque étape du cours.
+
+::: {.callout-note title="Prérequis"}
+Aucun prérequis mathématique au-delà du lycée. Une première manipulation de données tabulaires (tableur, tableau) est un plus mais n'est pas obligatoire.
+:::
+
+## Objectifs du module
+
+À l'issue de ce module, vous serez capable de :
+
+- Définir la statistique descriptive et la distinguer de la statistique inférentielle.
+- Identifier le type d'une variable (qualitative nominale/ordinale, quantitative discrète/continue).
+- Différencier population, individu statistique, échantillon et variable.
+- Associer chaque type de variable à la famille d'outils descriptifs appropriée.
+
+## Leçons
+
+| N° | Titre | Difficulté | Thèmes clés |
+|:--:|-------|:----------:|-------------|
+| 01 | [Qu'est-ce que la statistique descriptive ?](01-what-is-descriptive-statistics/) | Débutant | Définition, démarche, cas d'usage |
+| 02 | [Types de variables statistiques](02-variable-types/) | Débutant | Qualitative, quantitative, échelles de mesure |
+| 03 | [Population, échantillon et collecte de données](03-population-sample-and-data/) | Débutant | Individu, variable, modalité, données brutes |
+| 04 | [Panorama des outils de la statistique descriptive](04-tools-overview/) | Débutant | Tableaux, indicateurs, graphiques — quand utiliser quoi |
+
+**Durée estimée :** 3 heures (≈ 45 min par leçon).
+
+## Fil rouge
+
+Ce module introduit le **jeu de données fil rouge** utilisé tout au long du cours : une enquête menée auprès de **80 étudiants** sur leurs habitudes de transport et de travail. Les leçons 01 à 04 se familiarisent avec ce jeu de données avant de l'analyser en profondeur à partir du module 02.

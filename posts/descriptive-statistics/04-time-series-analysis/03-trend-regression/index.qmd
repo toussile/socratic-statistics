@@ -1,0 +1,544 @@
+---
+title: "Tendance et droite de régression"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000043"
+difficulty: "Intermediate"
+description: "Ajustement d'une droite de tendance par régression, codage temporel, extrapolation prudente."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="codage-temps">
+
+## Coder le temps : transformer une série en nuage de points
+
+Après avoir lissé une série pour révéler sa tendance (leçon 02), nous allons **modéliser** cette tendance à l'aide d'une droite. L'idée est simple : si la tendance est approximativement linéaire, on peut écrire
+
+$$T_t = a + b\,t, \qquad t = 1, 2, \ldots, T$$
+
+Le **codage du temps** consiste à remplacer les dates du calendrier (janvier 2021, février 2021, …) par des entiers $t = 1, 2, \ldots, T$. On obtient ainsi un nuage de points $(t,\, y_t)$ auquel on peut appliquer la régression des moindres carrés ordinaires (OLS) vue au module 03.
+
+:::{#def-codage-temps}
+## Codage du temps
+Pour une série $y_1, \ldots, y_T$, on note $t = 1, 2, \ldots, T$ l'**indice temporel** entier. La droite de tendance OLS est :
+
+$$\hat{T}_t = \hat{a} + \hat{b}\,t$$
+
+avec les formules habituelles :
+
+$$\hat{b} = \frac{\displaystyle\sum_{t=1}^{T}(t - \bar{t})(y_t - \bar{y})}{\displaystyle\sum_{t=1}^{T}(t - \bar{t})^2} \qquad \hat{a} = \bar{y} - \hat{b}\,\bar{t}$$
+
+où $\bar{t} = (T+1)/2$ et $\bar{y} = \frac{1}{T}\sum_{t=1}^{T} y_t$.
+:::
+
+**Pourquoi utiliser $t = 1, 2, \ldots$ plutôt que les dates réelles ?**
+
+- On évite la manipulation de formats de dates.
+- Les formules OLS s'appliquent sans transformation supplémentaire.
+- L'interprétation de $\hat{b}$ est immédiate : augmentation moyenne de $y$ par **une unité de temps** (ici, par mois).
+
+::: {.callout-note title="Centrage de l'indice temporel (optionnel)"}
+On peut aussi poser $t^* = t - \bar{t}$, ce qui centre les indices autour de zéro. L'ordonnée à l'origine $\hat{a}$ devient alors la valeur prédite au milieu de la série. Les deux codages donnent exactement la même droite — seule l'interprétation de $\hat{a}$ change.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_codage_temps -->
+
+<concept id="ols-temporelle">
+
+## Ajuster la droite de tendance OLS
+
+Rappelons les propriétés de $\bar{t}$ pour une série de longueur $T$ :
+
+$$\bar{t} = \frac{T+1}{2}, \qquad \sum_{t=1}^{T}(t-\bar{t})^2 = \frac{T(T^2-1)}{12}$$
+
+Ces expressions se simplifient considérablement par rapport au cas général, et permettent d'obtenir $\hat{b}$ sans calculer explicitement chaque écart $(t - \bar{t})$.
+
+:::{#prp-ols-serie}
+## Coefficients OLS pour une série temporelle
+Avec $t = 1, \ldots, T$, $\bar{t} = (T+1)/2$ et $S_{tt} = T(T^2-1)/12$ :
+
+$$\hat{b} = \frac{\displaystyle\sum_{t=1}^{T}(t-\bar{t})\,y_t}{S_{tt}}, \qquad \hat{a} = \bar{y} - \hat{b}\,\bar{t}$$
+:::
+
+**Application au jeu de données du musée ($T = 36$, pas mensuel) :**
+
+Les 36 observations mensuelles de janvier 2021 à décembre 2023 donnent :
+
+$$\bar{t} = \frac{37}{2} = 18{,}5 \qquad S_{tt} = \frac{36 \times (36^2-1)}{12} = \frac{36 \times 1295}{12} = 3\,885$$
+
+En calculant la somme des produits croisés $\sum(t - \bar{t})\,y_t$ sur les données :
+
+$$\hat{b} \approx \frac{384{,}0}{3\,885} \approx 0{,}099 \text{ milliers/mois} \approx 99 \text{ visites/mois}$$
+
+$$\hat{a} = \bar{y} - \hat{b}\,\bar{t} \approx 5{,}21 - 0{,}099 \times 18{,}5 \approx 3{,}38$$
+
+La droite de tendance ajustée est donc :
+
+$$\hat{T}_t = 3{,}38 + 0{,}099\,t$$
+
+**Interprétation :** en moyenne, la fréquentation du musée augmente d'environ **99 visites par mois** sur la période 2021–2023. En janvier 2021 ($t=1$), la fréquentation tendancielle est estimée à $3{,}38 + 0{,}099 = 3{,}48$ milliers de visites.
+
+**Coefficient de détermination $R^2$ :** le modèle linéaire explique environ $R^2 \approx 0{,}18$ de la variance totale de la série brute. Ce $R^2$ faible est attendu : la saisonnalité, non capturée par une simple droite, représente une part importante de la variance.
+
+::: {.callout-warning title="$R^2$ faible ≠ modèle inutile"}
+Sur une série avec forte saisonnalité, le $R^2$ de la droite de tendance est nécessairement faible. L'objectif n'est pas de « bien expliquer » les données brutes, mais d'**estimer la direction de long terme**. Le $R^2$ prendra tout son sens dans la leçon 05 lors de la décomposition complète.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_ols_temporelle -->
+
+<concept id="residus-tendance">
+
+## Résidus et tendance désaisonnalisée
+
+Une fois la droite ajustée, les résidus $\hat{\varepsilon}_t = y_t - \hat{T}_t$ contiennent principalement la **saisonnalité et les irrégularités**. On peut aussi les comparer à la série lissée par MM 2×12 (tendance-cycle pure) pour vérifier la cohérence des deux approches.
+
+:::{#def-serie-desaisonnalisee}
+## Composante résiduelle (modèle linéaire)
+Dans le modèle additif $y_t = T_t + S_t + I_t$, si l'on approche $T_t$ par $\hat{T}_t = \hat{a} + \hat{b}\,t$, alors :
+
+$$\hat{\varepsilon}_t = y_t - \hat{T}_t \approx S_t + I_t$$
+
+La série des résidus $\hat{\varepsilon}_t$ révèle le **profil saisonnier résiduel** — à condition que la tendance soit effectivement linéaire.
+:::
+
+**Lecture des résidus sur le musée :**
+
+| Période | Signe de $\hat{\varepsilon}_t$ | Interprétation |
+|---------|:------------------------------:|----------------|
+| Jan–Mar | Négatif | Fréquentation sous la tendance (hiver) |
+| Juil–Aoû | Très positif | Pic estival bien au-dessus de la tendance |
+| Oct–Déc | Légèrement négatif | Retour vers la tendance en fin d'année |
+
+Ce profil cohérent confirme la **saisonnalité annuelle** visible sur le chronogramme.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_residus_tendance -->
+
+<concept id="extrapolation">
+
+## Extrapolation : prolonger la tendance
+
+La droite de tendance peut être utilisée pour **projeter** la série au-delà de la période observée, en substituant $t > T$ dans l'équation $\hat{T}_t = \hat{a} + \hat{b}\,t$.
+
+:::{#def-extrapolation}
+## Extrapolation par la droite de tendance
+Étendre la droite $\hat{T}_t = \hat{a} + \hat{b}\,t$ à des valeurs $t > T$ s'appelle une **extrapolation** (ou prévision par tendance). Pour un horizon $h$ pas de temps au-delà de la fin de la série :
+
+$$\hat{T}_{T+h} = \hat{a} + \hat{b}\,(T + h)$$
+:::
+
+**Exemple :** projeter la fréquentation du musée pour janvier 2024 ($t = 37$, donc $h = 1$) :
+
+$$\hat{T}_{37} = 3{,}38 + 0{,}099 \times 37 \approx 7{,}05 \text{ milliers de visites}$$
+
+::: {.callout-warning title="Limites de l'extrapolation"}
+L'extrapolation suppose que la tendance linéaire **se maintient** au-delà de la période observée. Plus l'horizon $h$ est grand, plus l'incertitude augmente. En pratique :
+
+- Ne jamais extrapoler au-delà de $T/2$ pas de temps sans validation externe.
+- La prévision par tendance **ignore la saisonnalité** : elle donne la valeur tendancielle future, pas la valeur brute. Pour une prévision complète, il faut réintégrer les coefficients saisonniers (leçon 05) ou utiliser les lissages exponentiels (leçon 04).
+:::
+
+::: {.callout-important title="Interpolation vs extrapolation"}
+**Interpolation** : estimer $\hat{T}_t$ pour un $t$ *dans* l'intervalle $[1, T]$ — typiquement pour compléter une valeur manquante.
+
+**Extrapolation** : estimer $\hat{T}_{T+h}$ pour $h > 0$ — c'est une prévision soumise à l'hypothèse de persistance de la tendance.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_extrapolation -->
+
+## Application interactive
+
+```{ojs}
+//| echo: false
+trData = {
+  const y = [
+    2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+    2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+    2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+  ];
+  const trend = [
+    4.3949, 4.4363, 4.4777, 4.5191, 4.5605, 4.6019, 4.6433, 4.6847, 4.7261,
+    4.7675, 4.8089, 4.8503, 4.8917, 4.9331, 4.9745, 5.0159, 5.0573, 5.0987,
+    5.1401, 5.1815, 5.223, 5.2644, 5.3058, 5.3472, 5.3886, 5.43, 5.4714,
+    5.5128, 5.5542, 5.5956, 5.637, 5.6784, 5.7198, 5.7612, 5.8026, 5.844
+  ];
+  const resid = [
+    -2.2949, -2.1363, -1.2777, -0.0191, 0.5395, 2.1981, 4.5567, 4.2153, 0.8739,
+    -0.9675, -2.4089, -1.8503, -2.4917, -2.3331, -1.4745, -0.1159, 0.4427, 2.2013,
+    4.6599, 4.2185, 0.777, -1.1644, -2.6058, -2.0472, -2.7886, -2.53, -1.6714,
+    -0.3128, 0.3458, 2.2044, 4.763, 4.2216, 0.6802, -1.3612, -2.8026, -2.244
+  ];
+  return y.map((yi, i) => ({ t: i + 1, y: yi, trend: trend[i], resid: resid[i] }));
+}
+```
+
+```{ojs}
+//| echo: false
+viewof trVue = Inputs.radio(
+  ["Droite de tendance", "Résidus", "Extrapolation"],
+  { value: "Droite de tendance", label: "Mode :" }
+)
+```
+
+```{ojs}
+//| echo: false
+viewof trH = Inputs.range([1, 24], {
+  step: 1, value: 6,
+  label: html`<b>Horizon (mois après déc. 2023) :</b>`
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  if (trVue === "Extrapolation")
+    return html`<div style="max-width:480px;margin:4px 0 8px">${viewof trH}</div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const a = 4.3535, b = 0.0414;
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const T = 36;
+
+  const months = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  const mkLabel = t => {
+    const yr = 2021 + Math.floor((t-1)/12);
+    return months[(t-1) % 12] + " " + yr;
+  };
+
+  if (trVue === "Droite de tendance") {
+    const lineData = [{ t: 1, y: a + b }, { t: T, y: a + b * T }];
+    return Plot.plot({
+      width: 650, height: 340,
+      x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t] || "" },
+      y: { label: "Visites (milliers)", domain: [0, 12] },
+      marks: [
+        Plot.line(trData, { x: "t", y: "y", stroke: "#adb5bd", strokeWidth: 1.5 }),
+        Plot.dot(trData, { x: "t", y: "y", fill: "#666", r: 3 }),
+        Plot.line(lineData, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2.5 }),
+        Plot.text([{ t: 26, y: a + b*26 + 0.8 }], {
+          x: "t", y: "y",
+          text: [`T̂_t = ${a.toFixed(2)} + ${b.toFixed(4)}·t`],
+          fill: "#1098ad", fontSize: 11
+        })
+      ]
+    });
+
+  } else if (trVue === "Résidus") {
+    const pos = trData.filter(d => d.resid >= 0);
+    const neg = trData.filter(d => d.resid < 0);
+    return Plot.plot({
+      width: 650, height: 340,
+      x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t] || "" },
+      y: { label: "Résidu (milliers)", domain: [-4, 6] },
+      marks: [
+        Plot.ruleY([0], { stroke: "#868e96", strokeDasharray: "4,3" }),
+        Plot.ruleX(pos, { x: "t", y1: 0, y2: "resid", stroke: "#2f9e44", strokeWidth: 2 }),
+        Plot.ruleX(neg, { x: "t", y1: 0, y2: "resid", stroke: "#e03131", strokeWidth: 2 }),
+        Plot.dot(trData, { x: "t", y: "resid",
+          fill: d => d.resid >= 0 ? "#2f9e44" : "#e03131", r: 3.5 })
+      ]
+    });
+
+  } else {
+    const h = trH;
+    const T2 = T + h;
+    const extTicks = [1, 7, 13, 19, 25, 31, 37, 43, 49, 55].filter(t => t <= T2 + 1);
+    const extTickMap = {};
+    extTicks.forEach(t => { extTickMap[t] = mkLabel(t); });
+
+    const trendLine  = [{ t: 1, y: a + b }, { t: T, y: a + b * T }];
+    const extraLine  = [{ t: T, y: a + b * T }, { t: T2, y: a + b * T2 }];
+
+    return Plot.plot({
+      width: 650, height: 340,
+      x: { label: null, ticks: extTicks, tickFormat: t => extTickMap[t] || "",
+           domain: [0, T2 + 2] },
+      y: { label: "Visites (milliers)", domain: [0, 14] },
+      marks: [
+        Plot.line(trData, { x: "t", y: "y", stroke: "#adb5bd", strokeWidth: 1.5 }),
+        Plot.dot(trData, { x: "t", y: "y", fill: "#666", r: 2.5 }),
+        Plot.line(trendLine, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2 }),
+        Plot.line(extraLine, { x: "t", y: "y", stroke: "#1098ad", strokeWidth: 2,
+                               strokeDasharray: "5,3" }),
+        Plot.ruleX([T + 0.5], { stroke: "#868e96", strokeDasharray: "3,3" }),
+        Plot.dot([{ t: T2, y: a + b * T2 }], {
+          x: "t", y: "y", symbol: "diamond", fill: "#f76707", stroke: "white", r: 8
+        }),
+        Plot.text([{ t: T2, y: a + b * T2 + 0.7 }], {
+          x: "t", y: "y",
+          text: [`T̂ = ${(a + b * T2).toFixed(2)} k`],
+          fill: "#f76707", fontWeight: "bold", fontSize: 11
+        })
+      ]
+    });
+  }
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const a = 4.3535, b = 0.0414, T = 36;
+  const yBar = 5.1194, R2 = 0.0300;
+  const months = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+  const box = (lbl, val) =>
+    `<div style="background:#f8f9fa;border-left:4px solid #1098ad;
+      padding:7px 13px;border-radius:4px;min-width:110px">
+      <p style="font-size:.80em;color:#555;margin:0">${lbl}</p>
+      <p style="font-size:1.0em;font-weight:bold;color:#1098ad;margin:0">${val}</p></div>`;
+
+  const maxResid = 4.763, minResid = -2.803, nPos = 15;
+
+  if (trVue === "Résidus") {
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("Résidu max", `+${maxResid} k`)}
+      ${box("Résidu min", `${minResid} k`)}
+      ${box("Résidus > 0", `${nPos} / ${T}`)}
+      ${box("Moyenne résidus", "≈ 0")}
+    </div>`;
+  } else if (trVue === "Extrapolation") {
+    const h = trH;
+    const tp = T + h;
+    const yp = a + b * tp;
+    const yr = 2021 + Math.floor((tp-1)/12);
+    const mLabel = months[(tp-1) % 12] + " " + yr;
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("Indice prédit", `t = ${tp}`)}
+      ${box("Date", mLabel)}
+      ${box("T̂_t (tendance)", `${yp.toFixed(3)} k`)}
+      ${box("Équation", `${a} + ${b}×${tp}`)}
+    </div>`;
+  } else {
+    return html`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${box("Intercept â",             a.toFixed(4))}
+      ${box("Pente b̂ (k/mois)",       b.toFixed(4))}
+      ${box("ȳ (milliers)",            yBar.toFixed(3))}
+      ${box("R²",                      `${(R2*100).toFixed(1)} %`)}
+    </div>`;
+  }
+}
+```
+
+## Exercices
+
+:::{#exr-ols-calcul}
+## Calcul de la droite de tendance
+
+Une entreprise enregistre son chiffre d'affaires mensuel (en M€) sur $T = 12$ mois :
+
+$$3{,}2 \quad 3{,}5 \quad 3{,}8 \quad 4{,}1 \quad 4{,}6 \quad 4{,}9 \quad 5{,}3 \quad 5{,}8 \quad 6{,}0 \quad 6{,}4 \quad 6{,}9 \quad 7{,}2$$
+
+**a)** Calculez $\bar{t}$, $\bar{y}$, $S_{tt}$ et $\sum_{t=1}^{12}(t-\bar{t})\,y_t$.
+
+**b)** Déduisez-en $\hat{b}$ et $\hat{a}$ (deux décimales).
+
+**c)** Interprétez $\hat{b}$ dans le contexte.
+
+**d)** Extrapolez la tendance pour le mois $t = 15$ ($\hat{T}_{15}$).
+
+:::{.callout-note collapse="true" title="Solution"}
+**a)** $\bar{t} = 13/2 = 6{,}5$ ; $\bar{y} = (3{,}2 + \cdots + 7{,}2)/12 = 61{,}7/12 \approx 5{,}14$ M€.
+
+$S_{tt} = 12(144-1)/12 = 143$.
+
+$\sum(t - 6{,}5)\,y_t$ :
+
+| $t$ | $t - 6{,}5$ | $y_t$ | $(t-6{,}5)\,y_t$ |
+|:---:|:-----------:|:-----:|:----------------:|
+| 1 | −5,5 | 3,2 | −17,60 |
+| 2 | −4,5 | 3,5 | −15,75 |
+| 3 | −3,5 | 3,8 | −13,30 |
+| 4 | −2,5 | 4,1 | −10,25 |
+| 5 | −1,5 | 4,6 | −6,90 |
+| 6 | −0,5 | 4,9 | −2,45 |
+| 7 | 0,5 | 5,3 | 2,65 |
+| 8 | 1,5 | 5,8 | 8,70 |
+| 9 | 2,5 | 6,0 | 15,00 |
+| 10 | 3,5 | 6,4 | 22,40 |
+| 11 | 4,5 | 6,9 | 31,05 |
+| 12 | 5,5 | 7,2 | 39,60 |
+| **Σ** | | | **53,15** |
+
+**b)** $\hat{b} = 53{,}15 / 143 \approx 0{,}37$ M€/mois.
+
+$\hat{a} = 5{,}14 - 0{,}37 \times 6{,}5 \approx 2{,}74$ M€.
+
+Droite : $\hat{T}_t = 2{,}74 + 0{,}37\,t$.
+
+**c)** Le chiffre d'affaires augmente en moyenne de **0,37 M€ par mois** (soit environ 370 000 € /mois) sur la période.
+
+**d)** $\hat{T}_{15} = 2{,}74 + 0{,}37 \times 15 = 2{,}74 + 5{,}55 = 8{,}29$ M€.
+:::
+:::
+
+:::{#exr-extrapolation-limites}
+## Extrapolation et ses limites
+
+On dispose d'une série de production mensuelle d'une usine ($T = 24$, unités en tonnes) dont la droite de tendance ajustée est $\hat{T}_t = 120 + 3{,}5\,t$.
+
+**a)** Calculez $\hat{T}_{24}$, $\hat{T}_{30}$ et $\hat{T}_{48}$.
+
+**b)** Le responsable de production affirme que la série présente une forte saisonnalité (amplitude ±25 t). Pourquoi la valeur $\hat{T}_{30}$ est-elle une prévision incomplète ?
+
+**c)** Pour quel horizon $h$ la prévision extrapolée $\hat{T}_{24+h}$ dépasse-t-elle 250 tonnes ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a)**
+- $\hat{T}_{24} = 120 + 3{,}5 \times 24 = 120 + 84 = 204$ tonnes.
+- $\hat{T}_{30} = 120 + 3{,}5 \times 30 = 120 + 105 = 225$ tonnes.
+- $\hat{T}_{48} = 120 + 3{,}5 \times 48 = 120 + 168 = 288$ tonnes.
+
+**b)** $\hat{T}_{30}$ est la valeur **tendancielle** au mois $t = 30$. Elle ne tient pas compte de la saisonnalité ($\pm 25$ tonnes). La production réelle attendue sera :
+
+$$y_{30} \approx \hat{T}_{30} + S_{30} = 225 + S_{30}$$
+
+où $S_{30}$ est le coefficient saisonnier du mois correspondant. Sans les coefficients saisonniers (leçon 05), la prévision complète est impossible.
+
+De plus, l'horizon $h = 6$ représente $T/4 = 6$ pas, soit 25 % de la durée observée — c'est déjà une extrapolation à risque modéré.
+
+**c)** On cherche $h$ tel que $\hat{T}_{24+h} > 250$ :
+
+$$120 + 3{,}5(24 + h) > 250$$
+$$3{,}5\,h > 250 - 120 - 84 = 46$$
+$$h > 46 / 3{,}5 \approx 13{,}1$$
+
+À partir de $h = 14$ mois (soit $t = 38$), la tendance extrapolée dépasse 250 tonnes.
+:::
+:::
+
+## Quiz
+
+```{ojs}
+//| echo: false
+tr_questions = [
+  {
+    enonce: "Pour une série temporelle de longueur T = 20, quelle est la valeur de t̄ (moyenne des indices temporels t = 1, …, 20) ?",
+    choices: ["10,5", "10", "20", "9,5"],
+    correct: "10,5",
+    explication: "t̄ = (T+1)/2 = 21/2 = 10,5. La moyenne des entiers 1 à T vaut toujours (T+1)/2."
+  },
+  {
+    enonce: "Dans la régression temporelle T̂_t = â + b̂·t, que représente b̂ ?",
+    choices: [
+      "La valeur prédite de y en t = 0",
+      "L'augmentation moyenne de y pour chaque pas de temps supplémentaire",
+      "Le coefficient de corrélation entre y et t",
+      "La variance résiduelle du modèle"
+    ],
+    correct: "L'augmentation moyenne de y pour chaque pas de temps supplémentaire",
+    explication: "b̂ est la pente : pour chaque unité de temps supplémentaire, la tendance augmente de b̂ unités. â est l'ordonnée à l'origine (valeur prédite en t = 0)."
+  },
+  {
+    enonce: "On obtient â = 5,2 et b̂ = 0,15 pour une série mensuelle (T = 36). Quelle est la valeur tendancielle prédite pour t = 40 (extrapolation) ?",
+    choices: ["11,2", "10,9", "6,0", "10,6"],
+    correct: "11,2",
+    explication: "T̂_40 = 5,2 + 0,15 × 40 = 5,2 + 6,0 = 11,2. C'est une extrapolation 4 pas au-delà de la fin de la série."
+  },
+  {
+    enonce: "Pourquoi le R² de la droite de tendance linéaire est-il souvent faible pour une série avec forte saisonnalité ?",
+    choices: [
+      "Parce que la saisonnalité, non capturée par la droite, représente une part importante de la variance totale",
+      "Parce que les données temporelles violent l'hypothèse d'indépendance des résidus",
+      "Parce que la droite n'est pas la meilleure méthode pour ajuster une tendance",
+      "Parce que la formule OLS n'est pas applicable aux séries temporelles"
+    ],
+    correct: "Parce que la saisonnalité, non capturée par la droite, représente une part importante de la variance totale",
+    explication: "R² = SCE/SCT. Si la saisonnalité génère une grande variance que la droite n'explique pas, SCR reste élevé et R² reste faible — sans que cela invalide la droite comme estimateur de tendance."
+  },
+  {
+    enonce: "Que contiennent principalement les résidus ε̂_t = y_t − T̂_t de la droite de tendance, dans un modèle additif ?",
+    choices: [
+      "La saisonnalité et les irrégularités",
+      "La tendance non capturée",
+      "Uniquement le bruit aléatoire",
+      "La composante cyclique uniquement"
+    ],
+    correct: "La saisonnalité et les irrégularités",
+    explication: "Dans y_t = T_t + S_t + I_t, si T̂_t approche T_t, alors ε̂_t = y_t − T̂_t ≈ S_t + I_t : les résidus reflètent la saisonnalité et les irrégularités résiduelles."
+  },
+  {
+    enonce: "Quelle précaution est recommandée lors d'une extrapolation par la droite de tendance ?",
+    choices: [
+      "Ne jamais extrapoler au-delà de T/2 pas de temps sans validation externe et ne pas oublier de réintégrer la saisonnalité pour une prévision complète",
+      "Toujours utiliser t* = t − t̄ pour centrer les indices avant d'extrapoler",
+      "Multiplier la prévision par le R² pour corriger le biais",
+      "Soustraire la moyenne mobile 2×12 avant d'extrapoler"
+    ],
+    correct: "Ne jamais extrapoler au-delà de T/2 pas de temps sans validation externe et ne pas oublier de réintégrer la saisonnalité pour une prévision complète",
+    explication: "L'extrapolation suppose la persistance de la tendance linéaire — hypothèse de plus en plus fragile à mesure que l'horizon grandit. La règle empirique T/2 limite le risque. Il faut aussi réintégrer les coefficients saisonniers pour obtenir une prévision de la série brute."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof tr_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(tr_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  tr_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../02-moving-averages/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Moyennes mobiles</span></span></a>
+  <a href="../04-exponential-smoothing/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Lissages exponentiels</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

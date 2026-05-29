@@ -1,0 +1,347 @@
+---
+title: "Panorama des outils de la statistique descriptive"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000010"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000014"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", Introduction]
+---
+
+Cette leçon de synthèse clôt le module d'introduction. Elle donne une vue d'ensemble des trois familles d'outils de la statistique descriptive — **tableaux**, **graphiques** et **mesures numériques** — et explique quel outil choisir selon le type de variable rencontré. Les modules suivants approfondiront chacun de ces outils.
+
+<concept id="trois-familles">
+
+## Les trois familles d'outils
+
+La statistique descriptive dispose de trois grandes familles d'outils, complémentaires et non substitutives :
+
+| Famille | Rôle | Ce qu'elle donne |
+|---------|------|-----------------|
+| **Tableaux** | Organiser et dénombrer | Un résumé structuré des effectifs et fréquences |
+| **Graphiques** | Visualiser la distribution | Une image de la forme et de la répartition des données |
+| **Mesures numériques** | Résumer en un ou quelques chiffres | Des indicateurs synthétiques de position et de dispersion |
+
+Ces trois familles sont **complémentaires** : un tableau seul peut être illisible, un graphique sans mesures manque de précision, et des mesures sans visualisation peuvent masquer des distributions atypiques.
+
+::: {.callout-tip title="La règle d'or"}
+Commencez toujours par un graphique pour avoir une vision globale, puis affinez avec les mesures numériques. Ne vous fiez jamais uniquement à la moyenne : deux distributions très différentes peuvent avoir la même moyenne.
+:::
+</concept>
+
+<concept id="outils-qualitatif">
+
+## Outils pour les variables qualitatives
+
+### Tableaux
+Le **tableau de fréquences** recense les effectifs (nombre d'occurrences de chaque modalité) et les fréquences relatives (pourcentages). Pour les variables **ordinales**, on ajoute les fréquences cumulées.
+
+*Exemple — Variable : Ville de résidence (qualitative nominale)*
+
+| Ville | Effectif | Fréquence |
+|-------|----------|-----------|
+| Paris | 42 | 42 % |
+| Lyon | 28 | 28 % |
+| Bordeaux | 18 | 18 % |
+| Marseille | 12 | 12 % |
+| **Total** | **100** | **100 %** |
+
+### Graphiques
+- **Diagramme en barres** : une barre par modalité, hauteur proportionnelle à l'effectif. C'est le graphique de référence pour les variables qualitatives.
+- **Camembert (pie chart)** : adapté quand il y a peu de modalités et qu'on veut montrer les proportions. À éviter avec plus de 5-6 modalités.
+- **Barres ordonnées** : pour les variables ordinales, les barres sont triées selon l'ordre naturel des modalités.
+
+### Mesures numériques
+- **Mode** : la modalité la plus fréquente. C'est la seule mesure de position ayant un sens pour les variables nominales.
+- Pour les variables ordinales, la **médiane** (modalité "centrale") peut aussi être calculée si les modalités sont codées numériquement.
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_outils_qualitatif -->
+
+<concept id="outils-quantitatif">
+
+## Outils pour les variables quantitatives
+
+### Tableaux
+- **Variable discrète** : tableau de fréquences avec les **valeurs exactes** (0, 1, 2, 3…).
+- **Variable continue** : tableau de fréquences par **classes** (intervalles). Le nombre de classes se choisit avec la règle de Sturge : $k = 1 + 3{,}322 \times \log_{10}(n)$, arrondi à l'entier le plus proche.
+
+### Graphiques
+
+| Graphique | Pour quelle variable ? | Ce qu'il montre |
+|-----------|----------------------|-----------------|
+| **Histogramme** | Quantitative continue | Distribution par classes : forme, symétrie, pics |
+| **Diagramme en bâtons** | Quantitative discrète | Distribution valeur par valeur |
+| **Boîte à moustaches (boxplot)** | Quantitative (cont. ou disc.) | Médiane, quartiles, outliers en un seul graphique |
+| **Ogive** | Quantitative (+ fréquences cumulées) | Proportion d'individus en dessous d'un seuil |
+
+### Mesures numériques
+Les mesures se répartissent en deux catégories :
+
+**Mesures de position (tendance centrale)** : indiquent "où se situe le centre" de la distribution.
+- Moyenne arithmétique $\bar{x}$, Médiane $Me$, Mode $Mo$
+
+**Mesures de dispersion** : indiquent "comment les valeurs sont étalées autour du centre".
+- Étendue, Variance $s^2$, Écart-type $s$, Écart interquartile $IQR$, Coefficient de variation $CV$
+
+Ces mesures seront détaillées dans les modules **02 — Description univariée**.
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_outils_quantitatif -->
+
+<concept id="guide-de-choix">
+
+## Le guide de choix en un coup d'œil
+
+```
+Ma variable est...
+│
+├── QUALITATIVE ?
+│   ├── Nominale  →  Tableau de fréquences  |  Barres / Camembert  |  Mode
+│   └── Ordinale  →  Fréquences cumulées   |  Barres ordonnées    |  Mode, Médiane
+│
+└── QUANTITATIVE ?
+    ├── Discrète  →  Fréquences par valeur  |  Bâtons              |  Moy., Méd., Mode, σ
+    └── Continue  →  Fréquences par classes |  Histogramme, Boxplot |  Moy., Méd., σ, IQR
+```
+
+Ce guide est votre boussole pour tous les modules à venir. Revenez-y chaque fois que vous démarrez une analyse.
+</concept>
+
+## Outil interactif : Explorer les graphiques par type de variable
+
+Sélectionnez un type de variable pour voir les outils recommandés et un exemple de visualisation sur un jeu de données réaliste.
+
+```{ojs}
+//| echo: false
+toolsData = ({
+  "Qualitative nominale": {
+    label:    "Variable : Ville de résidence (n = 100)",
+    tableau:  "Tableau de fréquences absolues et relatives",
+    graphe:   "Diagramme en barres ou camembert",
+    mesure:   "Mode (modalité la plus fréquente)",
+    color:    "#74c0fc",
+    plotType: "bar_nom",
+    data: [
+      {modalite: "Paris",     effectif: 42},
+      {modalite: "Lyon",      effectif: 28},
+      {modalite: "Bordeaux",  effectif: 18},
+      {modalite: "Marseille", effectif: 12}
+    ],
+    caption: "Exemple illustratif sur 100 individus fictifs."
+  },
+  "Qualitative ordinale": {
+    label:    "Variable : Niveau de satisfaction (n = 100)",
+    tableau:  "Tableau de fréquences avec fréquences cumulées",
+    graphe:   "Diagramme en barres ordonné (ordre des modalités respecté)",
+    mesure:   "Mode, médiane (si encodage numérique de l'ordinalité)",
+    color:    "#69db7c",
+    plotType: "bar_ord",
+    data: [
+      {modalite: "★ Très insatisfait",    effectif:  8},
+      {modalite: "★★ Insatisfait",        effectif: 14},
+      {modalite: "★★★ Neutre",            effectif: 22},
+      {modalite: "★★★★ Satisfait",        effectif: 35},
+      {modalite: "★★★★★ Très satisfait",  effectif: 21}
+    ],
+    caption: "Exemple illustratif sur 100 individus fictifs."
+  },
+  "Quantitative discrète": {
+    label:    "Variable : Nombre d'enfants par foyer (n = 100)",
+    tableau:  "Tableau de fréquences par valeur exacte",
+    graphe:   "Diagramme en bâtons (barres fines séparées)",
+    mesure:   "Moyenne, médiane, mode, étendue, variance, écart-type",
+    color:    "#ffa94d",
+    plotType: "batons",
+    data: [
+      {valeur: "0", effectif: 18},
+      {valeur: "1", effectif: 32},
+      {valeur: "2", effectif: 28},
+      {valeur: "3", effectif: 15},
+      {valeur: "4", effectif:  5},
+      {valeur: "5+",effectif:  2}
+    ],
+    caption: "Exemple illustratif sur 100 individus fictifs."
+  },
+  "Quantitative continue": {
+    label:    "Variable : Taille des individus en cm (n = 200)",
+    tableau:  "Tableau de fréquences par classes (règle de Sturge)",
+    graphe:   "Histogramme ou boîte à moustaches (boxplot)",
+    mesure:   "Moyenne, médiane, écart-type, IQR, quartiles, min, max",
+    color:    "#da77f2",
+    plotType: "hist",
+    data: [
+      {x0: 144, x1: 151, n:  3},
+      {x0: 151, x1: 158, n: 10},
+      {x0: 158, x1: 165, n: 33},
+      {x0: 165, x1: 172, n: 62},
+      {x0: 172, x1: 179, n: 56},
+      {x0: 179, x1: 186, n: 26},
+      {x0: 186, x1: 193, n:  8},
+      {x0: 193, x1: 200, n:  2}
+    ],
+    mean: 170.2,
+    median: 170.0,
+    caption: "La ligne rouge indique la moyenne (170,2 cm), la ligne bleue pointillée la médiane (170,0 cm). Distribution approximativement symétrique."
+  }
+})
+```
+
+```{ojs}
+//| echo: false
+viewof typeVar = Inputs.select(
+  ["Qualitative nominale", "Qualitative ordinale", "Quantitative discrète", "Quantitative continue"],
+  { label: "Choisissez le type de variable :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const d = toolsData[typeVar];
+  const cardStyle = (borderColor) =>
+    `border:1px solid #dee2e6;border-left:4px solid ${borderColor};border-radius:8px;
+     padding:12px;margin-bottom:10px;`;
+  const labelStyle = `font-weight:bold;color:#555;font-size:0.85em;
+     text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;`;
+
+  // Build chart
+  let chart;
+  if (d.plotType === "bar_nom") {
+    chart = Plot.plot({
+      marginLeft: 70,
+      x: {label: "Effectif"},
+      y: {label: null},
+      marks: [
+        Plot.barX(d.data, {y: "modalite", x: "effectif", fill: d.color, sort: {y: "-x"}}),
+        Plot.text(d.data, {y: "modalite", x: "effectif", text: d => d.effectif + "", dx: 8, fill: "#333"})
+      ],
+      title: d.label
+    });
+  } else if (d.plotType === "bar_ord") {
+    const order = d.data.map(r => r.modalite);
+    chart = Plot.plot({
+      marginLeft: 120,
+      x: {label: "Effectif"},
+      y: {label: null, domain: order},
+      marks: [
+        Plot.barX(d.data, {y: "modalite", x: "effectif", fill: d.color}),
+        Plot.text(d.data, {y: "modalite", x: "effectif", text: d => d.effectif + "", dx: 8, fill: "#333"})
+      ],
+      title: d.label
+    });
+  } else if (d.plotType === "batons") {
+    const order = d.data.map(r => r.valeur);
+    chart = Plot.plot({
+      x: {label: "Nombre d'enfants"},
+      y: {label: "Effectif"},
+      marks: [
+        Plot.barY(d.data, {x: "valeur", y: "effectif", fill: d.color, insetLeft: 10, insetRight: 10}),
+        Plot.text(d.data, {x: "valeur", y: "effectif", text: d => d.effectif + "", dy: -8, fill: "#333"})
+      ],
+      title: d.label
+    });
+  } else {
+    // histogram from pre-computed bins
+    const histMarks = d.data.map(bin =>
+      ({x1: bin.x0, x2: bin.x1, y: bin.n})
+    );
+    chart = Plot.plot({
+      x: {label: "Taille (cm)"},
+      y: {label: "Effectif"},
+      marks: [
+        Plot.rect(histMarks, {x1: "x1", x2: "x2", y1: 0, y2: "y", fill: d.color, stroke: "white"}),
+        Plot.ruleX([d.mean],   {stroke: "#e03131", strokeWidth: 2}),
+        Plot.ruleX([d.median], {stroke: "#1971c2", strokeWidth: 2, strokeDasharray: "5,3"})
+      ],
+      title: d.label
+    });
+  }
+
+  return html`
+    <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:0 0 220px;">
+        <div style="${cardStyle("#0d6efd")}">
+          <div style="${labelStyle}">📋 Tableau</div>
+          <p style="margin:0;">${d.tableau}</p>
+        </div>
+        <div style="${cardStyle("#198754")}">
+          <div style="${labelStyle}">📊 Graphique</div>
+          <p style="margin:0;">${d.graphe}</p>
+        </div>
+        <div style="${cardStyle("#dc3545")}">
+          <div style="${labelStyle}">📐 Mesures numériques</div>
+          <p style="margin:0;">${d.mesure}</p>
+        </div>
+      </div>
+      <div style="flex:1;min-width:260px;">
+        ${chart}
+        <p style="color:#666;font-size:0.85em;margin-top:6px;">${d.caption}</p>
+      </div>
+    </div>`;
+}
+```
+
+## Exercices
+
+:::{#exr-choix-outil}
+### Choisir le bon outil
+
+Un médecin collecte les données suivantes auprès de 80 patients :
+
+| Variable | Valeurs | Type | Graphique conseillé | Mesures numériques |
+|----------|---------|------|--------------------|--------------------|
+| Groupe sanguin | A, B, AB, O | | | |
+| Âge (années entières) | 18–75 | | | |
+| Poids (kg) | 52,3–98,7 | | | |
+| Niveau de douleur | Absent, Léger, Modéré, Intense, Insupportable | | | |
+| Nombre de médicaments | 0–8 | | | |
+
+Complétez le tableau : type de variable, graphique le plus adapté, mesures numériques pertinentes.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+| Variable | Type | Graphique | Mesures |
+|----------|------|-----------|---------|
+| Groupe sanguin | Qual. nominale | Barres / camembert | Mode |
+| Âge | Quant. discrète (ou continue) | Bâtons / histogramme | Moyenne, médiane, σ |
+| Poids | Quant. continue | Histogramme, boxplot | Moyenne, médiane, IQR, σ |
+| Niveau de douleur | Qual. ordinale | Barres ordonnées | Mode, médiane (si encodée) |
+| Nb médicaments | Quant. discrète | Bâtons | Moyenne, médiane, mode, étendue |
+:::
+:::
+
+:::{#exr-erreur}
+### Repérer l'erreur méthodologique
+
+Chacun des énoncés suivants contient une **erreur dans le choix de l'outil**. Identifiez-la et proposez la correction.
+
+1. Pour visualiser la répartition des groupes sanguins dans un hôpital, l'analyste a tracé un **histogramme**.
+2. Pour résumer la satisfaction des clients (Très insatisfait → Très satisfait), le rapport indique la **moyenne** des réponses.
+3. Pour comparer la distribution des revenus de deux villes, l'analyste a produit un **diagramme camembert par ville**.
+
+:::{.callout-note collapse="true" title="Éléments de réponse"}
+1. L'histogramme s'applique aux variables quantitatives continues. Pour une variable qualitative nominale (groupe sanguin) → **diagramme en barres**.
+2. La moyenne n'a pas de sens rigoureux sur une échelle ordinale (les écarts entre modalités ne sont pas nécessairement égaux) → **mode** ou **médiane** si les modalités sont numérotées.
+3. Un camembert montre des proportions d'une seule population ; pour comparer deux distributions → **boxplots côte à côte** ou **histogrammes superposés**.
+:::
+:::
+
+## Récapitulatif du module 01 — Introduction
+
+Vous avez maintenant les bases conceptuelles pour aborder la statistique descriptive :
+
+1. **Leçon 01** — La statistique descriptive décrit sans généraliser ; elle se distingue de l'inférence statistique.
+2. **Leçon 02** — Une variable est qualitative (nominale ou ordinale) ou quantitative (discrète ou continue) ; ce type détermine tous les outils à utiliser.
+3. **Leçon 03** — On travaille toujours sur une population ou un échantillon ; la représentativité et l'absence de biais conditionnent la qualité des résultats.
+4. **Leçon 04** *(cette leçon)* — Trois familles d'outils (tableaux, graphiques, mesures) s'appliquent différemment selon le type de variable.
+
+Le module suivant — **Description univariée** — plongera dans chacun de ces outils pour une seule variable à la fois.
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../03-population-sample-and-data/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Population, échantillon et données</span></span></a>
+  <a href="../../02-univariate-analysis/01-frequency-tables/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tableaux de fréquences</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

@@ -1,0 +1,502 @@
+---
+title: "Lissages exponentiels"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000040"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000044"
+difficulty: "Intermediate"
+description: "Lissages exponentiels simple (SES), double (Holt) et triple (Holt-Winters), choix du paramètre α."
+categories: [Statistics, "Descriptive Statistics", "Time Series"]
+---
+
+<concept id="limites-mm-principe-ses">
+
+## Du lissage par fenêtre au lissage exponentiel
+
+Les moyennes mobiles présentent deux limites majeures :
+
+1. **Perte aux bords** — une MM centrée d'ordre $2k+1$ ne produit pas de valeur lissée pour les $k$ premières et dernières observations.
+2. **Pondération uniforme** — toutes les observations de la fenêtre ont le même poids, qu'elles aient 2 mois ou 2 ans d'ancienneté.
+
+Les **lissages exponentiels** (ou *smoothing exponentiel*) résolvent ces deux problèmes :
+
+- Aucune perte aux bords : la valeur lissée est définie dès $t = 1$.
+- Les poids décroissent géométriquement avec l'ancienneté : l'observation la plus récente a le poids le plus fort, les observations anciennes contribuent de façon négligeable.
+
+:::{#def-lissage-exponentiel}
+## Lissage exponentiel
+Un **lissage exponentiel** est une méthode récursive qui remplace chaque valeur $y_t$ par une moyenne pondérée de toutes les valeurs passées, avec des poids de la forme $\alpha(1-\alpha)^k$ qui décroissent exponentiellement avec l'ancienneté $k$.
+
+Le paramètre $\alpha \in (0,1)$ contrôle la **vitesse de réaction** :
+
+| Valeur de $\alpha$ | Réactivité | Mémoire |
+|:-----------------:|:----------:|:-------:|
+| $\alpha \to 1$ | Forte (s'adapte vite) | Courte (oublie vite le passé) |
+| $\alpha \to 0$ | Faible (inertie) | Longue (pondère fortement le passé) |
+:::
+
+**La famille des lissages exponentiels** comporte trois niveaux, chacun ajoutant une composante :
+
+| Méthode | Composantes modélisées | Paramètres |
+|---------|----------------------|:----------:|
+| **SES** — Simple | Niveau seul | $\alpha$ |
+| **Holt** — Double | Niveau + tendance | $\alpha,\, \beta$ |
+| **Holt-Winters** — Triple | Niveau + tendance + saisonnalité | $\alpha,\, \beta,\, \gamma$ |
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_principe_ses -->
+
+<concept id="ses">
+
+## Lissage exponentiel simple (SES)
+
+Le SES convient aux séries **sans tendance marquée et sans saisonnalité** — ou lorsqu'on cherche à produire rapidement une prévision à très court terme.
+
+:::{#def-ses}
+## Lissage exponentiel simple
+La valeur lissée $\hat{S}_t$ au rang $t$ est définie par la récurrence :
+
+$$\hat{S}_t = \alpha\, y_t + (1-\alpha)\,\hat{S}_{t-1}, \qquad t \geq 2$$
+
+avec l'initialisation $\hat{S}_1 = y_1$.
+
+La **prévision un pas en avant** est $\hat{y}_{t+1|t} = \hat{S}_t$.
+:::
+
+**Développement des poids :** en déroulant la récurrence,
+
+$$\hat{S}_t = \alpha\,y_t + \alpha(1-\alpha)\,y_{t-1} + \alpha(1-\alpha)^2\,y_{t-2} + \cdots$$
+
+L'observation au rang $t-k$ a le poids $\alpha(1-\alpha)^k$, qui décroît géométriquement. La somme des poids converge vers 1 quand on remonte suffisamment loin.
+
+::: {.callout-tip title="Forme correction d'erreur"}
+On peut réécrire $\hat{S}_t = \hat{S}_{t-1} + \alpha(y_t - \hat{S}_{t-1})$.
+
+Cela révèle que le SES **corrige** la valeur lissée précédente d'une fraction $\alpha$ de l'erreur de prévision $(y_t - \hat{S}_{t-1})$. C'est la forme dite de *correction d'erreur*.
+:::
+
+**Sur le jeu de données du musée ($\alpha = 0{,}30$) :**
+
+| $t$ | Mois | $y_t$ | $\hat{S}_t$ | Calcul |
+|:---:|------|:-----:|:-----------:|--------|
+| 1 | Jan 2021 | 2,1 | **2,10** | initialisation |
+| 2 | Fév 2021 | 2,3 | **2,16** | $0{,}30 \times 2{,}3 + 0{,}70 \times 2{,}10$ |
+| 3 | Mar 2021 | 3,2 | **2,47** | $0{,}30 \times 3{,}2 + 0{,}70 \times 2{,}16$ |
+| 7 | Jul 2021 | 9,2 | **4,80** | (après itérations) |
+| 8 | Août 2021 | 8,9 | **6,22** | $0{,}30 \times 8{,}9 + 0{,}70 \times 4{,}80$ |
+
+::: {.callout-warning title="SES et saisonnalité"}
+Le SES ne modélise ni la tendance ni la saisonnalité. Sur des données très saisonnières (comme le musée), il réagit avec retard et produit des prévisions structurellement biaisées. Pour ce type de série, Holt-Winters est indispensable.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_ses -->
+
+<concept id="holt">
+
+## Méthode de Holt (double lissage exponentiel)
+
+Quand la série présente une **tendance** (croissante ou décroissante), le SES accumule un biais systématique car il n'estime pas la pente. La méthode de Holt ajoute une deuxième équation pour lisser la **tendance**.
+
+:::{#def-holt}
+## Lissage de Holt
+Le lissage de Holt maintient deux composantes mises à jour récursivement :
+
+**Niveau :** $\displaystyle L_t = \alpha\,y_t + (1-\alpha)(L_{t-1} + T_{t-1})$
+
+**Tendance :** $\displaystyle T_t = \beta(L_t - L_{t-1}) + (1-\beta)\,T_{t-1}$
+
+avec $\alpha, \beta \in (0,1)$ et l'initialisation $L_1 = y_1$, $T_1 = y_2 - y_1$.
+
+La **prévision $h$ pas en avant** à partir du rang $t$ est :
+
+$$\hat{y}_{t+h|t} = L_t + h\,T_t$$
+:::
+
+**Rôle de $\beta$ :** $\beta$ contrôle la réactivité de l'estimateur de tendance.
+
+- $\beta$ grand : la tendance estimée suit rapidement les changements de pente.
+- $\beta$ petit : la tendance estimée est plus stable, moins sensible aux fluctuations locales.
+
+::: {.callout-note title="Interprétation de la prévision"}
+$L_t$ est la meilleure estimation du **niveau** de la série en $t$ (valeur de référence).
+$T_t$ est la meilleure estimation de la **pente locale** (changement par pas de temps).
+La prévision $h$ pas en avant prolonge linéairement : $L_t + 1 \cdot T_t$, $L_t + 2 \cdot T_t$, etc.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_holt -->
+
+<concept id="holt-winters">
+
+## Méthode de Holt-Winters (triple lissage exponentiel)
+
+La méthode de Holt-Winters étend Holt en ajoutant une troisième équation pour la **composante saisonnière**. C'est la méthode recommandée pour les séries avec tendance **et** saisonnalité — comme les visites du musée.
+
+:::{#def-holt-winters}
+## Lissage de Holt-Winters (version additive)
+Pour une série de période saisonnière $p$, trois composantes sont mises à jour à chaque rang $t$ :
+
+**Niveau :** $L_t = \alpha(y_t - S_{t-p}) + (1-\alpha)(L_{t-1} + T_{t-1})$
+
+**Tendance :** $T_t = \beta(L_t - L_{t-1}) + (1-\beta)\,T_{t-1}$
+
+**Saisonnier :** $S_t = \gamma(y_t - L_t) + (1-\gamma)\,S_{t-p}$
+
+La **prévision $h$ pas en avant** est :
+
+$$\hat{y}_{t+h|t} = L_t + h\,T_t + S_{t-p+((h-1)\bmod p)+1}$$
+:::
+
+**Initialisation :** on utilise les données de la première période complète pour estimer les coefficients saisonniers initiaux $S_1, \ldots, S_p$ et la pente initiale. En pratique, on utilise la MM $2\times p$ pour la première année.
+
+| Paramètre | Rôle |
+|:---------:|------|
+| $\alpha$ | Réactivité du niveau |
+| $\beta$ | Réactivité de la tendance |
+| $\gamma$ | Réactivité de la saisonnalité |
+
+**Choix optimal des paramètres :** en pratique, on minimise l'erreur quadratique moyenne sur les données d'entraînement :
+
+$$\text{RMSE} = \sqrt{\frac{1}{T}\sum_{t=1}^{T}(y_t - \hat{y}_{t|t-1})^2}$$
+
+Les logiciels (R : `HoltWinters()`, Python : `statsmodels.tsa.holtwinters`) effectuent cette optimisation automatiquement.
+
+::: {.callout-note title="Version multiplicative"}
+Si l'amplitude saisonnière **croît avec la tendance** (modèle multiplicatif), la composante saisonnière entre en facteur :
+
+$L_t = \alpha(y_t / S_{t-p}) + (1-\alpha)(L_{t-1} + T_{t-1})$
+
+Le reste des équations est analogue. La version multiplicative est souvent plus adaptée aux données économiques dont la variance augmente avec le niveau.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_holt_winters -->
+
+## Application interactive
+
+Explorez l'effet des paramètres $\alpha$ et $\beta$ sur le lissage de la série du musée.
+
+```{ojs}
+//| echo: false
+leRawData = [
+  2.1, 2.3, 3.2, 4.5, 5.1, 6.8, 9.2, 8.9, 5.6, 3.8, 2.4, 3.0,
+  2.4, 2.6, 3.5, 4.9, 5.5, 7.3, 9.8, 9.4, 6.0, 4.1, 2.7, 3.3,
+  2.6, 2.9, 3.8, 5.2, 5.9, 7.8, 10.4, 9.9, 6.4, 4.4, 3.0, 3.6
+]
+```
+
+```{ojs}
+//| echo: false
+viewof leMode = Inputs.radio(
+  ["SES", "Holt"],
+  { value: "SES", label: "Méthode :" }
+)
+```
+
+```{ojs}
+//| echo: false
+viewof leAlpha = Inputs.range([0.05, 0.95], {
+  step: 0.05, value: 0.30,
+  label: html`<b>α :</b>`
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  if (leMode === "Holt")
+    return html`<div style="max-width:480px;margin:2px 0 6px">${viewof leBeta}</div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+viewof leBeta = Inputs.range([0.05, 0.95], {
+  step: 0.05, value: 0.20,
+  label: html`<b>β :</b>`
+})
+```
+
+```{ojs}
+//| echo: false
+leSmoothed = {
+  const alpha = leAlpha, beta = leBeta;
+  const y = leRawData;
+  const n = y.length;
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+
+  if (leMode === "SES") {
+    let S = y[0];
+    const pts = y.map((yi, i) => {
+      const s = i === 0 ? S : (S = alpha * yi + (1 - alpha) * S, S);
+      if (i > 0) S = alpha * yi + (1 - alpha) * (i === 1 ? y[0] : S);
+      return { t: i + 1, y: yi, smooth: s };
+    });
+    // Recompute cleanly
+    let s2 = y[0];
+    return y.map((yi, i) => {
+      const val = s2;
+      s2 = alpha * yi + (1 - alpha) * s2;
+      return { t: i + 1, y: yi, smooth: val };
+    });
+  } else {
+    let L = y[0], T = y[1] - y[0];
+    return y.map((yi, i) => {
+      const val = L + T;
+      const Lnew = alpha * yi + (1 - alpha) * (L + T);
+      const Tnew = beta * (Lnew - L) + (1 - beta) * T;
+      L = Lnew; T = Tnew;
+      return { t: i + 1, y: yi, smooth: val };
+    });
+  }
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const tickMap = {1:"Jan 21",7:"Jul 21",13:"Jan 22",19:"Jul 22",25:"Jan 23",31:"Jul 23"};
+  const color = leMode === "SES" ? "#e8590c" : "#9c36b5";
+  const label = leMode === "SES"
+    ? `SES (α = ${leAlpha.toFixed(2)})`
+    : `Holt (α = ${leAlpha.toFixed(2)}, β = ${leBeta.toFixed(2)})`;
+
+  const rmse = Math.sqrt(
+    leSmoothed.reduce((s, d) => s + (d.y - d.smooth) ** 2, 0) / leSmoothed.length
+  ).toFixed(3);
+
+  return html`<div>
+    ${Plot.plot({
+      width: 650, height: 360,
+      x: { label: null, ticks: [1,7,13,19,25,31], tickFormat: t => tickMap[t] || "" },
+      y: { label: "Visiteurs (milliers)", domain: [0, 12] },
+      marks: [
+        Plot.line(leSmoothed, { x: "t", y: "y", stroke: "#1098ad", opacity: 0.45, strokeWidth: 1.5 }),
+        Plot.dot(leSmoothed, { x: "t", y: "y", fill: "#1098ad", opacity: 0.4, r: 2.8 }),
+        Plot.line(leSmoothed, { x: "t", y: "smooth", stroke: color, strokeWidth: 2.5 }),
+        Plot.dot(leSmoothed, { x: "t", y: "smooth", fill: color, r: 3.2 })
+      ],
+      color: { legend: false }
+    })}
+    <div style="display:flex;gap:16px;margin-top:8px;font-size:.87em;flex-wrap:wrap;">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <span style="display:inline-block;width:24px;height:3px;background:#1098ad;opacity:.5;border-radius:2px"></span>
+        Série brute
+      </span>
+      <span style="display:flex;align-items:center;gap:6px;">
+        <span style="display:inline-block;width:24px;height:3px;background:${color};border-radius:2px"></span>
+        ${label}
+      </span>
+      <span style="color:#555;">RMSE = <b>${rmse}</b> k</span>
+    </div>
+  </div>`;
+}
+```
+
+## Exercices écrits
+
+:::{#exr-ses-manuel}
+## Calculer un lissage SES à la main
+
+Le tableau suivant donne les ventes hebdomadaires d'un commerce sur 6 semaines :
+
+| Semaine | 1 | 2 | 3 | 4 | 5 | 6 |
+|:-------:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Ventes  | 40 | 44 | 38 | 46 | 50 | 45 |
+
+Avec $\alpha = 0{,}4$ et l'initialisation $\hat{S}_1 = y_1$ :
+
+a) Calculer $\hat{S}_t$ pour $t = 2, 3, 4, 5, 6$.
+b) Donner la prévision pour la semaine 7.
+c) Refaire avec $\alpha = 0{,}8$. Quelle valeur donne une série lissée plus proche des données brutes ? Pourquoi ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) SES avec $\alpha = 0{,}4$ :**
+
+$\hat{S}_1 = 40$
+
+| $t$ | $y_t$ | Calcul | $\hat{S}_t$ |
+|:---:|:-----:|--------|:-----------:|
+| 2 | 44 | $0{,}4 \times 44 + 0{,}6 \times 40$ | **41,6** |
+| 3 | 38 | $0{,}4 \times 38 + 0{,}6 \times 41{,}6$ | **40,16** |
+| 4 | 46 | $0{,}4 \times 46 + 0{,}6 \times 40{,}16$ | **42,50** |
+| 5 | 50 | $0{,}4 \times 50 + 0{,}6 \times 42{,}50$ | **45,50** |
+| 6 | 45 | $0{,}4 \times 45 + 0{,}6 \times 45{,}50$ | **45,30** |
+
+**b) Prévision semaine 7 :** $\hat{y}_{7|6} = \hat{S}_6 = 45{,}30$
+
+**c) SES avec $\alpha = 0{,}8$ :**
+
+| $t$ | $y_t$ | Calcul | $\hat{S}_t$ |
+|:---:|:-----:|--------|:-----------:|
+| 2 | 44 | $0{,}8 \times 44 + 0{,}2 \times 40$ | **43,2** |
+| 3 | 38 | $0{,}8 \times 38 + 0{,}2 \times 43{,}2$ | **39,04** |
+| 4 | 46 | $0{,}8 \times 46 + 0{,}2 \times 39{,}04$ | **44,61** |
+| 5 | 50 | $0{,}8 \times 50 + 0{,}2 \times 44{,}61$ | **48,92** |
+| 6 | 45 | $0{,}8 \times 45 + 0{,}2 \times 48{,}92$ | **45,78** |
+
+Avec $\alpha = 0{,}8$, la série lissée est **plus proche des données brutes** : le RMSE est plus faible car le lissage « suit » plus activement les observations. Avec $\alpha = 0{,}4$, la courbe est plus régulière mais réagit plus lentement.
+:::
+:::
+
+:::{#exr-holt-prevision}
+## Prévisions par la méthode de Holt
+
+Une entreprise relève son chiffre d'affaires mensuel sur 5 mois (sans saisonnalité visible) :
+
+| Mois | 1 | 2 | 3 | 4 | 5 |
+|:----:|:-:|:-:|:-:|:-:|:-:|
+| CA (M€) | 10 | 11 | 13 | 14 | 16 |
+
+Avec $\alpha = 0{,}5$, $\beta = 0{,}3$, $L_1 = 10$, $T_1 = 1$ :
+
+a) Calculer $L_t$ et $T_t$ pour $t = 2, 3, 4, 5$.
+b) Donner la prévision $\hat{y}_{6|5}$ (1 pas) et $\hat{y}_{8|5}$ (3 pas).
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Calcul récursif :**
+
+| $t$ | $y_t$ | $L_t$ | $T_t$ |
+|:---:|:-----:|:-----:|:-----:|
+| 1 | 10 | **10,00** | **1,00** | (initialisation) |
+| 2 | 11 | $0{,}5 \times 11 + 0{,}5 \times 11{,}0 = \mathbf{11{,}00}$ | $0{,}3 \times 1{,}0 + 0{,}7 \times 1{,}0 = \mathbf{1{,}00}$ |
+| 3 | 13 | $0{,}5 \times 13 + 0{,}5 \times 12{,}0 = \mathbf{12{,}50}$ | $0{,}3 \times 1{,}5 + 0{,}7 \times 1{,}0 = \mathbf{1{,}15}$ |
+| 4 | 14 | $0{,}5 \times 14 + 0{,}5 \times 13{,}65 = \mathbf{13{,}83}$ | $0{,}3 \times 1{,}33 + 0{,}7 \times 1{,}15 = \mathbf{1{,}21}$ |
+| 5 | 16 | $0{,}5 \times 16 + 0{,}5 \times 15{,}04 = \mathbf{15{,}52}$ | $0{,}3 \times 1{,}69 + 0{,}7 \times 1{,}21 = \mathbf{1{,}35}$ |
+
+**b) Prévisions à partir de $t = 5$ :**
+
+$\hat{y}_{6|5} = L_5 + 1 \times T_5 = 15{,}52 + 1{,}35 = \mathbf{16{,}87}$ M€.
+
+$\hat{y}_{8|5} = L_5 + 3 \times T_5 = 15{,}52 + 3 \times 1{,}35 = 15{,}52 + 4{,}05 = \mathbf{19{,}57}$ M€.
+:::
+:::
+
+### Quiz — Lissages exponentiels
+
+```{ojs}
+//| echo: false
+le_questions = [
+  {
+    enonce: "Quelle est la principale différence entre une moyenne mobile d'ordre 5 et un lissage SES ?",
+    choices: [
+      "La MM d'ordre 5 n'est définie que pour t ≥ 3, le SES est défini pour tout t",
+      "La MM d'ordre 5 pondère uniformément les 5 dernières observations ; le SES assigne des poids décroissants à toutes les observations passées",
+      "Le SES est toujours plus précis que la MM pour les données saisonnières",
+      "La MM d'ordre 5 nécessite le paramètre α, le SES non"
+    ],
+    correct: "La MM d'ordre 5 pondère uniformément les 5 dernières observations ; le SES assigne des poids décroissants à toutes les observations passées",
+    explication: "La MM d'ordre 5 donne le même poids (1/5) aux 5 dernières observations et ignore tout le reste. Le SES assigne le poids α(1−α)^k à l'observation d'il y a k rangs, en utilisant toute l'histoire avec des poids décroissants. De plus, la MM d'ordre 5 perd k−1 = 4 observations au début (problème de bord), tandis que le SES est défini dès t = 1."
+  },
+  {
+    enonce: "Un analyste utilise un SES avec α = 0,9 sur une série de ventes. Quelle est la conséquence sur la courbe lissée ?",
+    choices: [
+      "La courbe lissée est très lisse, presque une droite horizontale",
+      "La courbe lissée suit de très près les données brutes et réagit fortement aux variations",
+      "Les observations anciennes ont plus de poids que les observations récentes",
+      "La prévision un pas en avant est identique à la moyenne de toute la série"
+    ],
+    correct: "La courbe lissée suit de très près les données brutes et réagit fortement aux variations",
+    explication: "Avec α = 0,9, le poids de l'observation courante y_t est 0,9, soit 90 % du lissage. Les valeurs passées ont un poids residuel très faible (y_{t−1} a 0,09, y_{t−2} a 0,009, etc.). La courbe lissée 'colle' aux données brutes avec peu de régularisation. À l'inverse, α → 0 donnerait une courbe quasi-constante."
+  },
+  {
+    enonce: "On calcule un SES avec α = 0,3, S₁ = 5,0. La valeur y₂ = 7,0. Quelle est S₂ ?",
+    choices: ["5,6", "6,5", "7,0", "5,0"],
+    correct: "5,6",
+    explication: "S₂ = α × y₂ + (1 − α) × S₁ = 0,3 × 7,0 + 0,7 × 5,0 = 2,1 + 3,5 = 5,6."
+  },
+  {
+    enonce: "Pourquoi la méthode de Holt est-elle préférable au SES pour une série avec tendance croissante ?",
+    choices: [
+      "Parce que Holt utilise plus de paramètres et est donc plus flexible",
+      "Parce que le SES appliqué à une série avec tendance produit des prévisions systématiquement en retard (biais négatif), tandis que Holt corrige ce décalage en estimant la pente",
+      "Parce que Holt calcule automatiquement la MM 2×12 pour éliminer la saisonnalité",
+      "Parce que Holt minimise le R² de la régression, tandis que le SES minimise le RMSE"
+    ],
+    correct: "Parce que le SES appliqué à une série avec tendance produit des prévisions systématiquement en retard (biais négatif), tandis que Holt corrige ce décalage en estimant la pente",
+    explication: "Sur une série en hausse, le SES S_t est toujours inférieur à y_t car il pondère le passé (plus bas). Ce biais s'accumule sur les prévisions futures. Holt maintient une composante tendance T_t qui capte la pente locale : la prévision h pas en avant est L_t + h × T_t, ce qui compense le décalage."
+  },
+  {
+    enonce: "Dans la méthode de Holt-Winters, à quoi sert le paramètre γ ?",
+    choices: [
+      "Il contrôle la réactivité du niveau",
+      "Il contrôle la réactivité de la tendance",
+      "Il contrôle la vitesse d'adaptation des coefficients saisonniers",
+      "Il détermine la période saisonnière p"
+    ],
+    correct: "Il contrôle la vitesse d'adaptation des coefficients saisonniers",
+    explication: "Dans Holt-Winters, α contrôle le niveau, β contrôle la tendance, et γ contrôle la mise à jour des coefficients saisonniers S_t. γ proche de 1 : les coefficients saisonniers s'adaptent rapidement (saisonnalité évolutive). γ proche de 0 : les coefficients saisonniers restent proches de leurs valeurs initiales (saisonnalité stable)."
+  },
+  {
+    enonce: "Avec Holt, L₅ = 15,0 et T₅ = 1,2. Quelle est la prévision pour 3 pas en avant (t = 8) ?",
+    choices: ["18,6", "16,2", "17,4", "15,0"],
+    correct: "18,6",
+    explication: "ŷ_{8|5} = L₅ + 3 × T₅ = 15,0 + 3 × 1,2 = 15,0 + 3,6 = 18,6. La méthode de Holt produit des prévisions linéaires : le niveau de base augmente d'une unité de tendance T₅ pour chaque pas supplémentaire."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof le_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; };
+  const values = new Array(le_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  le_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choices = shuffle([...q.choices]);
+    const choicesHtml = choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = choices[idx] === q.correct;
+        values[i] = choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../03-trend-regression/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Tendance et droite de régression</span></span></a>
+  <a href="../05-seasonal-decomposition/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Saisonnalité et décomposition</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

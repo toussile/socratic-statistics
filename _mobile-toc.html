@@ -1,0 +1,47 @@
+<script>
+(function () {
+  "use strict";
+
+  function initCollapsibleToc() {
+    /* Uniquement sur petits écrans */
+    if (window.innerWidth >= 992) return;
+
+    var sidebar  = document.getElementById("quarto-margin-sidebar");
+    var tocTitle = sidebar && sidebar.querySelector("#toc-title");
+    var tocList  = sidebar && sidebar.querySelector("nav#TOC > ul");
+
+    if (!sidebar || !tocTitle || !tocList) return;
+
+    /* Replier par défaut */
+    tocList.style.display = "none";
+
+    /* Style du titre pour signaler l'interactivité */
+    tocTitle.style.cursor     = "pointer";
+    tocTitle.style.userSelect = "none";
+    tocTitle.setAttribute("role", "button");
+    tocTitle.setAttribute("aria-expanded", "false");
+
+    /* Flèche indicatrice */
+    var arrow = document.createElement("span");
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = " ▸";
+    arrow.style.fontSize = "0.72em";
+    arrow.style.opacity  = "0.65";
+    tocTitle.appendChild(arrow);
+
+    /* Toggle au clic */
+    tocTitle.addEventListener("click", function () {
+      var isOpen = tocList.style.display !== "none";
+      tocList.style.display = isOpen ? "none" : "block";
+      arrow.textContent = isOpen ? " ▸" : " ▾";
+      tocTitle.setAttribute("aria-expanded", String(!isOpen));
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCollapsibleToc);
+  } else {
+    initCollapsibleToc();
+  }
+})();
+</script>

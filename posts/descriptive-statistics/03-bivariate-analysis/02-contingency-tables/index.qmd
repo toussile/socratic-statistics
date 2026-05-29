@@ -1,0 +1,573 @@
+---
+title: "Tableaux de contingence"
+author: "Wilson Toussile"
+date: "2026-05-23"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000032"
+difficulty: "Beginner"
+categories: [Statistics, "Descriptive Statistics", "Bivariate Analysis"]
+---
+
+Le tableau de contingence est l'outil fondateur de l'analyse Qual × Qual : il croise deux variables qualitatives en une grille d'effectifs, révélant d'un coup d'œil si certaines combinaisons de modalités sont sur- ou sous-représentées. Cette leçon en couvre la construction, la lecture des fréquences marginales et la notion de profils conditionnels.
+
+<concept id="construction-tableau-contingence">
+
+## Construction du tableau de contingence
+
+:::{#def-tableau-contingence}
+## Tableau de contingence
+Un **tableau de contingence** (ou tableau croisé) croise deux variables qualitatives $X$ (en ligne, $r$ modalités) et $Y$ (en colonne, $c$ modalités). La cellule $(i, j)$ contient l'effectif conjoint :
+
+$$n_{ij} = \text{nombre d'individus ayant } X = x_i \text{ ET } Y = y_j$$
+
+Les **totaux marginaux** sont :
+$$n_{i\bullet} = \sum_{j=1}^c n_{ij} \quad \text{(total ligne } i\text{)} \qquad n_{\bullet j} = \sum_{i=1}^r n_{ij} \quad \text{(total colonne } j\text{)}$$
+
+et le **grand total** $n = \sum_i n_{i\bullet} = \sum_j n_{\bullet j}$.
+:::
+
+*Application — fil rouge : Transport ($X$, 4 modalités) × Satisfaction ($Y$, scores 1 à 5), $n = 80$*
+
+| | Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 | **Total** |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Bus** | 2 | 6 | 14 | 9 | 2 | **33** |
+| **Voiture** | 1 | 4 | 8 | 8 | 3 | **24** |
+| **Vélo** | 1 | 2 | 4 | 6 | 1 | **14** |
+| **Pied** | 0 | 0 | 2 | 3 | 4 | **9** |
+| **Total** | **4** | **12** | **28** | **26** | **10** | **80** |
+
+**Lecture directe :** 14 étudiants prennent le bus et ont un score de satisfaction de 3. C'est la cellule la plus peuplée du tableau.
+
+::: {.callout-tip title="Ordre des variables"}
+Par convention, on place en lignes la variable dont on veut étudier les sous-groupes (ici le transport) et en colonnes la variable à expliquer (ici la satisfaction). Ce choix oriente la lecture des profils-lignes.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_construction -->
+
+<concept id="frequences-marginales">
+
+## Fréquences marginales
+
+Les totaux de ligne et de colonne permettent de retrouver les **distributions univariées** de chaque variable — comme si on n'avait observé qu'une seule variable à la fois.
+
+**Distribution marginale de $X$ (transport) :**
+
+| Bus | Voiture | Vélo | Pied | Total |
+|:---:|:-------:|:----:|:----:|:-----:|
+| 33 (41,3 %) | 24 (30,0 %) | 14 (17,5 %) | 9 (11,3 %) | 80 |
+
+**Distribution marginale de $Y$ (satisfaction) :**
+
+| Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 | Total |
+|:------:|:------:|:------:|:------:|:------:|:-----:|
+| 4 (5,0 %) | 12 (15,0 %) | 28 (35,0 %) | 26 (32,5 %) | 10 (12,5 %) | 80 |
+
+Ces distributions marginales sont **indépendantes de la liaison** entre les deux variables : elles décrivent chaque variable séparément, exactement comme dans le module sur l'analyse univariée.
+
+::: {.callout-note}
+Si $X$ et $Y$ sont statistiquement **indépendantes**, connaître le mode de transport d'un étudiant ne change rien à ce qu'on peut dire de sa satisfaction — sa distribution de satisfaction reste la distribution marginale.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_marginales -->
+
+<concept id="profils-lignes-colonnes">
+
+## Profils-lignes et profils-colonnes
+
+Pour détecter une liaison, on compare les **distributions conditionnelles** de $Y$ pour chaque modalité de $X$.
+
+:::{#def-profil-ligne}
+## Profil-ligne
+Le **profil-ligne** de la modalité $x_i$ est la distribution conditionnelle de $Y$ sachant $X = x_i$ :
+
+$$f_{j|i} = \frac{n_{ij}}{n_{i\bullet}} \quad (\%)$$
+
+Il y a **liaison** si les profils-lignes diffèrent selon $i$ — c'est-à-dire si la distribution de $Y$ change selon la modalité de $X$.
+:::
+
+*Profils-lignes pour Transport × Satisfaction :*
+
+| | Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 | Moyenne |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Bus** | 6,1 % | 18,2 % | **42,4 %** | 27,3 % | 6,1 % | 3,09 |
+| **Voiture** | 4,2 % | 16,7 % | 33,3 % | 33,3 % | 12,5 % | 3,33 |
+| **Vélo** | 7,1 % | 14,3 % | 28,6 % | **42,9 %** | 7,1 % | 3,29 |
+| **Pied** | 0,0 % | 0,0 % | 22,2 % | 33,3 % | **44,4 %** | 4,22 |
+| **Marginal** | 5,0 % | 15,0 % | 35,0 % | 32,5 % | 12,5 % | 3,33 |
+
+**Lecture :** Le profil des étudiants venant à **pied** est très différent du profil marginal — 44,4 % ont un score de 5, contre 12,5 % en moyenne. À l'inverse, les usagers du **bus** sont surreprésentés aux scores 2 et 3. Les profils ne sont pas tous identiques : il y a bien une liaison entre le mode de transport et la satisfaction.
+
+**Profil-colonne** : symétrique — distribution conditionnelle de $X$ sachant $Y = y_j$ :
+$$f_{i|j} = \frac{n_{ij}}{n_{\bullet j}}$$
+Utile pour répondre : « parmi les étudiants très satisfaits (score 5), comment se répartissent-ils selon le transport ? »
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_profils -->
+
+<concept id="effectifs-theoriques">
+
+## Effectifs théoriques et indépendance
+
+Si $X$ et $Y$ étaient **indépendantes**, les effectifs attendus dans chaque cellule seraient :
+
+:::{#prp-effectifs-theoriques}
+## Effectifs théoriques sous indépendance
+$$\hat{n}_{ij} = \frac{n_{i\bullet} \times n_{\bullet j}}{n}$$
+
+Ces effectifs vérifient les mêmes marges que le tableau observé. Plus les écarts $n_{ij} - \hat{n}_{ij}$ sont importants, plus la liaison est forte.
+:::
+
+*Quelques effectifs théoriques (Transport × Satisfaction) :*
+
+| Cellule | Observé $n_{ij}$ | Théorique $\hat{n}_{ij}$ | Écart |
+|---------|:---:|:---:|:---:|
+| Pied × Sat. 5 | **4** | $9 \times 10 / 80 = 1{,}1$ | +2,9 |
+| Bus × Sat. 3 | **14** | $33 \times 28 / 80 = 11{,}6$ | +2,4 |
+| Bus × Sat. 5 | **2** | $33 \times 10 / 80 = 4{,}1$ | −2,1 |
+| Pied × Sat. 1 | **0** | $9 \times 4 / 80 = 0{,}5$ | −0,5 |
+
+Les cellules **Pied × Sat. 5** et **Bus × Sat. 3** montrent les plus grands écarts relatifs à leur effectif théorique : les étudiants à pied sont très satisfaits bien au-delà de ce qu'on attendrait sous indépendance, et les usagers du bus se concentrent davantage sur le score 3. La leçon suivante quantifiera la force globale de cette liaison avec le V de Cramér.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_independance -->
+
+<concept id="statistique-chi-carre">
+
+## La statistique du χ²
+
+Les effectifs théoriques quantifient ce qu'on observerait sous indépendance. La statistique du χ² agrège les écarts de toutes les cellules en un seul nombre :
+
+:::{#def-chi-deux}
+## Statistique du χ² de Pearson
+$$\chi^2 = \sum_{i=1}^r \sum_{j=1}^c \frac{(n_{ij} - \hat{n}_{ij})^2}{\hat{n}_{ij}}$$
+
+Chaque terme est la **contribution** de la cellule $(i, j)$ : elle est grande quand l'écart entre observé et théorique est important relativement à l'effectif théorique.
+:::
+
+**Propriétés :**
+
+- $\chi^2 \geq 0$, avec $\chi^2 = 0$ si et seulement si le tableau est en parfaite indépendance.
+- Plus $\chi^2$ est grand, plus les effectifs s'éloignent de l'indépendance.
+- **Limite :** $\chi^2$ dépend de $n$ et des dimensions du tableau — il n'est pas comparable entre deux tableaux de tailles différentes.
+
+*Contributions au χ² — Transport × Satisfaction :*
+
+| | Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 | **Sous-total** |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Bus** | 0,07 | 0,22 | 0,52 | 0,28 | 1,09 | **2,19** |
+| **Voiture** | 0,03 | 0,04 | 0,02 | 0,01 | 0,00 | **0,10** |
+| **Vélo** | 0,13 | 0,00 | 0,17 | 0,46 | 0,32 | **1,08** |
+| **Pied** | 0,45 | 1,35 | 0,42 | 0,00 | **7,35** | **9,57** |
+| | | | | | | **χ² ≈ 12,94** |
+
+La cellule **Pied × Sat. 5** contribue à elle seule pour 7,35 — soit 57 % du χ² total. C'est le principal moteur de la liaison : les étudiants venant à pied sont très souvent très satisfaits, bien au-delà de ce qu'on attendrait sous indépendance.
+
+::: {.callout-warning title="χ² comme mesure descriptive, pas comme test"}
+Ici, le χ² est utilisé comme **indicateur de l'écart global à l'indépendance**. La valeur 12,94 est difficile à interpréter directement sans la normaliser — c'est le rôle du V de Cramér.
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_chi_deux -->
+
+<concept id="v-de-cramer">
+
+## Le V de Cramér
+
+:::{#def-v-cramer}
+## V de Cramér
+$$V = \sqrt{\frac{\chi^2}{n \times \min(r-1,\ c-1)}}$$
+
+où $r$ est le nombre de lignes et $c$ le nombre de colonnes. Le V de Cramér est borné dans $[0\,;\,1]$ :
+
+- $V = 0$ : indépendance parfaite
+- $V = 1$ : liaison parfaite (déterminisme)
+:::
+
+Le V normalise le χ² par la taille de l'échantillon et les dimensions du tableau, le rendant **comparable entre tableaux de structures différentes**.
+
+*Application — Transport ($r = 4$) × Satisfaction ($c = 5$) :*
+
+$$V = \sqrt{\frac{12{,}94}{80 \times \min(3,\ 4)}} = \sqrt{\frac{12{,}94}{240}} \approx \mathbf{0{,}23}$$
+
+**Grille d'interprétation :**
+
+| $V$ | Interprétation |
+|:---:|----------------|
+| $[0\,;\,0{,}1[$ | Liaison négligeable |
+| $[0{,}1\,;\,0{,}3[$ | Liaison faible à modérée |
+| $[0{,}3\,;\,0{,}5[$ | Liaison modérée à forte |
+| $[0{,}5\,;\,1]$ | Liaison forte à très forte |
+
+$V \approx 0{,}23$ → **liaison faible à modérée** entre le mode de transport et la satisfaction. Les profils des différents groupes diffèrent (la liaison est réelle), mais elle reste imparfaite — d'autres facteurs influencent aussi la satisfaction des étudiants.
+
+::: {.callout-tip title="Symétrie du V de Cramér"}
+Le V de Cramér est **symétrique** : $V(\text{Transport} \times \text{Satisfaction}) = V(\text{Satisfaction} \times \text{Transport})$. L'échange de $X$ et $Y$ ne change pas la mesure de la liaison — seul l'angle d'interprétation change (profils-lignes vs profils-colonnes).
+:::
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_v_cramer -->
+
+<concept id="visualisation-qual-qual">
+
+## Visualisation — barres groupées et barres empilées
+
+Un tableau de contingence se lit chiffre par chiffre, mais un **graphique** permet de saisir la liaison d'un seul coup d'œil. Deux représentations complémentaires s'appliquent à deux variables qualitatives.
+
+### Diagramme en barres groupées
+
+:::{#def-barres-groupees}
+## Diagramme en barres groupées
+Un **diagramme en barres groupées** représente, pour chaque modalité de $X$, les effectifs de chaque modalité de $Y$ sous forme de barres juxtaposées.
+
+- L'axe horizontal regroupe les modalités de $X$ (Bus, Voiture, Vélo, Pied).
+- Chaque groupe contient une barre par modalité de $Y$ (5 niveaux de satisfaction).
+- La **hauteur** d'une barre représente l'effectif conjoint $n_{ij}$.
+:::
+
+Ce graphique compare les **effectifs** entre groupes et modalités. Il montre que le groupe Bus est le plus large et que Sat. 3 domine dans chaque groupe. **Limite :** les groupes de taille inégale (Bus : 33, Pied : 9) rendent la comparaison des structures difficile — le groupe Pied est visuellement "écrasé" par rapport au groupe Bus.
+
+### Diagramme en barres empilées à 100 %
+
+Pour comparer les **profils** plutôt que les effectifs, on normalise chaque barre à 100 %.
+
+:::{#def-barres-empilees}
+## Diagramme en barres empilées à 100 %
+Un **diagramme en barres empilées à 100 %** représente, pour chaque modalité de $X$, la **distribution de $Y$ au sein du groupe**, normalisée à 100 % :
+
+$$\text{Hauteur de la section } j \text{ dans la barre } i = f_{j|i} = \frac{n_{ij}}{n_{i\bullet}} \times 100$$
+
+Chaque barre totalise 100 %, ce qui élimine l'effet de taille et permet de comparer directement les structures entre groupes.
+:::
+
+::: {.callout-tip title="Lien avec les profils-lignes"}
+Le diagramme en barres empilées 100 % est la **représentation graphique exacte du tableau des profils-lignes**. Si tous les profils sont identiques, toutes les barres sont visuellement identiques — c'est l'indépendance statistique. Plus les barres diffèrent entre elles, plus la liaison est marquée.
+:::
+
+**Lecture sur le fil rouge :** La barre « Pied » se distingue par une large section Sat. 5 (44,4 %), contre 12,5 % dans la distribution marginale — confirmant visuellement l'écart déjà quantifié par $V \approx 0{,}23$.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_viz_qual_qual -->
+
+## Application interactive
+
+Explorez le tableau de contingence Transport × Satisfaction sous différentes formes : tableaux et graphiques.
+
+```{ojs}
+//| echo: false
+ctObs = [
+  [2, 6, 14, 9, 2],
+  [1, 4,  8, 8, 3],
+  [1, 2,  4, 6, 1],
+  [0, 0,  2, 3, 4]
+]
+ctTransports = ["Bus","Voiture","Vélo","Pied"]
+ctSats       = ["Sat. 1","Sat. 2","Sat. 3","Sat. 4","Sat. 5"]
+ctRowTot     = ctObs.map(r => r.reduce((a,b)=>a+b,0))
+ctColTot     = ctSats.map((_,j) => ctObs.reduce((s,r)=>s+r[j],0))
+ctN          = 80
+ctTheo       = ctObs.map((r,i) => r.map((_,j) => +(ctRowTot[i]*ctColTot[j]/ctN).toFixed(1)))
+ctChiCont    = ctObs.map((r,i) => r.map((v,j) => {
+  const e = ctTheo[i][j]; return e > 0 ? +((v-e)**2/e).toFixed(2) : 0;
+}))
+ctChi2       = ctChiCont.reduce((s,r)=>s+r.reduce((a,b)=>a+b,0),0)
+ctVCramer    = +Math.sqrt(ctChi2/(ctN*Math.min(ctTransports.length-1, ctSats.length-1))).toFixed(3)
+ctRowProf    = ctObs.map((r,i) => r.map(v => +(v/ctRowTot[i]*100).toFixed(1)))
+ctColProf    = ctObs.map((r,i) => r.map((v,j) => +(v/ctColTot[j]*100).toFixed(1)))
+ctMargRow    = ctRowTot.map(v => +(v/ctN*100).toFixed(1))
+ctMargCol    = ctColTot.map(v => +(v/ctN*100).toFixed(1))
+```
+
+```{ojs}
+//| echo: false
+viewof ctMode = Inputs.radio(
+  new Map([
+    ["Effectifs observés",    "obs"],
+    ["Profils-lignes (%)",    "row"],
+    ["Profils-colonnes (%)",  "col"],
+    ["Effectifs théoriques",  "theo"],
+    ["Contributions au χ²",  "chi"],
+    ["Barres groupées",       "grouped"],
+    ["Barres empilées 100 %", "stacked"]
+  ]),
+  { label: "Affichage :", value: "obs" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const notes = {
+    obs:     `Tableau des effectifs conjoints. Total marginal Bus (ligne 1) : ${ctRowTot[0]} étudiants.`,
+    row:     "Profils-lignes : chaque ligne somme à 100 %. Comparez les profils entre eux pour détecter une liaison.",
+    col:     "Profils-colonnes : chaque colonne somme à 100 %. Comparez la distribution du mode de transport par niveau de satisfaction.",
+    theo:    `Effectifs sous indépendance. χ² = ${ctChi2.toFixed(2)}, V de Cramér = ${ctVCramer}`,
+    chi:     `Contributions au χ². χ² total = ${ctChi2.toFixed(2)}. La cellule 'Pied × Sat. 5' domine (contribution la plus élevée).`,
+    grouped: "Barres groupées : chaque groupe de barres correspond à un mode de transport. Comparez les satisfactions.",
+    stacked: "Barres empilées 100 % : équivalent visuel du tableau des profils-lignes."
+  };
+
+  const cell  = (v, bg) => `<td style="padding:5px 8px;border:1px solid #dee2e6;text-align:center;${bg||''}">${v}</td>`;
+  const thCell = v => `<th style="padding:6px 8px;border:1px solid #dee2e6;background:#fdf3e7;color:#e8590c;text-align:center;">${v}</th>`;
+  
+  let content;
+  if (["obs","row","col","theo","chi"].includes(ctMode)) {
+    // Build table
+    let mat, suffix, getTotal;
+    if (ctMode === "obs") {
+      mat = ctObs; suffix = ""; getTotal = i => ctRowTot[i]; 
+    } else if (ctMode === "row") {
+      mat = ctRowProf; suffix = " %"; getTotal = i => "100 %";
+    } else if (ctMode === "col") {
+      mat = ctColProf; suffix = " %"; getTotal = i => ctMargRow[i] + " %";
+    } else if (ctMode === "theo") {
+      mat = ctTheo; suffix = ""; getTotal = i => ctRowTot[i];
+    } else {
+      mat = ctChiCont; suffix = ""; getTotal = i => ctChiCont[i].reduce((a,b)=>a+b,0).toFixed(2);
+    }
+    const header = `<tr>${thCell("")}${ctSats.map(thCell).join("")}${thCell("Total")}</tr>`;
+    const rows = ctTransports.map((t,i) => {
+      const cells = mat[i].map(v => cell(typeof v === "number" ? v+suffix : v, "")).join("");
+      const tot = cell(getTotal(i), "font-weight:bold;");
+      return `<tr>${cell("<b>"+t+"</b>","font-weight:bold;")+(ctMode === "row" ? `<td style="padding:5px 8px;border:1px solid #dee2e6;text-align:center;font-weight:bold;">${ctMargRow[i]} %</td>` : cells+tot)}</tr>`.replace(
+        ctMode === "row" ? `<td style="padding:5px 8px;border:1px solid #dee2e6;text-align:center;font-weight:bold;">${ctMargRow[i]} %</td>` : "",
+        ctMode === "row" ? cells + `<td style="padding:5px 8px;border:1px solid #dee2e6;text-align:center;font-weight:bold;">100 %</td>` : ""
+      );
+    }).join("");
+    const marginalRow = ctMode === "col"
+      ? `<tr>${cell("<b>Marginal</b>","font-weight:bold;")}${ctMargCol.map(v=>cell(v+" %","font-weight:bold;")).join("")}${cell("100 %","font-weight:bold;")}</tr>`
+      : `<tr>${cell("<b>Total</b>","font-weight:bold;")}${ctColTot.map(v=>cell(v,"font-weight:bold;")).join("")}${cell(ctN,"font-weight:bold;")}</tr>`;
+    content = html`<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;font-size:0.88em;">${header}${rows}${marginalRow}</table></div>`;
+  } else {
+    // Bar charts
+    const flatData = ctTransports.flatMap((t,i) =>
+      ctSats.map((s,j) => ({transport: t, sat: s, n: ctObs[i][j], pct: ctRowProf[i][j]}))
+    );
+    if (ctMode === "grouped") {
+      content = Plot.plot({
+        x: {label: "Mode de transport"},
+        y: {label: "Effectif"},
+        color: {legend: true},
+        fx: {label: null},
+        title: "Effectifs Transport × Satisfaction (barres groupées)",
+        marks: [
+          Plot.barY(flatData, Plot.groupX({y: "sum"}, {x: "sat", y: "n", fill: "transport", fx: "transport"}))
+        ]
+      });
+    } else {
+      content = Plot.plot({
+        x: {label: "Mode de transport"},
+        y: {label: "% (profil-ligne)", domain: [0,100]},
+        color: {legend: true},
+        title: "Profils-lignes Transport × Satisfaction (barres empilées 100 %)",
+        marks: [
+          Plot.barY(flatData, Plot.stackY({x: "transport", y: "pct", fill: "sat", order: ctSats}))
+        ]
+      });
+    }
+  }
+
+  return html`
+    ${content}
+    <div style="background:#fff3bf;border-left:4px solid #f59f00;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:0.88em;">
+      ${notes[ctMode]}
+    </div>`;
+}
+```
+
+## Exercices
+
+:::{#exr-contingence-lecture}
+## Lire un tableau de contingence
+
+Le tableau suivant croise le mode de transport et le score de satisfaction pour 80 étudiants :
+
+| | Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 | Total |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Bus | 2 | 6 | 14 | 9 | 2 | 33 |
+| Voiture | 1 | 4 | 8 | 8 | 3 | 24 |
+| Vélo | 1 | 2 | 4 | 6 | 1 | 14 |
+| Pied | 0 | 0 | 2 | 3 | 4 | 9 |
+| **Total** | 4 | 12 | 28 | 26 | 10 | **80** |
+
+a) Calculer le profil-ligne complet pour les étudiants venant **à vélo**.
+b) Comparer ce profil avec la distribution marginale de la satisfaction. Y a-t-il une différence notable ?
+c) Calculer l'effectif théorique sous indépendance pour la cellule **Vélo × Sat. 4**.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Profil-ligne Vélo** ($n_{\text{Vélo}\bullet} = 14$) :
+
+$$f_{j|\text{Vélo}} = \frac{n_{\text{Vélo},j}}{14}$$
+
+| Sat. 1 | Sat. 2 | Sat. 3 | Sat. 4 | Sat. 5 |
+|:---:|:---:|:---:|:---:|:---:|
+| 1/14 = **7,1 %** | 2/14 = **14,3 %** | 4/14 = **28,6 %** | 6/14 = **42,9 %** | 1/14 = **7,1 %** |
+
+**b) Comparaison avec le profil marginal** (5 %, 15 %, 35 %, 32,5 %, 12,5 %) :
+
+Le profil Vélo est décalé vers le score 4 (42,9 % vs 32,5 % en marginal) et légèrement sous-représenté aux scores 3 et 5. L'écart est visible mais modéré — les cyclistes semblent un peu plus satisfaits que la moyenne, sans que la différence soit dramatique.
+
+**c) Effectif théorique Vélo × Sat. 4 :**
+
+$$\hat{n}_{\text{Vélo},4} = \frac{n_{\text{Vélo}\bullet} \times n_{\bullet 4}}{n} = \frac{14 \times 26}{80} = \frac{364}{80} = \mathbf{4{,}55}$$
+
+L'effectif observé est 6 > 4,55 : les cyclistes ont un score 4 plus fréquemment qu'attendu sous l'hypothèse d'indépendance.
+:::
+:::
+
+:::{#exr-contingence-construction}
+## Construire un profil-colonne
+
+À partir du même tableau, calculer le **profil-colonne** pour la colonne **Satisfaction = 5** (les 10 étudiants très satisfaits).
+
+a) Quelle est la part de chaque mode de transport dans cette colonne ?
+b) Comparer avec la distribution marginale du transport (Bus 41,3 %, Voiture 30 %, Vélo 17,5 %, Pied 11,3 %). Quel groupe est le plus sur-représenté parmi les très satisfaits ?
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Profil-colonne Sat. 5** ($n_{\bullet 5} = 10$) :
+
+| Bus | Voiture | Vélo | Pied |
+|:---:|:-------:|:----:|:----:|
+| 2/10 = **20 %** | 3/10 = **30 %** | 1/10 = **10 %** | 4/10 = **40 %** |
+
+**b) Comparaison :**
+
+| Groupe | Profil-colonne Sat. 5 | Marginal transport | Écart |
+|--------|:---:|:---:|:---:|
+| Bus | 20 % | 41,3 % | **−21,3 pts** |
+| Voiture | 30 % | 30,0 % | ≈ 0 |
+| Vélo | 10 % | 17,5 % | −7,5 pts |
+| **Pied** | **40 %** | 11,3 % | **+28,7 pts** |
+
+Les étudiants venant **à pied** sont massivement sur-représentés parmi les très satisfaits : ils constituent 40 % du groupe Sat. 5 alors qu'ils ne sont que 11,3 % de l'échantillon total. C'est la confirmation, vue depuis la colonne, que la liaison transport × satisfaction est réelle.
+:::
+:::
+
+### Quiz — Tableaux de contingence
+
+```{ojs}
+//| echo: false
+ct_questions = [
+  {
+    enonce: "Dans le tableau de contingence Transport × Satisfaction, que représente la valeur n₂₃ = 8 ?",
+    choices: ["8 étudiants prennent le Bus et ont un score de satisfaction de 3", "8 étudiants viennent en Voiture et ont un score de satisfaction de 3", "8 % des étudiants viennent en Voiture", "8 étudiants au total ont un score de satisfaction de 3"],
+    correct: "8 étudiants viennent en Voiture et ont un score de satisfaction de 3",
+    explication: "nᵢⱼ désigne l'effectif conjoint de la modalité i en ligne (Voiture = ligne 2) et de la modalité j en colonne (Sat. 3 = colonne 3). n₂₃ = 8 signifie 8 étudiants viennent en Voiture ET ont un score de satisfaction de 3."
+  },
+  {
+    enonce: "Quel est le total marginal de la ligne 'Bus' dans le tableau Transport × Satisfaction ?",
+    choices: ["24 étudiants", "28 étudiants", "33 étudiants", "14 étudiants"],
+    correct: "33 étudiants",
+    explication: "Le total marginal de la ligne 'Bus' est n_Bus• = 2+6+14+9+2 = 33. Il représente le nombre total d'étudiants prenant le bus, indépendamment de leur satisfaction."
+  },
+  {
+    enonce: "Le profil-ligne 'Pied' montre 44,4 % au score 5, contre 12,5 % dans le profil marginal. Qu'est-ce que cela indique ?",
+    choices: ["Les étudiants à pied sont nettement plus satisfaits que la moyenne de l'échantillon", "Les étudiants à pied sont moins satisfaits que la moyenne", "44,4 % de tous les étudiants vont à pied", "Il n'y a pas de différence significative"],
+    correct: "Les étudiants à pied sont nettement plus satisfaits que la moyenne de l'échantillon",
+    explication: "Un écart de 44,4 % − 12,5 % = 31,9 points sur le score 5 signifie que les étudiants à pied sont fortement sur-représentés parmi les très satisfaits. C'est un signe clair de liaison."
+  },
+  {
+    enonce: "Sous l'hypothèse d'indépendance, quel serait l'effectif théorique de la cellule 'Pied × Sat. 5' ?",
+    choices: ["0,9", "1,1", "4,0", "2,5"],
+    correct: "1,1",
+    explication: "Sous indépendance : n̂_Pied,5 = n_Pied• × n_•5 / n = 9 × 10 / 80 = 90/80 = 1,125 ≈ 1,1. L'effectif observé est 4, soit presque 4 fois l'effectif théorique."
+  },
+  {
+    enonce: "Si tous les profils-lignes d'un tableau de contingence sont identiques à la distribution marginale de Y, que peut-on conclure ?",
+    choices: ["X et Y sont statistiquement indépendantes", "X et Y sont parfaitement liées", "Le tableau est mal construit", "Il y a au moins une cellule à effectif nul"],
+    correct: "X et Y sont statistiquement indépendantes",
+    explication: "Si f_{j|i} = f_{•j} pour tout i et j, la distribution de Y est la même quel que soit le groupe de X — connaître X n'apporte aucune information sur Y. C'est la définition de l'indépendance statistique."
+  },
+  {
+    enonce: "La distribution marginale de la satisfaction (5 %, 15 %, 35 %, 32,5 %, 12,5 %) s'obtient à partir de :",
+    choices: ["Les totaux de lignes divisés par n", "Les totaux de colonnes divisés par n", "Les effectifs diagonaux", "Les profils-lignes moyens"],
+    correct: "Les totaux de colonnes divisés par n",
+    explication: "La satisfaction est placée en colonne. Sa distribution marginale s'obtient en divisant chaque total de colonne n_•j par le grand total n."
+  },
+  {
+    enonce: "La cellule 'Pied × Sat. 5' a une contribution au χ² de 7,35, sur un total de χ² ≈ 12,94. Que signifie une contribution aussi élevée ?",
+    choices: ["Cette cellule représente 57 % de l'écart global à l'indépendance — c'est le principal moteur de la liaison", "La cellule a trop peu d'observations pour être fiable", "Le tableau de contingence est invalide", "Cette cellule est proche de l'effectif théorique attendu"],
+    correct: "Cette cellule représente 57 % de l'écart global à l'indépendance — c'est le principal moteur de la liaison",
+    explication: "7,35 / 12,94 ≈ 57 % : cette seule cellule explique plus de la moitié du χ² total. La sur-représentation des étudiants à pied parmi les très satisfaits est la liaison la plus forte du tableau."
+  },
+  {
+    enonce: "Pour le tableau Transport × Satisfaction (r = 4 lignes, c = 5 colonnes, n = 80, χ² ≈ 12,94), le V de Cramér vaut ≈ 0,23. Comment interpréter cette valeur ?",
+    choices: ["Liaison parfaite (V = 1)", "Liaison nulle (V = 0)", "Liaison faible à modérée — les profils diffèrent selon le transport, mais d'autres facteurs jouent aussi", "Liaison non calculable car le tableau est déséquilibré"],
+    correct: "Liaison faible à modérée — les profils diffèrent selon le transport, mais d'autres facteurs jouent aussi",
+    explication: "V ∈ [0 ; 1]. V ≈ 0,23 indique une liaison faible à modérée. Les profils-lignes montrent des différences visibles (notamment Pied vs Bus) mais la liaison n'est pas dominante."
+  },
+  {
+    enonce: "Quelle représentation graphique est l'équivalent visuel du tableau des profils-lignes ?",
+    choices: ["Le diagramme en barres groupées", "Le diagramme en barres empilées à 100 %", "Le nuage de points", "La boîte à moustaches"],
+    correct: "Le diagramme en barres empilées à 100 %",
+    explication: "Les barres empilées à 100 % montrent exactement les profils-lignes : chaque barre représente un groupe de X et sa décomposition reflète la distribution conditionnelle de Y. C'est l'équivalent graphique du tableau des profils-lignes."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof ct_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(ct_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  ct_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../01-introduction-bivariate-analysis/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Introduction à l'analyse bivariée</span></span></a>
+  <a href="../03-qualitative-quantitative/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Quali × Quanti</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>

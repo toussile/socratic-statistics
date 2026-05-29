@@ -1,0 +1,62 @@
+---
+title: "Module 03 — Analyse bivariée"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000001"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+type: "module"
+difficulty: "Intermediate"
+categories: [Statistics, "Descriptive Statistics"]
+---
+
+## À propos de ce module
+
+L'**analyse bivariée** étudie simultanément deux variables pour répondre à la question : *existe-t-il une liaison entre $X$ et $Y$, et si oui, quelle en est la forme et l'intensité ?*
+
+L'approche dépend de la nature des deux variables. Ce module traite les trois configurations possibles — qualitative × qualitative, qualitative × quantitative, quantitative × quantitative — en fournissant pour chacune les outils de description, de mesure et de visualisation adaptés.
+
+::: {.callout-note title="Prérequis"}
+Module 02 — Analyse univariée complet. En particulier : tableaux de fréquences, indicateurs de position et de dispersion, lecture d'un histogramme et d'une boîte à moustaches.
+:::
+
+::: {.callout-important title="Corrélation ≠ causalité"}
+Une liaison statistique, aussi forte soit-elle, ne prouve pas qu'une variable *cause* l'autre. Cette distinction fondamentale est introduite dès la leçon 01 et revient dans chaque leçon du module.
+:::
+
+## Objectifs du module
+
+À l'issue de ce module, vous serez capable de :
+
+- Identifier la configuration variable × variable et choisir les outils bivariés adaptés.
+- Construire et interpréter un tableau de contingence, calculer les profils-lignes et profils-colonnes.
+- Calculer et interpréter le $\chi^2$ descriptif et le V de Cramér pour deux variables qualitatives.
+- Comparer des distributions conditionnelles et calculer le rapport de corrélation $\eta^2$ pour une paire qualitative × quantitative.
+- Construire et lire un nuage de points, calculer et interpréter le coefficient de corrélation de Pearson $r$.
+- Ajuster une droite de régression OLS, interpréter ses coefficients et évaluer la qualité d'ajustement via $R^2$.
+
+## Leçons
+
+| N° | Titre | Difficulté | Configuration |
+|:--:|-------|:----------:|:-------------:|
+| 01 | [Introduction à l'analyse bivariée](01-introduction-bivariate-analysis/) | Intermédiaire | Toutes |
+| 02 | [Tableaux de contingence](02-contingency-tables/) | Intermédiaire | Qual × Qual |
+| 03 | [Variable qualitative × Variable quantitative](03-qualitative-quantitative/) | Intermédiaire | Qual × Quant |
+| 04 | [Variable quantitative × Variable quantitative](04-quantitative-quantitative/) | Intermédiaire | Quant × Quant |
+| 05 | [Régression linéaire simple](05-linear-regression/) | Intermédiaire | Quant × Quant |
+
+**Durée estimée :** 6 heures (≈ 1 h à 1 h 30 par leçon selon la leçon).
+
+## Fil rouge
+
+Ce module mobilise les **six variables** du jeu de données fil rouge. Deux nouvelles variables sont introduites à partir de la leçon 04 :
+
+| Variable | Type | Leçons |
+|----------|------|--------|
+| Mode de transport | Qualitative nominale | L01, L02, L03 |
+| Score de satisfaction (1–5) | Qualitative ordinale | L01, L02 |
+| Nombre de cours / semaine | Quantitative discrète | L01 |
+| Durée du trajet (min) | Quantitative continue | L01, L03 |
+| **Heures de révision / semaine** *(nouveau)* | Quantitative continue | L04, L05 |
+| **Note moyenne au semestre** *(nouveau)* | Quantitative continue | L04, L05 |
+
+La paire (Heures de révision, Note moyenne) est choisie pour illustrer la corrélation et la régression : $r \approx 0{,}75$, $R^2 \approx 0{,}56$ — une liaison forte et pédagogiquement riche.

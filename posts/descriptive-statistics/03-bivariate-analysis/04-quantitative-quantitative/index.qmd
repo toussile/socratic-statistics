@@ -1,0 +1,439 @@
+---
+title: "Analyse bivariée — Variable quantitative × Variable quantitative"
+author: "Wilson Toussile"
+date: "2026-05-24"
+course_id: "d5a7c3e1-0001-0001-0001-000000000010"
+module_id: "d5a7c3e1-0001-0001-0001-000000000030"
+lesson_id: "d5a7c3e1-0001-0001-0001-000000000034"
+difficulty: "Intermediate"
+categories: [Statistics, "Descriptive Statistics", "Bivariate Analysis"]
+---
+
+<concept id="nuage-de-points">
+
+## Le nuage de points
+
+Lorsque $X$ et $Y$ sont toutes deux **quantitatives**, la première étape de l'analyse bivariée est visuelle : le **nuage de points**.
+
+:::{#def-nuage-points}
+## Nuage de points
+Le **nuage de points** (*scatter plot*) représente $n$ observations dans le plan cartésien : chaque individu $i$ est placé au point de coordonnées $(x_i,\, y_i)$.
+
+- L'axe horizontal ($x$) porte la variable explicative $X$.
+- L'axe vertical ($y$) porte la variable à expliquer $Y$.
+:::
+
+Quatre aspects guident la lecture d'un nuage :
+
+| Aspect | Question | Signal de liaison |
+|--------|----------|-------------------|
+| **Direction** | Les points montent-ils ou descendent-ils de gauche à droite ? | Liaison positive ($\nearrow$) ou négative ($\searrow$) |
+| **Forme** | L'alignement est-il rectiligne ou courbé ? | Linéaire → mesurable par $r$ ; non linéaire → $r$ inadapté |
+| **Force** | Les points sont-ils serrés autour d'une droite ? | Resserrés → liaison forte ; dispersés → liaison faible |
+| **Anomalies** | Y a-t-il des points très isolés ? | *Outliers* pouvant fausser les mesures |
+
+**Sur le fil rouge :** $X$ = Heures de révision par semaine ([2 ; 25] h), $Y$ = Note moyenne au semestre ([6 ; 19] sur 20), $n = 80$ étudiants. On cherche à savoir si réviser davantage est associé à de meilleures notes.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_nuage_points -->
+
+<concept id="covariance">
+
+## La covariance
+
+Le nuage de points donne une impression visuelle. Pour la quantifier, on construit une mesure qui capte le co-mouvement de $X$ et $Y$.
+
+**Idée géométrique :** On découpe le plan en quatre quadrants autour du point $(\bar{x}, \bar{y})$.
+
+- Quadrant I ($x_i > \bar{x}$ et $y_i > \bar{y}$) et quadrant III ($x_i < \bar{x}$ et $y_i < \bar{y}$) : les deux variables sont du même côté de leur moyenne → contribution **positive** à la liaison.
+- Quadrant II ($x_i < \bar{x}$ et $y_i > \bar{y}$) et quadrant IV ($x_i > \bar{x}$ et $y_i < \bar{y}$) : les variables sont de côtés opposés → contribution **négative**.
+
+:::{#def-covariance}
+## Covariance
+La **covariance** de $X$ et $Y$ est la moyenne des produits des écarts à la moyenne :
+
+$$\text{cov}(X, Y) = \frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})$$
+
+- $\text{cov}(X, Y) > 0$ : $X$ et $Y$ varient globalement dans le même sens.
+- $\text{cov}(X, Y) < 0$ : $X$ et $Y$ varient globalement en sens opposé.
+- $\text{cov}(X, Y) = 0$ : aucune tendance linéaire commune.
+:::
+
+**Limite de la covariance :** Sa valeur dépend des unités de $X$ et de $Y$. Multiplier toutes les heures par 60 (convertir en minutes) multiplierait la covariance par 60, sans que la liaison ait changé. Comparer des covariances entre études différentes est donc sans sens.
+
+**Sur le fil rouge :**
+
+$$\text{cov}(\text{Heures}, \text{Note}) \approx 0{,}75 \times 5{,}2 \times 3{,}0 \approx 11{,}7 \quad (\text{h} \cdot \text{pts})$$
+
+La covariance est positive : en moyenne, les étudiants qui révisent plus ont de meilleures notes. Mais sa valeur brute (11,7) n'est pas directement interprétable — la prochaine section la normalise.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_covariance -->
+
+<concept id="correlation-pearson">
+
+## Coefficient de corrélation de Pearson
+
+Pour obtenir une mesure sans unité, comparable d'une étude à l'autre, on standardise la covariance par les écarts-types.
+
+:::{#def-pearson}
+## Coefficient de corrélation de Pearson
+Le **coefficient de corrélation de Pearson** est :
+
+$$r = \frac{\text{cov}(X, Y)}{\sigma_X \cdot \sigma_Y} = \frac{\displaystyle\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\displaystyle\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2} \cdot \sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}$$
+:::
+
+:::{#prp-proprietes-r}
+## Propriétés de $r$
+
+1. **Borné :** $r \in [-1\,;\,1]$.
+2. **Symétrique :** $r(X, Y) = r(Y, X)$ — l'ordre de $X$ et $Y$ n'importe pas.
+3. **Invariant aux transformations affines :** changer l'unité ou l'origine de $X$ ou $Y$ ne modifie pas $|r|$.
+4. **Cas extrêmes :** $|r| = 1 \Leftrightarrow$ tous les points sont exactement alignés sur une droite. $r = 0 \Leftrightarrow$ aucune tendance linéaire (mais d'autres formes de liaison peuvent exister).
+:::
+
+**Grille d'interprétation de $|r|$ :**
+
+| $|r|$ | Interprétation |
+|:-----:|----------------|
+| $[0\,;\,0{,}1[$ | Liaison linéaire négligeable |
+| $[0{,}1\,;\,0{,}3[$ | Liaison faible |
+| $[0{,}3\,;\,0{,}5[$ | Liaison modérée |
+| $[0{,}5\,;\,0{,}7[$ | Liaison assez forte |
+| $[0{,}7\,;\,0{,}9[$ | Liaison forte |
+| $[0{,}9\,;\,1]$ | Liaison très forte à quasi-parfaite |
+
+**Sur le fil rouge :**
+
+$$r = \frac{\text{cov}(\text{Heures}, \text{Note})}{\sigma_{\text{Heures}} \cdot \sigma_{\text{Note}}} = \frac{11{,}7}{5{,}2 \times 3{,}0} \approx \mathbf{0{,}75}$$
+
+$r \approx 0{,}75$ → **liaison forte et positive** : les étudiants qui révisent davantage ont tendance à obtenir de meilleures notes, et cet effet est net et régulier.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_pearson -->
+
+<concept id="interpretation-r">
+
+## Interprétation et limites de $r$
+
+### Ce que $r$ mesure — et ce qu'il ne mesure pas
+
+::: {.callout-warning title="$r$ ne mesure que la liaison linéaire"}
+Un coefficient $r \approx 0$ ne signifie pas l'absence de toute liaison entre $X$ et $Y$. Il signifie seulement l'absence de **tendance linéaire**. Une relation en U (quadratique), par exemple, peut avoir $r = 0$ alors que $X$ détermine parfaitement $Y$.
+
+Toujours examiner le nuage de points avant de se fier à $r$.
+:::
+
+### Sensibilité aux valeurs extrêmes
+
+Un seul *outlier* peut faire passer $r$ de 0,1 à 0,7 — ou l'inverse. Avant de conclure à une liaison, vérifier que $r$ n'est pas dominé par quelques points isolés.
+
+### Corrélation et causalité
+
+::: {.callout-important title="Corrélation ≠ causalité"}
+Même $r = 0{,}75$ ne prouve pas que réviser **cause** de meilleures notes. La liaison peut être :
+
+- **causale directe** : réviser améliore réellement les notes ;
+- **confondante** : une troisième variable (motivation, niveau de départ) influence simultanément les heures de révision et les notes ;
+- **inverse** : les étudiants qui se sentent à l'aise révissent moins mais réussissent quand même.
+
+La statistique descriptive constate une association ; établir la causalité requiert un plan d'étude adapté (expérience contrôlée, analyse longitudinale…).
+:::
+
+### $r^2$ : la part de variance expliquée
+
+Le carré du coefficient de corrélation a une interprétation directe analogue à $\eta^2$ :
+
+$$r^2 \approx 0{,}75^2 = 0{,}56$$
+
+**56 % de la variabilité des notes** est associée (linéairement) à la variabilité des heures de révision. Les 44 % restants reflètent d'autres facteurs — qualité du travail, niveau de départ, conditions d'examen, etc.
+
+</concept>
+
+<!-- checkpoint: trigger_socratic_check_interpretation_r -->
+
+## Application interactive
+
+Explorez le nuage de points Heures de révision × Note moyenne et observez l'effet des superpositions.
+
+```{ojs}
+//| echo: false
+// Pre-computed scatter data: 80 students, hrs ~ N(12.9,5.2), note ~ N(12.5,3.0), r≈0.75
+scatterData = [
+  {hrs: 6.8, note: 9.3}, {hrs: 12.4, note: 13.7}, {hrs: 18.1, note: 15.2}, {hrs: 10.2, note: 11.8},
+  {hrs: 7.5, note: 10.1}, {hrs: 15.3, note: 14.9}, {hrs: 20.1, note: 17.1}, {hrs: 8.9, note: 10.6},
+  {hrs: 14.7, note: 14.2}, {hrs: 11.3, note: 12.0}, {hrs: 5.2, note: 8.3}, {hrs: 16.8, note: 15.8},
+  {hrs: 13.5, note: 13.1}, {hrs: 9.4, note: 11.2}, {hrs: 19.2, note: 16.5}, {hrs: 7.1, note: 9.8},
+  {hrs: 12.0, note: 12.5}, {hrs: 17.5, note: 15.5}, {hrs: 14.1, note: 13.8}, {hrs: 10.8, note: 11.5},
+  {hrs: 6.3, note: 9.1}, {hrs: 15.9, note: 14.7}, {hrs: 21.0, note: 16.9}, {hrs: 11.7, note: 12.2},
+  {hrs: 8.2, note: 10.4}, {hrs: 13.9, note: 13.5}, {hrs: 18.6, note: 16.1}, {hrs: 9.1, note: 11.0},
+  {hrs: 16.2, note: 15.1}, {hrs: 12.8, note: 12.9}, {hrs: 5.9, note: 8.7}, {hrs: 14.5, note: 14.0},
+  {hrs: 20.5, note: 17.3}, {hrs: 7.8, note: 9.7}, {hrs: 11.5, note: 12.1}, {hrs: 17.2, note: 15.4},
+  {hrs: 13.2, note: 13.2}, {hrs: 10.5, note: 11.4}, {hrs: 6.7, note: 9.0}, {hrs: 15.6, note: 14.6},
+  {hrs: 19.8, note: 16.7}, {hrs: 8.5, note: 10.3}, {hrs: 14.3, note: 13.6}, {hrs: 11.0, note: 11.9},
+  {hrs: 22.0, note: 17.8}, {hrs: 16.5, note: 15.3}, {hrs: 9.8, note: 11.3}, {hrs: 12.5, note: 12.6},
+  {hrs: 7.3, note: 9.5}, {hrs: 18.3, note: 15.9}, {hrs: 13.7, note: 13.4}, {hrs: 10.1, note: 11.7},
+  {hrs: 5.5, note: 8.5}, {hrs: 15.2, note: 14.5}, {hrs: 20.8, note: 17.0}, {hrs: 8.8, note: 10.5},
+  {hrs: 14.9, note: 14.1}, {hrs: 11.2, note: 12.0}, {hrs: 17.8, note: 15.7}, {hrs: 9.6, note: 11.1},
+  {hrs: 16.1, note: 15.0}, {hrs: 12.3, note: 12.7}, {hrs: 6.1, note: 8.9}, {hrs: 19.5, note: 16.6},
+  {hrs: 13.0, note: 13.3}, {hrs: 10.4, note: 11.6}, {hrs: 7.6, note: 9.6}, {hrs: 15.8, note: 14.8},
+  {hrs: 21.5, note: 17.5}, {hrs: 8.3, note: 10.2}, {hrs: 14.0, note: 13.7}, {hrs: 11.8, note: 12.3},
+  {hrs: 5.7, note: 8.6}, {hrs: 17.0, note: 15.6}, {hrs: 12.7, note: 12.8}, {hrs: 9.3, note: 11.1},
+  {hrs: 16.4, note: 15.2}, {hrs: 13.4, note: 13.5}, {hrs: 10.6, note: 11.5}, {hrs: 6.9, note: 9.4}
+]
+hrsBar  = +(scatterData.reduce((s,d)=>s+d.hrs,0)/scatterData.length).toFixed(2)
+noteBar = +(scatterData.reduce((s,d)=>s+d.note,0)/scatterData.length).toFixed(2)
+rVal    = +((() => {
+  const n = scatterData.length;
+  const covXY = scatterData.reduce((s,d)=>s+(d.hrs-hrsBar)*(d.note-noteBar),0)/n;
+  const sX = Math.sqrt(scatterData.reduce((s,d)=>s+(d.hrs-hrsBar)**2,0)/n);
+  const sY = Math.sqrt(scatterData.reduce((s,d)=>s+(d.note-noteBar)**2,0)/n);
+  return covXY/(sX*sY);
+})()).toFixed(3)
+b1 = +((scatterData.reduce((s,d)=>s+(d.hrs-hrsBar)*(d.note-noteBar),0)/scatterData.length) /
+        (scatterData.reduce((s,d)=>s+(d.hrs-hrsBar)**2,0)/scatterData.length)).toFixed(3)
+b0 = +(noteBar - b1*hrsBar).toFixed(3)
+```
+
+```{ojs}
+//| echo: false
+viewof scatterOpts = Inputs.checkbox(
+  new Map([
+    ["Droite de régression",  "reg"],
+    ["Croisée des moyennes",  "cross"],
+    ["Quadrants colorés",     "quad"]
+  ]),
+  { label: "Superpositions :" }
+)
+```
+
+```{ojs}
+//| echo: false
+{
+  const marks = [
+    Plot.dot(scatterData, {x:"hrs", y:"note", fill:"#339af080", r:4})
+  ];
+  if (scatterOpts.includes("quad")) {
+    marks.unshift(
+      Plot.rect([{x1:0,x2:hrsBar,y1:4,y2:noteBar},{x1:hrsBar,x2:27,y1:noteBar,y2:21}],
+        {x1:"x1",x2:"x2",y1:"y1",y2:"y2",fill:"#ffe3e340"}),
+      Plot.rect([{x1:0,x2:hrsBar,y1:noteBar,y2:21},{x1:hrsBar,x2:27,y1:4,y2:noteBar}],
+        {x1:"x1",x2:"x2",y1:"y1",y2:"y2",fill:"#d3f9d840"})
+    );
+    marks.push(Plot.dot(scatterData, {x:"hrs", y:"note", fill:"#339af080", r:4}));
+  }
+  if (scatterOpts.includes("cross")) {
+    marks.push(Plot.ruleX([hrsBar],  {stroke:"#555", strokeDasharray:"4,2", strokeWidth:1.2}));
+    marks.push(Plot.ruleY([noteBar], {stroke:"#555", strokeDasharray:"4,2", strokeWidth:1.2}));
+  }
+  if (scatterOpts.includes("reg")) {
+    const xmin = Math.min(...scatterData.map(d=>d.hrs));
+    const xmax = Math.max(...scatterData.map(d=>d.hrs));
+    marks.push(Plot.line([{x:xmin,y:b0+b1*xmin},{x:xmax,y:b0+b1*xmax}],
+      {x:"x",y:"y",stroke:"#e8590c",strokeWidth:2}));
+    marks.push(Plot.text([{x:xmax*0.55,y:b0+b1*xmax*0.55+0.4}],
+      {x:"x",y:"y",text:[`ŷ = ${b0} + ${b1}·x`],fill:"#e8590c",fontSize:11}));
+  }
+
+  const statsHtml = `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;">
+    <div style="background:#f8f9fa;border-left:4px solid #e8590c;padding:8px 14px;border-radius:4px;">
+      <p style="font-size:0.82em;color:#555;margin:0;">r (Pearson)</p>
+      <p style="font-size:1.1em;font-weight:bold;color:#e8590c;margin:0;">${rVal}</p>
+    </div>
+    <div style="background:#f8f9fa;border-left:4px solid #e8590c;padding:8px 14px;border-radius:4px;">
+      <p style="font-size:0.82em;color:#555;margin:0;">r² = coefficient de détermination</p>
+      <p style="font-size:1.1em;font-weight:bold;color:#e8590c;margin:0;">${(rVal**2).toFixed(3)}</p>
+    </div>
+    <div style="background:#f8f9fa;border-left:4px solid #e8590c;padding:8px 14px;border-radius:4px;">
+      <p style="font-size:0.82em;color:#555;margin:0;">x̄ heures</p>
+      <p style="font-size:1.1em;font-weight:bold;color:#e8590c;margin:0;">${hrsBar}</p>
+    </div>
+    <div style="background:#f8f9fa;border-left:4px solid #e8590c;padding:8px 14px;border-radius:4px;">
+      <p style="font-size:0.82em;color:#555;margin:0;">ȳ note</p>
+      <p style="font-size:1.1em;font-weight:bold;color:#e8590c;margin:0;">${noteBar}</p>
+    </div>
+  </div>`;
+
+  return html`
+    ${Plot.plot({
+      x: {label: "Heures de révision / semaine", domain: [0, 27]},
+      y: {label: "Note moyenne (/20)",           domain: [4, 21]},
+      title: `Nuage de points — Heures × Note  (n = 80)`,
+      marks
+    })}
+    ${statsHtml}`;
+}
+```
+
+## Exercices
+
+:::{#exr-pearson-calcul}
+## Calculer $r$ à partir des données brutes
+
+Cinq observations $(x_i, y_i)$ sont données :
+
+| $i$ | $x_i$ | $y_i$ |
+|:---:|:-----:|:-----:|
+| 1 | 2 | 5 |
+| 2 | 4 | 7 |
+| 3 | 5 | 6 |
+| 4 | 7 | 9 |
+| 5 | 7 | 8 |
+
+a) Calculer $\bar{x}$, $\bar{y}$, $\sigma_X$, $\sigma_Y$ et $\text{cov}(X, Y)$.
+b) En déduire $r$.
+c) Interpréter la liaison.
+
+:::{.callout-note collapse="true" title="Solution"}
+**a) Statistiques univariées :**
+
+$$\bar{x} = \frac{2+4+5+7+7}{5} = \frac{25}{5} = 5 \qquad \bar{y} = \frac{5+7+6+9+8}{5} = \frac{35}{5} = 7$$
+
+| $i$ | $x_i - \bar{x}$ | $y_i - \bar{y}$ | $(x_i-\bar{x})(y_i-\bar{y})$ | $(x_i-\bar{x})^2$ | $(y_i-\bar{y})^2$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | −3 | −2 | **6** | 9 | 4 |
+| 2 | −1 | 0 | **0** | 1 | 0 |
+| 3 | 0 | −1 | **0** | 0 | 1 |
+| 4 | 2 | 2 | **4** | 4 | 4 |
+| 5 | 2 | 1 | **2** | 4 | 1 |
+| Σ | | | **12** | **18** | **10** |
+
+$$\sigma_X = \sqrt{\frac{18}{5}} = \sqrt{3{,}6} \approx 1{,}897 \qquad \sigma_Y = \sqrt{\frac{10}{5}} = \sqrt{2} \approx 1{,}414$$
+
+$$\text{cov}(X, Y) = \frac{12}{5} = 2{,}4$$
+
+**b) Coefficient de corrélation :**
+
+$$r = \frac{2{,}4}{1{,}897 \times 1{,}414} = \frac{2{,}4}{2{,}683} \approx \mathbf{0{,}894}$$
+
+**c) Interprétation :**
+
+$r \approx 0{,}89$ → **liaison très forte et positive**. Lorsque $x$ augmente, $y$ augmente de façon quasi-proportionnelle. Le nuage est très resserré autour d'une droite ascendante.
+:::
+:::
+
+:::{#exr-pearson-interpretation}
+## Interpréter des nuages de points
+
+Pour chacun des cas suivants, indiquer le signe probable de $r$ et son ordre de grandeur :
+
+a) Plus les températures hivernales augmentent, moins on consomme de gaz de chauffage.
+b) La taille et la pointure des adultes.
+c) Le numéro de département et le revenu médian.
+d) L'âge d'un arbre et son diamètre de tronc (chez les arbres d'une même espèce, en croissance normale).
+
+:::{.callout-note collapse="true" title="Solution"}
+**a)** $r < 0$, probablement $r \approx -0{,}8$ à $-0{,}95$ : liaison négative forte. Quand il fait plus chaud, on chauffe moins — relation physique directe avec peu d'exceptions.
+
+**b)** $r > 0$, probablement $r \approx 0{,}6$ à $0{,}8$ : liaison positive assez forte. Taille et pointure co-varient car toutes deux reflètent la taille corporelle globale, mais beaucoup d'autres facteurs génétiques individuels interviennent.
+
+**c)** $r \approx 0$ : le numéro de département est un identifiant administratif arbitraire, sans ordre naturel correspondant à la richesse. Corréler un code numérique à une variable quantitative n'a pas de sens — et le résultat serait proche de 0 par hasard.
+
+**d)** $r > 0$, probablement $r \approx 0{,}8$ à $0{,}95$ : liaison positive forte. Le diamètre d'un arbre croît régulièrement avec l'âge dans des conditions normales — c'est même le principe de la dendrochronologie (datation par les cernes).
+:::
+:::
+
+### Quiz — Nuage de points et corrélation
+
+```{ojs}
+//| echo: false
+quant_quant_questions = [
+  {
+    enonce: "Sur un nuage de points, les points sont très resserrés autour d'une droite descendante. Quel coefficient de corrélation est le plus vraisemblable ?",
+    choices: ["r ≈ 0,90", "r ≈ 0,10", "r ≈ −0,90", "r ≈ −0,10"],
+    correct: "r ≈ −0,90",
+    explication: "Un nuage resserré autour d'une droite indique une liaison linéaire forte (|r| proche de 1). La direction descendante (les y diminuent quand x augmente) indique que r est négatif."
+  },
+  {
+    enonce: "La covariance entre X et Y vaut −15. Qu'indique le signe négatif ?",
+    choices: ["X et Y ne sont pas liées", "En moyenne, quand X est supérieure à sa moyenne, Y tend à être inférieure à la sienne", "X et Y ont des unités différentes", "La covariance est toujours négative"],
+    correct: "En moyenne, quand X est supérieure à sa moyenne, Y tend à être inférieure à la sienne",
+    explication: "Le signe négatif signifie que les produits (xᵢ−x̄)(yᵢ−ȳ) sont en moyenne négatifs — les écarts à la moyenne de X et de Y sont généralement de signes opposés."
+  },
+  {
+    enonce: "Pourquoi préfère-t-on le coefficient de corrélation r à la covariance pour comparer deux études ?",
+    choices: ["r est toujours positif", "r est sans unité et borné dans [−1 ; 1], ce qui le rend comparable quelle que soit l'échelle", "La covariance est difficile à calculer", "r est plus facile à interpréter uniquement en statistique descriptive"],
+    correct: "r est sans unité et borné dans [−1 ; 1], ce qui le rend comparable quelle que soit l'échelle",
+    explication: "La covariance dépend des unités de X et de Y. Le coefficient r = cov(X,Y)/(σ_X σ_Y) est adimensionnel et toujours dans [−1 ; 1], ce qui permet de comparer des liaisons mesurées sur des variables d'unités différentes."
+  },
+  {
+    enonce: "Pour la paire Heures de révision × Note moyenne (r ≈ 0,75), que signifie r² ≈ 0,56 ?",
+    choices: ["56 % des étudiants ont la note prédite", "La relation linéaire entre heures et note explique 56 % de la variabilité des notes", "Il y a 56 % de chances que la relation soit causale", "r² = 0,56 signifie que r = 0,56"],
+    correct: "La relation linéaire entre heures et note explique 56 % de la variabilité des notes",
+    explication: "r² mesure la proportion de variance de Y associée linéairement à la variation de X. r² ≈ 0,56 : 56 % de la dispersion des notes s'explique par la variation des heures de révision."
+  },
+  {
+    enonce: "Un chercheur observe r = 0,82 entre la consommation de glaces (X) et le nombre de noyades (Y). Quelle conclusion est correcte ?",
+    choices: ["Consommer des glaces augmente le risque de noyade", "La liaison est forte mais une variable confondante (la saison estivale) explique probablement les deux", "r = 0,82 prouve une causalité directe", "Cette corrélation est spurieuse et r doit valoir 0"],
+    correct: "La liaison est forte mais une variable confondante (la saison estivale) explique probablement les deux",
+    explication: "La chaleur estivale augmente simultanément la consommation de glaces ET la fréquentation des plages (donc les noyades). La saison est une variable confondante."
+  },
+  {
+    enonce: "Un nuage de points en forme de U parfait (parabole) a r ≈ 0. Quelle interprétation est correcte ?",
+    choices: ["X et Y sont indépendantes", "La liaison est forte mais linéaire", "Il n'existe pas de liaison linéaire, mais une liaison non linéaire (quadratique) est présente", "r = 0 signifie que les deux variables sont orthogonales"],
+    correct: "Il n'existe pas de liaison linéaire, mais une liaison non linéaire (quadratique) est présente",
+    explication: "r mesure uniquement l'intensité de la tendance linéaire. Pour une parabole symétrique, les contributions positives et négatives s'annulent. Mais X détermine parfaitement Y via une relation quadratique."
+  }
+]
+```
+
+```{ojs}
+//| echo: false
+viewof quant_quant_rep = {
+  const uid = Math.random().toString(36).slice(2,8);
+  const values = new Array(quant_quant_questions.length).fill(null);
+  const wrap = html`<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;"></div>`;
+  quant_quant_questions.forEach((q, i) => {
+    const ctxHtml = q.context
+      ? `<div style="display:inline-block;background:#ebfbee;color:#0ca678;font-weight:600;font-size:.8em;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${q.context}</div>`
+      : "";
+    const choicesHtml = q.choices.map((c, j) =>
+      `<label data-idx="${j}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.92em;"><input type="radio" name="q${i}_${uid}" data-idx="${j}" style="margin:0;accent-color:#339af0;flex-shrink:0;width:15px;height:15px;cursor:pointer;"><span>${c}</span></label>`
+    ).join("");
+    const card = html`<div style="border:1px solid #dee2e6;border-radius:8px;padding:16px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);">${ctxHtml}<p style="margin:0 0 12px;font-weight:600;font-size:.95em;line-height:1.5;"><span style="color:#339af0;margin-right:2px;">Q${i+1}.</span> ${q.enonce}</p><div style="display:flex;flex-direction:column;gap:2px;">${choicesHtml}</div><div data-expl style="display:none;margin-top:10px;padding:10px 14px;border-left:3px solid #aaa;border-radius:0 4px 4px 0;font-size:.88em;color:#555;font-style:italic;">${q.explication}</div></div>`;
+    const explDiv = card.querySelector("[data-expl]");
+    card.querySelectorAll("input[type=radio]").forEach(radio => {
+      radio.addEventListener("change", () => {
+        const idx = +radio.dataset.idx;
+        const isCorrect = q.choices[idx] === q.correct;
+        values[i] = q.choices[idx];
+        wrap.value = [...values];
+        wrap.dispatchEvent(new CustomEvent("input"));
+        card.querySelectorAll("label[data-idx]").forEach(l => {
+          const li = +l.dataset.idx;
+          l.querySelector("input").disabled = true;
+          l.style.cursor = "default";
+          if (q.choices[li] === q.correct) {
+            l.style.background = "#d3f9d8";
+            l.style.borderColor = "#2f9e44";
+          } else if (li === idx) {
+            l.style.background = "#ffe3e3";
+            l.style.borderColor = "#c92a2a";
+          } else {
+            l.style.opacity = "0.5";
+          }
+        });
+        explDiv.style.display = "block";
+        explDiv.style.borderLeftColor = isCorrect ? "#2f9e44" : "#e67700";
+        explDiv.style.background    = isCorrect ? "#ebfbee" : "#fff9db";
+        explDiv.style.color         = isCorrect ? "#2f9e44" : "#664d03";
+      });
+    });
+    wrap.appendChild(card);
+  });
+  wrap.value = values;
+  return wrap;
+}
+```
+
+
+
+---
+
+<div style="display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:.75rem;margin-top:2.5rem;padding-top:1.25rem;border-top:2px solid var(--bs-border-color,#dee2e6);">
+  <a href="../03-qualitative-quantitative/" style="display:flex;align-items:center;justify-content:flex-start;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">←</span><span><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Précédente</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Quali × Quanti</span></span></a>
+  <a href="../05-linear-regression/" style="display:flex;align-items:center;justify-content:flex-end;gap:.75rem;text-decoration:none;border:1px solid var(--bs-border-color,#dee2e6);border-radius:8px;padding:.8rem 1.1rem;flex:1;min-width:0;background:var(--bs-body-bg);"><span style="text-align:right;"><small style="display:block;color:var(--bs-secondary-color,#6c757d);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Suivante</small><span style="font-weight:600;font-size:.88rem;color:var(--bs-link-color,#339af0);">Régression linéaire simple</span></span><span style="font-size:1.3rem;line-height:1;flex-shrink:0;color:var(--bs-secondary-color,#6c757d);">→</span></a>
+</div>
